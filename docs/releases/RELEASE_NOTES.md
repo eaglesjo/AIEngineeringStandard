@@ -28,3 +28,22 @@ No installer runtime behavior changes are included in this release preparation; 
 - Add update commands that reapply the recorded installation configuration and refresh managed resources.
 - Add safe uninstall with modification protection and explicit `--force` recovery.
 - Keep the existing install CLI positional arguments compatible while routing both shell and PowerShell through one lifecycle engine.
+
+## v1.17.2
+
+### Repository architecture transition
+
+- Make `eaglesjo/codingStandard-dev` the canonical public development, validation, and release source of truth.
+- Keep `eaglesjo/codingStandard-private` Luna-only; it is no longer a source or release repository.
+- Preserve the existing `v1.17.1` release and historical Git history without rewriting or deleting it.
+
+### Quality and validation
+
+- Retain the architecture, policy, project-profile, repository-dependency, and layer-boundary contracts in the canonical source repository.
+- Validate the 20-locale runtime resource contract with resource completeness, semantic policy parity, and runtime/documentation consistency gates.
+- Keep the release gate covering environment contracts, installers, LLM/Vision CPU smoke tests, and related validation suites.
+
+### Release model
+
+- Bump the canonical development version to `1.17.2` only after the architecture transition is complete.
+- Promote validated releases from `codingStandard-dev` to `eaglesjo/AIEngineeringStandard`.

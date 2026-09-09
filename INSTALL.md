@@ -1,21 +1,21 @@
 # Installation Guide
 
-`install-domains.ps1` and `install-domains.sh` are the supported installers for the public `codingStandard` distribution.
+`install-domains.ps1` and `install-domains.sh` are the supported installers for the public `AIEngineeringStandard` distribution.
 
 ## 1. Clone
 
 ```bash
-git clone https://github.com/eaglesjo/codingStandard.git
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 ```
 
 Run the installer from the repository root of the project you want to configure.
 
 ## 2. Choose Language and Domain
 
-Documentation is available in eight languages. Validated runtime resources are currently available for English, Korean, Simplified Chinese, Japanese, and Russian. French, Spanish, and Turkish are documentation-only until their runtime resources complete translation and validation.
+Documentation and runtime resources are catalogued for 20 locales. Runtime resources use English fallback where a locale-specific resource is not available at a domain-specific level.
 
 ```text
-Documentation languages
+Documentation / runtime locales
   en      = English
   ko      = Korean
   fr      = French
@@ -24,13 +24,18 @@ Documentation languages
   ja      = Japanese
   ru      = Russian
   tr      = Turkish
-
-Validated runtime resource languages
-  en      = English canonical resources
-  ko      = Korean localized resources
-  zh-CN   = Simplified Chinese localized common policy resources
-  ja      = Japanese localized common policy resources
-  ru      = Russian localized common policy resources
+  de      = German
+  it      = Italian
+  pt      = Portuguese
+  ar      = Arabic
+  hi      = Hindi
+  id      = Indonesian
+  vi      = Vietnamese
+  th      = Thai
+  nl      = Dutch
+  pl      = Polish
+  sv      = Swedish
+  uk      = Ukrainian
 
 Install domains
   common = common rules only
@@ -41,20 +46,18 @@ Install domains
   all    = common + ML + LLM + Vision + Colab
 ```
 
-For documentation-only locales, use their localized README as the language-specific entrypoint. Runtime installation falls back to English for domain resources that are not translated and validated.
-
 ### Windows / PowerShell
 
 Interactive mode:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\install-domains.ps1 -Target .
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
 Explicit mode:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\install-domains.ps1 -Target . -Language ko -Domain ml
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language ko -Domain ml
 ```
 
 ### Linux / macOS
@@ -62,13 +65,13 @@ powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\ins
 Interactive mode:
 
 ```bash
-bash ./codingStandard/scripts/installers/install-domains.sh .
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 ```
 
 Explicit mode:
 
 ```bash
-bash ./codingStandard/scripts/installers/install-domains.sh . ko ml overwrite false
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . ko ml overwrite false
 ```
 
 Arguments are:
@@ -88,7 +91,7 @@ PowerShell:
 Bash:
 
 ```bash
-bash ./codingStandard/scripts/installers/install-domains.sh . en all ask true
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . en all ask true
 ```
 
 Dry-run never writes installation files.
@@ -99,7 +102,7 @@ When a target file already exists:
 
 ```text
 Ask       choose per file
-Merge     preserve existing content and update the codingStandard-managed block
+Merge     preserve existing content and update the AIEngineeringStandard-managed block
 Overwrite replace the complete target file
 Skip      keep the existing target file
 ```
@@ -204,11 +207,8 @@ For Colab, run the validation notebook under `tests/colab/` from a fresh runtime
 
 ## Language-specific documentation
 
-- [English README](README.md)
-- [한국어 README](i18n/ko/README.md)
-- [Français README](i18n/fr/README.md)
-- [Español README](i18n/es/README.md)
-- [简体中文 README](i18n/zh-CN/README.md)
-- [日本語 README](i18n/ja/README.md)
-- [Русский README](i18n/ru/README.md)
-- [Türkçe README](i18n/tr/README.md)
+See the language catalog in [`i18n/languages.json`](i18n/languages.json) and the localization guide in [`i18n/README.md`](i18n/README.md).
+
+## Public distribution
+
+Validated releases are promoted through `codingStandard-dev` to `AIEngineeringStandard`.

@@ -11,7 +11,7 @@
   },
   "delivery": {
     "validation_required": true,
-    "release_from": "private-source-of-truth"
+    "release_from": "codingStandard-dev"
   },
   "scalability": {
     "traffic": "low-to-medium",

@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>v1.17 — Final Stable Release</strong>
+  <strong>v1.17.1 — Final Maintenance Release</strong>
 </p>
 
 <p align="center">
@@ -165,9 +165,7 @@ bash ./AIEngineeringStandard/scripts/installers/uninstall-domains.sh . --force
 
 PowerShell equivalents are available as `state-domains.ps1`, `update-domains.ps1`, and `uninstall-domains.ps1`.
 
-See [`docs/development/INSTALLER_LIFECYCLE.md`](docs/development/INSTALLER_LIFECYCLE.md) for manifest and lifecycle behavior.
-
-For the full Korean installation instructions, see [`i18n/ko/INSTALL.md`](i18n/ko/INSTALL.md).
+For the full installation instructions, see [`INSTALL.md`](INSTALL.md).
 
 ## 📦 Installation Domains
 
@@ -293,7 +291,7 @@ The canonical policy intent vocabulary currently covers:
 
 Runtime locales must achieve quality grade **A** before release promotion.
 
-See [`docs/development/I18N_QUALITY.md`](docs/development/I18N_QUALITY.md), [`docs/development/I18N_SEMANTIC_PARITY.md`](docs/development/I18N_SEMANTIC_PARITY.md), and [`docs/development/I18N_CONSISTENCY.md`](docs/development/I18N_CONSISTENCY.md).
+See [`i18n/README.md`](i18n/README.md) for the localization contract.
 
 ## 🧪 Validation
 
@@ -317,10 +315,10 @@ Open the notebook directly from GitHub in Google Colab. No private-repository cr
 
 | Validation | Purpose | Colab |
 |---|---|---|
-| Full AI Engineering Standard | Runtime, environment, LLM/Vision smoke tests and repository validation | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/codingstandard_colab_test.ipynb) |
-| Clean runtime | Fresh-runtime environment and checkpoint/restore smoke test | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/examples/colab/clean_runtime_validation.ipynb) |
-| LLM QLoRA | 4-bit/NF4 + PEFT/LoRA runtime validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/examples/colab/llm_qlora_validation.ipynb) |
-| RAG | Dense embeddings + top-k retrieval + grounded prompt + generation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/examples/colab/rag_validation.ipynb) |
+| Full AI Engineering Standard | Runtime, environment, LLM/Vision smoke tests and repository validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/codingstandard_colab_test.ipynb) |
+| Clean runtime | Fresh-runtime environment and checkpoint/restore smoke test | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/clean_runtime_validation.ipynb) |
+| LLM QLoRA | 4-bit/NF4 + PEFT/LoRA runtime validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/llm_qlora_validation.ipynb) |
+| RAG | Dense embeddings + top-k retrieval + grounded prompt + generation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/rag_validation.ipynb) |
 
 > Recommended first test: **Full AI Engineering Standard**. For the RAG capability specifically, run **RAG** in a fresh Colab runtime.
 
@@ -331,17 +329,12 @@ GitHub Actions validates the repository on macOS and Ubuntu 24.04 LTS. Windows i
 ## 📚 Documentation
 
 - [Installation Guide](INSTALL.md)
-- [Installer Lifecycle](docs/development/INSTALLER_LIFECYCLE.md)
-- [Korean Installation Guide](i18n/ko/INSTALL.md)
-- [Repository Structure](docs/development/REPOSITORY_STRUCTURE.md)
-- [Public Development Guide](docs/development/DEVELOPMENT_PUBLIC.md)
+- [Korean README](i18n/ko/README.md)
+- [Language Resources](i18n/README.md)
 - [Architecture Profiles](docs/development/ARCHITECTURE_PROFILES.md)
 - [Policy Inheritance](docs/development/POLICY_INHERITANCE.md)
 - [Project Profiles](docs/development/PROJECT_PROFILES.md)
 - [Scalability Architecture](docs/development/SCALABILITY_ARCHITECTURE.md)
-- [i18n Quality](docs/development/I18N_QUALITY.md)
-- [i18n Semantic Parity](docs/development/I18N_SEMANTIC_PARITY.md)
-- [i18n Runtime / Documentation Consistency](docs/development/I18N_CONSISTENCY.md)
 - [Common Agent Rules](core/common/AGENT.md)
 - [ML Agent Rules](domains/ml/AGENT.md)
 - [ML Skill](domains/ml/SKILL.md)
@@ -363,4 +356,4 @@ This project is released under the [MIT License](LICENSE).
 
 ## 🔗 Public Distribution
 
-Validated releases are promoted from the development repository after the full validation gate passes. The private repository remains the source of truth, while `codingStandard-dev` serves as the public development and CI gate. `AIEngineeringStandard` is the official stable public distribution repository.
+Validated releases are promoted from this development repository after the full validation gate passes. The private repository remains the source of truth, while `codingStandard-dev` serves as the public development and CI gate. `AIEngineeringStandard` is the official stable public distribution repository.

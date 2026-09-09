@@ -1,6 +1,6 @@
 # Language Resources
 
-`codingStandard` separates **documentation localization** from **runtime policy localization** so a language is never advertised as fully translated before its Agent / Skill / Environment resources are actually translated and validated.
+`AI Engineering Standard` separates **documentation localization** from **runtime policy localization** so a language is never advertised as fully translated before its Agent / Skill / Environment resources are actually translated and validated.
 
 ## Documentation languages
 
@@ -47,7 +47,11 @@ The v1.16 quality contract requires three gates:
 2. **Semantic parity** — required engineering-policy intents are expressed in the locale.
 3. **Runtime/documentation consistency** — runtime and documentation entries remain aligned.
 
-Every runtime locale must reach quality grade **A**. The detailed quality and semantic contracts are documented in [`I18N_QUALITY.md`](../docs/development/I18N_QUALITY.md) and [`I18N_SEMANTIC_PARITY.md`](../docs/development/I18N_SEMANTIC_PARITY.md).
+Every runtime locale must reach quality grade **A**.
+
+## Colab documentation
+
+The public Colab validation flow is documented in locale-specific guides. The canonical English guide remains [`../tests/colab/README.md`](../tests/colab/README.md).
 
 ## Localization rules
 

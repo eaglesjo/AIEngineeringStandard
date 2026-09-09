@@ -38,9 +38,9 @@ REQUIRED_FILES = [
     "tests/integration/ml_classification_smoke.py", "tests/integration/llm_qlora_strategy_smoke.py",
     ".github/instructions/ml.instructions.md", ".github/instructions/colab.instructions.md",
     "scripts/installers/install-domains.ps1", "scripts/installers/install-domains.sh",
-    "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py",
+    "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/validation/validate_profiles.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py",
     "scripts/installers/test_installers_windows.ps1", ".github/workflows/windows-install-test.yml",
-    "tests/validation/test_i18n_quality.py", "tests/validation/test_i18n_consistency.py", "tests/colab/README.md", "tests/colab/codingstandard_colab_test.ipynb", "LICENSE",
+    "tests/validation/test_i18n_consistency.py", "tests/colab/README.md", "tests/colab/codingstandard_colab_test.ipynb", "LICENSE",
 ]
 
 
@@ -130,6 +130,10 @@ def run_structure_check() -> None:
     run_checker(ROOT / "scripts" / "validation" / "check_structure.py", "Repository structure validation")
 
 
+def run_profile_check() -> None:
+    run_checker(ROOT / "scripts" / "validation" / "validate_profiles.py", "Architecture profile validation")
+
+
 def run_i18n_check() -> None:
     run_checker(ROOT / "scripts" / "validation" / "check_i18n.py", "Multilingual localization check")
     run_checker(ROOT / "scripts" / "validation" / "check_i18n_quality.py", "i18n quality validation")
@@ -137,7 +141,7 @@ def run_i18n_check() -> None:
 
 
 def main() -> None:
-    check_required_files(); run_structure_check(); check_python(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("codingStandard validation passed")
+    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("codingStandard validation passed")
 
 
 if __name__ == "__main__": main()
