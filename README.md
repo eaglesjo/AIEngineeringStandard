@@ -10,12 +10,13 @@
 
 <p align="center">
   <a href="https://github.com/eaglesjo/codingStandard/releases"><img src="https://img.shields.io/github/v/release/eaglesjo/codingStandard?label=public%20release" alt="Public release"></a>
+  <a href="https://github.com/eaglesjo/codingStandard-dev/actions/workflows/validate-coding-standard.yml"><img src="https://github.com/eaglesjo/codingStandard-dev/actions/workflows/validate-coding-standard.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="MIT License"></a>
 </p>
 
 **Language:** English · [한국어](i18n/ko/README.md) · [Français](i18n/fr/README.md) · [Español](i18n/es/README.md) · [简体中文](i18n/zh-CN/README.md) · [日本語](i18n/ja/README.md) · [Русский](i18n/ru/README.md) · [Türkçe](i18n/tr/README.md) · [Deutsch](i18n/de/README.md) · [Italiano](i18n/it/README.md) · [Português](i18n/pt/README.md) · [العربية](i18n/ar/README.md) · [हिन्दी](i18n/hi/README.md) · [Bahasa Indonesia](i18n/id/README.md) · [Tiếng Việt](i18n/vi/README.md) · [ไทย](i18n/th/README.md) · [Nederlands](i18n/nl/README.md) · [Polski](i18n/pl/README.md) · [Svenska](i18n/sv/README.md) · [Українська](i18n/uk/README.md)
 
-> **Repository model:** `eaglesjo/codingStandard` is the stable public distribution. Releases are promoted from the validated development repository, with the private repository remaining the development source of truth.
+> **Repository model:** `codingStandard-dev` is the public development and validation gate. Validated releases are promoted to [`eaglesjo/codingStandard`](https://github.com/eaglesjo/codingStandard). The private repository remains the development source of truth.
 >
 > **Runtime resource languages:** 20 locales are validated for runtime resources: English, Korean, French, Spanish, Simplified Chinese, Japanese, Russian, Turkish, German, Italian, Portuguese, Arabic, Hindi, Indonesian, Vietnamese, Thai, Dutch, Polish, Swedish, and Ukrainian.
 >
@@ -226,8 +227,6 @@ The repository uses a canonical layered structure. Tool-specific entrypoints are
 │   └── validation/
 ├── tests/
 │   └── validation/
-├── examples/
-│   └── colab/
 ├── .github/
 └── VERSION
 ```
@@ -364,4 +363,4 @@ This project is released under the [MIT License](LICENSE).
 
 ## 🔗 Public Distribution
 
-This repository is the stable public distribution of `codingStandard`. Releases are promoted only after the development repository passes the complete validation gate.
+Validated releases are promoted from this development repository after the full validation gate passes. The private repository remains the source of truth, while this repository serves as the public development and CI gate.
