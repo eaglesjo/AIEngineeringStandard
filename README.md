@@ -5,18 +5,18 @@
 </p>
 
 <p align="center">
-  <strong>v1.16 — Multilingual Quality & Semantic Parity</strong>
+  <strong>v1.17 — Final Stable Release</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/eaglesjo/codingStandard/releases"><img src="https://img.shields.io/github/v/release/eaglesjo/codingStandard?label=public%20release" alt="Public release"></a>
+  <a href="https://github.com/eaglesjo/AIEngineeringStandard/releases"><img src="https://img.shields.io/github/v/release/eaglesjo/AIEngineeringStandard?label=public%20release" alt="Public release"></a>
   <a href="https://github.com/eaglesjo/codingStandard-dev/actions/workflows/validate-coding-standard.yml"><img src="https://github.com/eaglesjo/codingStandard-dev/actions/workflows/validate-coding-standard.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="MIT License"></a>
 </p>
 
 **Language:** English · [한국어](i18n/ko/README.md) · [Français](i18n/fr/README.md) · [Español](i18n/es/README.md) · [简体中文](i18n/zh-CN/README.md) · [日本語](i18n/ja/README.md) · [Русский](i18n/ru/README.md) · [Türkçe](i18n/tr/README.md) · [Deutsch](i18n/de/README.md) · [Italiano](i18n/it/README.md) · [Português](i18n/pt/README.md) · [العربية](i18n/ar/README.md) · [हिन्दी](i18n/hi/README.md) · [Bahasa Indonesia](i18n/id/README.md) · [Tiếng Việt](i18n/vi/README.md) · [ไทย](i18n/th/README.md) · [Nederlands](i18n/nl/README.md) · [Polski](i18n/pl/README.md) · [Svenska](i18n/sv/README.md) · [Українська](i18n/uk/README.md)
 
-> **Repository model:** `codingStandard-dev` is the public development and validation gate. Validated releases are promoted to [`eaglesjo/codingStandard`](https://github.com/eaglesjo/codingStandard). The private repository remains the development source of truth.
+> **Repository model:** `codingStandard-dev` is the public development and validation gate. Validated releases are promoted to [`eaglesjo/AIEngineeringStandard`](https://github.com/eaglesjo/AIEngineeringStandard). The private repository remains the development source of truth.
 >
 > **Runtime resource languages:** 20 locales are validated for runtime resources: English, Korean, French, Spanish, Simplified Chinese, Japanese, Russian, Turkish, German, Italian, Portuguese, Arabic, Hindi, Indonesian, Vietnamese, Thai, Dutch, Polish, Swedish, and Ukrainian.
 >
@@ -24,7 +24,7 @@
 
 ## ✨ What is AI Engineering Standard?
 
-`codingStandard` is a reusable engineering standard for AI-assisted development, model training, experimentation, LLM/Vision workflows, general ML/DL workflows, and AI coding agents.
+`AI Engineering Standard` is a reusable engineering standard for AI-assisted development, model training, experimentation, LLM/Vision workflows, general ML/DL workflows, and AI coding agents.
 
 It provides:
 
@@ -98,31 +98,31 @@ Clone the public distribution repository in the project you want to configure:
 ### Windows / PowerShell
 
 ```powershell
-git clone https://github.com/eaglesjo/codingStandard.git
-powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\install-domains.ps1 -Target .
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
 Explicit installation:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain all
-powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\install-domains.ps1 -Target . -Language ko -Domain ml
-powershell -ExecutionPolicy Bypass -File .\codingStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain colab
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain all
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language ko -Domain ml
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain colab
 ```
 
 ### Linux / macOS
 
 ```bash
-git clone https://github.com/eaglesjo/codingStandard.git
-bash ./codingStandard/scripts/installers/install-domains.sh .
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 ```
 
 Explicit installation:
 
 ```bash
-bash ./codingStandard/scripts/installers/install-domains.sh . en all ask false
-bash ./codingStandard/scripts/installers/install-domains.sh . ko ml overwrite false
-bash ./codingStandard/scripts/installers/install-domains.sh . en colab overwrite false
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . en all ask false
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . ko ml overwrite false
+bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . en colab overwrite false
 ```
 
 Arguments are:
@@ -146,21 +146,21 @@ Every successful install records ownership and hashes in `.codingstandard/instal
 Inspect the installation:
 
 ```bash
-bash ./codingStandard/scripts/installers/state-domains.sh .
+bash ./AIEngineeringStandard/scripts/installers/state-domains.sh .
 ```
 
 Update the recorded language/domain installation to the current release:
 
 ```bash
-bash ./codingStandard/scripts/installers/update-domains.sh .
-bash ./codingStandard/scripts/installers/update-domains.sh . --policy overwrite
+bash ./AIEngineeringStandard/scripts/installers/update-domains.sh .
+bash ./AIEngineeringStandard/scripts/installers/update-domains.sh . --policy overwrite
 ```
 
 Safely uninstall managed files. Modified files are preserved unless force mode is explicitly selected:
 
 ```bash
-bash ./codingStandard/scripts/installers/uninstall-domains.sh .
-bash ./codingStandard/scripts/installers/uninstall-domains.sh . --force
+bash ./AIEngineeringStandard/scripts/installers/uninstall-domains.sh .
+bash ./AIEngineeringStandard/scripts/installers/uninstall-domains.sh . --force
 ```
 
 PowerShell equivalents are available as `state-domains.ps1`, `update-domains.ps1`, and `uninstall-domains.ps1`.
@@ -317,12 +317,12 @@ Open the notebook directly from GitHub in Google Colab. No private-repository cr
 
 | Validation | Purpose | Colab |
 |---|---|---|
-| Full codingStandard | Runtime, environment, LLM/Vision smoke tests and repository validation | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eaglesjo/codingStandard/blob/main/tests/colab/codingstandard_colab_test.ipynb) |
-| Clean runtime | Fresh-runtime environment and checkpoint/restore smoke test | [Open in Colab](https://colab.research.google.com/github/eaglesjo/codingStandard/blob/main/examples/colab/clean_runtime_validation.ipynb) |
-| LLM QLoRA | 4-bit/NF4 + PEFT/LoRA runtime validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/codingStandard/blob/main/examples/colab/llm_qlora_validation.ipynb) |
-| RAG | Dense embeddings + top-k retrieval + grounded prompt + generation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/codingStandard/blob/main/examples/colab/rag_validation.ipynb) |
+| Full AI Engineering Standard | Runtime, environment, LLM/Vision smoke tests and repository validation | [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/codingstandard_colab_test.ipynb) |
+| Clean runtime | Fresh-runtime environment and checkpoint/restore smoke test | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/examples/colab/clean_runtime_validation.ipynb) |
+| LLM QLoRA | 4-bit/NF4 + PEFT/LoRA runtime validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/examples/colab/llm_qlora_validation.ipynb) |
+| RAG | Dense embeddings + top-k retrieval + grounded prompt + generation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/examples/colab/rag_validation.ipynb) |
 
-> Recommended first test: **Full codingStandard**. For the RAG capability specifically, run **RAG** in a fresh Colab runtime.
+> Recommended first test: **Full AI Engineering Standard**. For the RAG capability specifically, run **RAG** in a fresh Colab runtime.
 
 ### Platform validation
 
@@ -363,4 +363,4 @@ This project is released under the [MIT License](LICENSE).
 
 ## 🔗 Public Distribution
 
-Validated releases are promoted from this development repository after the full validation gate passes. The private repository remains the source of truth, while this repository serves as the public development and CI gate.
+Validated releases are promoted from the development repository after the full validation gate passes. The private repository remains the source of truth, while `codingStandard-dev` serves as the public development and CI gate. `AIEngineeringStandard` is the official stable public distribution repository.
