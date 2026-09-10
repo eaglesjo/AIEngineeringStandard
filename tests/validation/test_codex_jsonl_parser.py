@@ -64,7 +64,10 @@ def main() -> int:
     item_error = event("item.completed", {"type": "error", "message": "recoverable item error"})
     observations, warnings = parse_codex_jsonl(item_error)
     assert not warnings
-    assert not observations, "item-level errors must not be promoted to fatal stream errors"
+    grouped = results(observations)
+    assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
+    assert len(observations) == 1, "item-level errors must not be promoted to semantic stream errors"
+    assert "codex-stream-error" not in grouped
 
     malformed_item = event("item.completed")
     observations, warnings = parse_codex_jsonl(malformed_item)
