@@ -128,6 +128,10 @@ def validate_evidence_schema(data: object) -> None:
     require(set(observation.get("properties", {}).get("evidence_level", {}).get("enum", [])) == OBSERVATION_LEVELS, "observation evidence level enum is incomplete")
     protected = data.get("properties", {}).get("protected_files", {})
     require(protected.get("type") == "array", "evidence schema protected_files must be an array")
+    all_of = data.get("allOf", [])
+    require(isinstance(all_of, list) and all_of, "evidence schema must define result-dependent policy rules")
+    pass_rule = next((rule for rule in all_of if rule.get("if", {}).get("properties", {}).get("result", {}).get("const") == "PASS"), None)
+    require(pass_rule is not None, "evidence schema must define PASS evidence policy")
 
 
 def validate_runtime_scenario(data: object, label: str) -> None:
