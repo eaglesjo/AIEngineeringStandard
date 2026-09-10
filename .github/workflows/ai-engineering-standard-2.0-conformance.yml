@@ -31,6 +31,9 @@ jobs:
       - name: Validate Codex adapter syntax
         run: python -m py_compile scripts/validation/adapters/codex_runtime.py
 
+      - name: Run Codex adapter self-test
+        run: python tests/validation/test_codex_runtime_adapter.py
+
       - name: Run Codex adapter discovery
         run: python scripts/validation/adapters/codex_runtime.py --output /tmp/codex-runtime-adapter.json
 
