@@ -36,9 +36,8 @@ def main() -> int:
             event("turn.completed"),
         ]
     )
-    observations, warnings = parse_codex_jsonl(valid)
+    observations = parse_codex_jsonl(valid)
     grouped = results(observations)
-    assert not warnings, warnings
     assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
     assert grouped["codex-command-execution"] == ["OBSERVED"]
     assert grouped["codex-skill-file-access"] == ["OBSERVED"]
@@ -46,33 +45,36 @@ def main() -> int:
     assert grouped["codex-file-change"] == ["OBSERVED"]
 
     malformed = "{not-json}\n" + event("turn.completed")
-    observations, warnings = parse_codex_jsonl(malformed)
-    assert any("non-JSON output ignored" in warning for warning in warnings)
-    assert results(observations)["codex-jsonl-event-stream"] == ["OBSERVED"]
+    observations = parse_codex_jsonl(malformed)
+    grouped = results(observations)
+    assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
+    assert grouped["codex-jsonl-parse-warning"] == ["OBSERVED"]
 
     unknown = event("future.event", answer="do not infer")
-    observations, warnings = parse_codex_jsonl(unknown)
-    assert results(observations)["codex-jsonl-event-stream"] == ["OBSERVED"]
-    assert len(observations) == 1, "unknown events should not create semantic observations"
-    assert any("unknown event type" in warning for warning in warnings)
+    observations = parse_codex_jsonl(unknown)
+    grouped = results(observations)
+    assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
+    assert len(observations) == 2, "unknown events should only create the stream and parse-warning observations"
+    assert grouped["codex-jsonl-parse-warning"] == ["OBSERVED"]
 
     top_level_error = event("error", message="stream failure")
-    observations, warnings = parse_codex_jsonl(top_level_error)
-    assert not warnings
-    assert results(observations)["codex-stream-error"] == ["OBSERVED"]
+    observations = parse_codex_jsonl(top_level_error)
+    grouped = results(observations)
+    assert grouped["codex-stream-error"] == ["OBSERVED"]
+    assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
 
     item_error = event("item.completed", {"type": "error", "message": "recoverable item error"})
-    observations, warnings = parse_codex_jsonl(item_error)
-    assert not warnings
+    observations = parse_codex_jsonl(item_error)
     grouped = results(observations)
     assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
     assert len(observations) == 1, "item-level errors must not be promoted to semantic stream errors"
     assert "codex-stream-error" not in grouped
 
     malformed_item = event("item.completed")
-    observations, warnings = parse_codex_jsonl(malformed_item)
-    assert results(observations).get("codex-jsonl-event-stream", []) == ["OBSERVED"]
-    assert any("has no object item" in warning for warning in warnings)
+    observations = parse_codex_jsonl(malformed_item)
+    grouped = results(observations)
+    assert grouped["codex-jsonl-event-stream"] == ["OBSERVED"]
+    assert grouped["codex-jsonl-parse-warning"] == ["OBSERVED"]
 
     print("Codex JSONL parser edge-case tests passed")
     return 0
