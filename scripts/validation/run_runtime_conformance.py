@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
-"""Run a bounded runtime conformance scenario and emit machine-readable evidence.
-
-This harness never executes Skills, Plugins, or MCP components directly. It invokes
-an explicitly supplied agent runtime command, captures bounded output, and applies
-only deterministic scenario assertions.
-"""
+"""Run a bounded runtime conformance scenario and emit machine-readable evidence."""
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shlex
@@ -46,6 +42,17 @@ def git_value(*args: str) -> str | None:
     except OSError:
         return None
     return proc.stdout.strip() if proc.returncode == 0 else None
+
+
+def sha256_file(path: Path) -> str | None:
+    try:
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+    except OSError:
+        return None
 
 
 def make_check(check_id: str, result: str, evidence: str, notes: str = "") -> dict:
@@ -88,11 +95,11 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     if timeout < 1 or timeout > 900:
         raise SystemExit("ERROR: scenario timeout_seconds must be between 1 and 900")
 
+    protected = {str(path): sha256_file(ROOT / str(path)) for path in meta.get("protected_files", [])}
     prompt = str(meta["prompt"])
     prompt_path = ROOT / ".runtime-conformance-prompt.txt"
     prompt_path.write_text(prompt + "\n", encoding="utf-8")
-    command_text = args.command.replace("{prompt}", prompt)
-    command = shlex.split(command_text)
+    command = shlex.split(args.command.replace("{prompt}", prompt))
     if not command:
         raise SystemExit("ERROR: --command must not be empty")
     try:
@@ -103,57 +110,48 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
             "AIENGINEERINGSTANDARD_CONFORMANCE_PROMPT_FILE": str(prompt_path),
         }
         try:
-            proc = subprocess.run(
-                command, cwd=ROOT, capture_output=True, text=True, timeout=timeout, check=False, env=env
-            )
-            timed_out = False
-            exit_code = proc.returncode
-            stdout = proc.stdout or ""
-            stderr = proc.stderr or ""
+            proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout, check=False, env=env)
+            timed_out, exit_code = False, proc.returncode
+            stdout, stderr = proc.stdout or "", proc.stderr or ""
         except subprocess.TimeoutExpired as exc:
-            timed_out = True
-            exit_code = None
+            timed_out, exit_code = True, None
             stdout = (exc.stdout or "") if isinstance(exc.stdout, str) else ""
             stderr = (exc.stderr or "") if isinstance(exc.stderr, str) else ""
         except OSError as exc:
-            timed_out = False
-            exit_code = None
-            stdout = ""
-            stderr = str(exc)
+            timed_out, exit_code = False, None
+            stdout, stderr = "", str(exc)
     finally:
         prompt_path.unlink(missing_ok=True)
 
+    protected_after = {path: sha256_file(ROOT / path) for path in protected}
+    protected_ok = protected == protected_after
     combined = stdout + "\n" + stderr
     expected_ok, expected_note = marker_check(combined, list(meta.get("expected_markers", [])))
     forbidden = [marker for marker in meta.get("forbidden_markers", []) if marker in combined]
     command_ok = exit_code == 0 and not timed_out
+    negative = bool(meta.get("protected_files"))
+    recovery_ok = protected_ok and expected_ok and not forbidden
 
     checks = [
-        make_check("instruction-discovery", "PASS" if command_ok and expected_ok else "FAIL", "runtime completed and expected instruction/task markers were observed" if command_ok and expected_ok else expected_note),
-        make_check("skill-discovery", "PASS" if command_ok and expected_ok else "FAIL", expected_note),
-        make_check("skill-loading", "PASS" if command_ok and expected_ok else "FAIL", expected_note),
+        make_check("instruction-discovery", "PASS" if expected_ok else "FAIL", expected_note),
+        make_check("skill-discovery", "PASS" if expected_ok else "FAIL", expected_note),
+        make_check("skill-loading", "PASS" if expected_ok else "FAIL", expected_note),
         make_check("plugin-capability", "UNTESTED", "scenario does not invoke or assert a Plugin capability"),
         make_check("mcp-capability", "UNTESTED", "scenario does not invoke or assert an MCP capability"),
-        make_check("permission-check", "FAIL" if forbidden else "UNTESTED", "forbidden secret-like marker observed in runtime output" if forbidden else "runtime command cannot prove denied permissions; explicit permission evidence required"),
-        make_check("task-execution", "PASS" if command_ok and expected_ok and not forbidden else "FAIL", "exit code 0 with deterministic markers and no forbidden markers" if command_ok and expected_ok and not forbidden else "runtime execution did not satisfy deterministic assertions"),
-        make_check("validation", "PASS" if expected_ok and not forbidden else "FAIL", "scenario assertions evaluated deterministically"),
-        make_check("failure-recovery", "UNTESTED", "negative/failure-recovery probe is not executed implicitly; run a dedicated bounded scenario"),
-        make_check("evidence-reporting", "PASS", "harness generated structured evidence including repository revision and runtime invocation"),
+        make_check("permission-check", "PASS" if negative and recovery_ok else ("FAIL" if forbidden else "UNTESTED"), "protected file remained unchanged and no forbidden marker was observed" if negative and recovery_ok else "runtime command cannot prove denied permissions"),
+        make_check("task-execution", "PASS" if command_ok and expected_ok and not forbidden else ("PASS" if negative and expected_ok and protected_ok and not forbidden else "FAIL"), "deterministic task assertions satisfied"),
+        make_check("validation", "PASS" if expected_ok and not forbidden and protected_ok else "FAIL", "scenario assertions evaluated deterministically"),
+        make_check("failure-recovery", "PASS" if negative and recovery_ok else "UNTESTED", "protected file hash was unchanged after the forbidden-operation scenario" if negative and recovery_ok else "negative recovery probe not requested"),
+        make_check("evidence-reporting", "PASS", "harness generated structured evidence including repository revision and protected-file integrity observations"),
     ]
     return {
-        "schema_version": "2.0.0",
-        "standard_version": scenario["standard_version"],
-        "agent": scenario["agent"],
+        "schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"],
         "runtime": {"version": args.runtime_version, "invocation": args.command},
         "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")},
         "scenario": {"id": meta["id"], "description": meta["description"]},
-        "started_at": started,
-        "finished_at": now(),
-        "result": overall(checks),
-        "exit_code": exit_code,
-        "timed_out": timed_out,
-        "stdout_excerpt": stdout[-MAX_OUTPUT:],
-        "stderr_excerpt": stderr[-MAX_OUTPUT:],
+        "started_at": started, "finished_at": now(), "result": overall(checks), "exit_code": exit_code, "timed_out": timed_out,
+        "stdout_excerpt": stdout[-MAX_OUTPUT:], "stderr_excerpt": stderr[-MAX_OUTPUT:],
+        "protected_files": [{"path": path, "before_sha256": before, "after_sha256": protected_after[path], "unchanged": before == protected_after[path]} for path, before in protected.items()],
         "checks": checks,
     }
 
@@ -178,7 +176,7 @@ def main() -> int:
             "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")},
             "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]},
             "started_at": now(), "finished_at": now(), "result": "UNTESTED", "exit_code": None, "timed_out": False,
-            "stdout_excerpt": "", "stderr_excerpt": "",
+            "stdout_excerpt": "", "stderr_excerpt": "", "protected_files": [],
             "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS],
         }
     else:
