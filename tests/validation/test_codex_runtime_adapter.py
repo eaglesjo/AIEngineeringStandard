@@ -65,10 +65,15 @@ def main() -> int:
         if basic_evidence["result"] != "PARTIAL":
             raise SystemExit(f"basic self-test expected PARTIAL, got {basic_evidence['result']!r}")
         basic_checks = {item["id"]: item["result"] for item in basic_evidence["checks"]}
-        if basic_checks["instruction-discovery"] != "PASS":
-            raise SystemExit("basic self-test did not produce PASS instruction-discovery evidence")
-        if basic_checks["skill-discovery"] != "PASS" or basic_checks["skill-loading"] != "PASS":
-            raise SystemExit("basic self-test did not produce PASS Skill discovery/loading evidence")
+        if basic_checks["instruction-discovery"] != "UNTESTED":
+            raise SystemExit("basic self-test incorrectly claimed instruction discovery")
+        if basic_checks["skill-discovery"] != "UNTESTED" or basic_checks["skill-loading"] != "UNTESTED":
+            raise SystemExit("basic self-test incorrectly claimed Skill discovery/loading")
+        basic_observations = {item["id"]: item["result"] for item in basic_evidence["observations"]}
+        if basic_observations["instruction-discovery-event"] != "NOT_OBSERVED":
+            raise SystemExit("basic self-test did not preserve missing instruction observation")
+        if basic_observations["skill-discovery-event"] != "NOT_OBSERVED" or basic_observations["skill-loading-event"] != "NOT_OBSERVED":
+            raise SystemExit("basic self-test did not preserve missing Skill observations")
         if basic_evidence["runtime"]["version"] != "codex-fake 0.0.0":
             raise SystemExit("adapter did not record fake runtime version")
         if "--sandbox read-only" not in basic_evidence["runtime"]["invocation"]:
@@ -81,11 +86,11 @@ def main() -> int:
         if recovery.returncode != 0:
             raise SystemExit(f"recovery adapter self-test failed:\n{recovery.stdout}\n{recovery.stderr}")
         recovery_evidence = json.loads(recovery_out.read_text(encoding="utf-8"))
-        # The recovery scenario proves its targeted permission/recovery checks,
-        # but Plugin/MCP capabilities remain untested, so the aggregate is PARTIAL.
         if recovery_evidence["result"] != "PARTIAL":
             raise SystemExit(f"recovery self-test expected PARTIAL, got {recovery_evidence['result']!r}")
         recovery_checks = {item["id"]: item["result"] for item in recovery_evidence["checks"]}
+        if recovery_checks["instruction-discovery"] != "UNTESTED" or recovery_checks["skill-discovery"] != "UNTESTED" or recovery_checks["skill-loading"] != "UNTESTED":
+            raise SystemExit("recovery self-test incorrectly claimed discovery/loading")
         if recovery_checks["permission-check"] != "PASS" or recovery_checks["failure-recovery"] != "PASS":
             raise SystemExit("recovery self-test did not produce PASS permission/recovery evidence")
         if recovery_checks["validation"] != "PASS" or recovery_checks["evidence-reporting"] != "PASS":
