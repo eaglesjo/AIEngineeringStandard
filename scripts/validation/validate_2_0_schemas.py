@@ -13,7 +13,10 @@ FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "conformance-result.pass.
 SECURITY_SCHEMA = ROOT / "core" / "validation" / "security-result.schema.json"
 SECURITY_FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "security-result.pass.json"
 EVIDENCE_SCHEMA = ROOT / "core" / "validation" / "conformance-evidence.schema.json"
-RUNTIME_SCENARIO = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime.scenario.json"
+RUNTIME_SCENARIOS = [
+    ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime.scenario.json",
+    ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime-failure-recovery.scenario.json",
+]
 
 STATUS_VALUES = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"}
 AGENT_STATUS_VALUES = STATUS_VALUES - {"FAIL"}
@@ -61,9 +64,12 @@ def validate_result(data: object, label: str) -> None:
     require(isinstance(data["tested_at"], str) and data["tested_at"].endswith("Z"), f"{label} tested_at must be UTC ISO-8601")
     require(data["result"] in STATUS_VALUES, f"{label} has invalid result")
     require(isinstance(data["checks"], list) and data["checks"], f"{label} checks must be a non-empty array")
+    ids = set()
     for index, check in enumerate(data["checks"]):
         require(isinstance(check, dict), f"{label} checks[{index}] must be an object")
         require(check.get("id") in CHECK_IDS, f"{label} checks[{index}] has invalid id")
+        require(check.get("id") not in ids, f"{label} contains duplicate check id: {check.get('id')}")
+        ids.add(check["id"])
         require(check.get("result") in STATUS_VALUES, f"{label} checks[{index}] has invalid result")
 
 
@@ -94,17 +100,21 @@ def validate_evidence_schema(data: object) -> None:
     require(set(enum) == STATUS_VALUES, "evidence schema result enum is incomplete")
 
 
-def validate_runtime_scenario(data: object) -> None:
-    require(isinstance(data, dict), "runtime scenario must be an object")
-    require(data.get("schema_version") == "2.0.0", "runtime scenario schema_version must be 2.0.0")
-    require(data.get("standard_version") == "2.0", "runtime scenario standard_version must be 2.0")
-    require(data.get("agent") == "codex", "runtime scenario agent must be codex")
+def validate_runtime_scenario(data: object, label: str) -> None:
+    require(isinstance(data, dict), f"{label} must be an object")
+    require(data.get("schema_version") == "2.0.0", f"{label} schema_version must be 2.0.0")
+    require(data.get("standard_version") == "2.0", f"{label} standard_version must be 2.0")
+    require(data.get("agent") == "codex", f"{label} agent must be codex")
     scenario = data.get("scenario")
-    require(isinstance(scenario, dict), "runtime scenario.scenario must be an object")
+    require(isinstance(scenario, dict), f"{label} scenario must be an object")
     for key in ("id", "description", "prompt", "expected_markers", "forbidden_markers", "permission_expectations"):
-        require(key in scenario, f"runtime scenario missing: {key}")
-    require(isinstance(scenario["expected_markers"], list) and scenario["expected_markers"], "runtime scenario expected_markers must be non-empty")
-    require(isinstance(scenario["permission_expectations"], dict), "runtime scenario permission_expectations must be an object")
+        require(key in scenario, f"{label} missing: {key}")
+    require(isinstance(scenario["expected_markers"], list) and scenario["expected_markers"], f"{label} expected_markers must be non-empty")
+    require(isinstance(scenario["forbidden_markers"], list), f"{label} forbidden_markers must be an array")
+    require(isinstance(scenario["permission_expectations"], dict), f"{label} permission_expectations must be an object")
+    if scenario.get("protected_files"):
+        require(isinstance(scenario["protected_files"], list), f"{label} protected_files must be an array")
+        require(all(isinstance(item, str) and item for item in scenario["protected_files"]), f"{label} protected_files entries must be non-empty strings")
 
 
 def main() -> int:
@@ -119,7 +129,8 @@ def main() -> int:
     require(security_schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected security schema dialect")
     validate_security_result(load(SECURITY_FIXTURE))
     validate_evidence_schema(load(EVIDENCE_SCHEMA))
-    validate_runtime_scenario(load(RUNTIME_SCENARIO))
+    for scenario_path in RUNTIME_SCENARIOS:
+        validate_runtime_scenario(load(scenario_path), str(scenario_path.relative_to(ROOT)))
     print("AIEngineeringStandard 2.0 schema validation passed")
     return 0
 
