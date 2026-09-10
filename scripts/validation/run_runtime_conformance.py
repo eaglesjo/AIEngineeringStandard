@@ -81,6 +81,58 @@ def make_observation(obs_id: str, source: str, method: str, evidence_level: str,
     return {"id": obs_id, "source": source, "method": method, "evidence_level": evidence_level, "result": result, "details": details}
 
 
+def parse_runtime_jsonl(stdout: str) -> list[dict]:
+    """Observe the current Codex exec --json event surface without guessing unknown events."""
+    observations: list[dict] = []
+    seen: set[str] = set()
+    known = {
+        "thread.started", "turn.started", "turn.completed", "turn.failed",
+        "item.started", "item.updated", "item.completed", "error",
+    }
+    item_types = {"command_execution", "file_change", "mcp_tool_call", "collab_tool_call", "web_search", "todo_list", "agent_message", "reasoning", "error"}
+
+    def add(obs_id: str, result: str, details: str, level: str = "moderate") -> None:
+        if obs_id not in seen:
+            observations.append(make_observation(obs_id, "runtime", "direct-runtime", level, result, details))
+            seen.add(obs_id)
+
+    for line_number, line in enumerate(stdout.splitlines(), 1):
+        text = line.strip()
+        if not text:
+            continue
+        try:
+            event = json.loads(text)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(event, dict):
+            continue
+        event_type = event.get("type")
+        if event_type not in known:
+            continue
+        add("codex-jsonl-event-stream", "OBSERVED", f"recognized Codex JSONL event type {event_type!r} at line {line_number}")
+        if event_type == "error":
+            add("codex-stream-error", "FAILED", "Codex JSONL stream reported a top-level error event")
+            continue
+        item = event.get("item")
+        if not isinstance(item, dict):
+            continue
+        details = item.get("type")
+        if details not in item_types:
+            continue
+        if details == "command_execution":
+            command = str(item.get("command", ""))
+            add("codex-command-execution", "OBSERVED", f"command_execution observed: {command[:500]!r}")
+            if ".agents/skills/" in command or "SKILL.md" in command:
+                add("codex-skill-file-access", "OBSERVED", "runtime command directly accessed a project Skill file; this does not prove first-class Skill loading", "strong")
+        elif details == "file_change":
+            add("codex-file-change-event", "OBSERVED", "file_change item observed in Codex JSONL")
+        elif details == "mcp_tool_call":
+            add("codex-mcp-tool-call", "OBSERVED", "mcp_tool_call item observed in Codex JSONL")
+        elif details == "collab_tool_call":
+            add("codex-collab-tool-call", "OBSERVED", "collab_tool_call item observed in Codex JSONL")
+    return observations
+
+
 def overall(checks: list[dict]) -> str:
     results = {item["result"] for item in checks}
     if "FAIL" in results:
@@ -151,17 +203,17 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     negative = bool(meta.get("protected_files"))
     recovery_ok = protected_ok and expected_ok and not forbidden
 
-    # Task output is weak evidence about behavior. Protected-file hashes are
-    # harness integrity evidence, not proof of runtime permission enforcement.
-    # Discovery/loading PASS requires an adapter trace or direct runtime event.
     observations = [
         make_observation("runtime-exit", "harness", "harness-integrity", "moderate", "OBSERVED" if command_ok else "FAILED", f"exit_code={exit_code}, timed_out={timed_out}"),
         make_observation("task-output-markers", "harness", "task-assertion", "weak", "OBSERVED" if expected_ok and not forbidden else "FAILED", expected_note),
         make_observation("protected-file-integrity", "harness", "harness-integrity", "strong", "OBSERVED" if protected_ok else "FAILED", "protected file hashes were unchanged" if protected_ok else "protected file hash changed"),
+    ]
+    observations.extend(parse_runtime_jsonl(stdout))
+    observations.extend([
         make_observation("instruction-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving instruction discovery was supplied"),
         make_observation("skill-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving Skill discovery was supplied"),
-        make_observation("skill-loading-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving Skill loading was supplied"),
-    ]
+        make_observation("skill-loading-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no first-class runtime event proving Skill loading was supplied"),
+    ])
 
     discovery_note = "runtime did not supply objective discovery/loading observations"
     checks = [
