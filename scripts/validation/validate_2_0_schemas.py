@@ -90,7 +90,8 @@ def validate_evidence_schema(data: object) -> None:
     required = data.get("required", [])
     for key in ("schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "checks"):
         require(key in required, f"evidence schema missing required field: {key}")
-    require(data.get("properties", {}).get("result", {}).get("enum") == sorted(STATUS_VALUES), "evidence schema result enum is incomplete")
+    enum = data.get("properties", {}).get("result", {}).get("enum", [])
+    require(set(enum) == STATUS_VALUES, "evidence schema result enum is incomplete")
 
 
 def validate_runtime_scenario(data: object) -> None:
