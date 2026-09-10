@@ -34,8 +34,13 @@ jobs:
       - name: Validate Codex conformance fixture
         run: python scripts/validation/validate_conformance_fixture.py --agent codex --result /tmp/codex-conformance.json
 
-      - name: Publish conformance result
+      - name: Run runtime conformance harness dry run
+        run: python scripts/validation/run_runtime_conformance.py --agent codex --output /tmp/codex-runtime-conformance.json
+
+      - name: Publish conformance results
         uses: actions/upload-artifact@v4
         with:
           name: ai-engineering-standard-2.0-conformance
-          path: /tmp/codex-conformance.json
+          path: |
+            /tmp/codex-conformance.json
+            /tmp/codex-runtime-conformance.json
