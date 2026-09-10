@@ -7,17 +7,15 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-
 AGENTS = ROOT / "compatibility" / "agents.json"
 RESULT_SCHEMA = ROOT / "core" / "validation" / "conformance-result.schema.json"
 FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "conformance-result.pass.json"
+SECURITY_SCHEMA = ROOT / "core" / "validation" / "security-result.schema.json"
+SECURITY_FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "security-result.pass.json"
 
 STATUS_VALUES = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"}
-CHECK_IDS = {
-    "instruction-discovery", "skill-discovery", "skill-loading", "plugin-capability",
-    "mcp-capability", "permission-check", "task-execution", "validation",
-    "failure-recovery", "evidence-reporting",
-}
+CHECK_IDS = {"instruction-discovery", "skill-discovery", "skill-loading", "plugin-capability", "mcp-capability", "permission-check", "task-execution", "validation", "failure-recovery", "evidence-reporting"}
+SECURITY_CHECK_IDS = {"provenance", "integrity", "permissions", "secrets", "execution-boundary", "instruction-safety", "mcp-boundary", "plugin-boundary"}
 
 
 def load(path: Path) -> object:
@@ -66,6 +64,22 @@ def validate_result(data: object, label: str) -> None:
         require(check.get("result") in STATUS_VALUES, f"{label} checks[{index}] has invalid result")
 
 
+def validate_security_result(data: object) -> None:
+    require(isinstance(data, dict), "security fixture must be an object")
+    for key in ("schema_version", "standard_version", "component", "trust", "checks"):
+        require(key in data, f"security fixture missing required field: {key}")
+    require(data["schema_version"] == "2.0.0", "security fixture schema_version must be 2.0.0")
+    require(bool(re.fullmatch(r"2\.[0-9]+", data["standard_version"])), "security fixture has invalid standard_version")
+    require(data["trust"] in {"UNTRUSTED", "REVIEWED", "VERIFIED"}, "security fixture has invalid trust")
+    require(isinstance(data["checks"], list) and data["checks"], "security fixture checks must be non-empty")
+    for index, check in enumerate(data["checks"]):
+        require(isinstance(check, dict), f"security fixture checks[{index}] must be an object")
+        require(check.get("id") in SECURITY_CHECK_IDS, f"security fixture checks[{index}] has invalid id")
+        require(check.get("result") in {"PASS", "FAIL", "UNTESTED"}, f"security fixture checks[{index}] has invalid result")
+    if data["trust"] == "VERIFIED":
+        require(data.get("version_or_commit"), "VERIFIED security result requires version_or_commit")
+
+
 def main() -> int:
     validate_agents(load(AGENTS))
     schema = load(RESULT_SCHEMA)
@@ -73,6 +87,10 @@ def main() -> int:
     require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected JSON Schema dialect")
     require(schema.get("title") == "AIEngineeringStandard 2.0 Conformance Result", "unexpected conformance schema title")
     validate_result(load(FIXTURE), "conformance fixture")
+    security_schema = load(SECURITY_SCHEMA)
+    require(isinstance(security_schema, dict), "security result schema must be an object")
+    require(security_schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected security schema dialect")
+    validate_security_result(load(SECURITY_FIXTURE))
     print("AIEngineeringStandard 2.0 schema validation passed")
     return 0
 
