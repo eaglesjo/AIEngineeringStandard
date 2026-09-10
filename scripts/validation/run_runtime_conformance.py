@@ -19,6 +19,9 @@ CHECK_IDS = (
     "failure-recovery", "evidence-reporting",
 )
 VALID_RESULTS = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"}
+OBSERVATION_SOURCES = {"harness", "adapter", "runtime"}
+OBSERVATION_METHODS = {"task-assertion", "harness-integrity", "adapter-trace", "direct-runtime"}
+OBSERVATION_LEVELS = {"weak", "moderate", "strong"}
 MAX_OUTPUT = 12000
 
 
@@ -66,12 +69,16 @@ def make_check(check_id: str, result: str, evidence: str, notes: str = "") -> di
     return item
 
 
-def make_observation(obs_id: str, source: str, result: str, details: str) -> dict:
-    if source not in {"harness", "adapter", "runtime"}:
+def make_observation(obs_id: str, source: str, method: str, evidence_level: str, result: str, details: str) -> dict:
+    if source not in OBSERVATION_SOURCES:
         raise SystemExit(f"ERROR: invalid observation source: {source}")
+    if method not in OBSERVATION_METHODS:
+        raise SystemExit(f"ERROR: invalid observation method: {method}")
+    if evidence_level not in OBSERVATION_LEVELS:
+        raise SystemExit(f"ERROR: invalid observation evidence level: {evidence_level}")
     if result not in {"OBSERVED", "NOT_OBSERVED", "FAILED"}:
         raise SystemExit(f"ERROR: invalid observation result: {result}")
-    return {"id": obs_id, "source": source, "result": result, "details": details}
+    return {"id": obs_id, "source": source, "method": method, "evidence_level": evidence_level, "result": result, "details": details}
 
 
 def overall(checks: list[dict]) -> str:
@@ -144,16 +151,16 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     negative = bool(meta.get("protected_files"))
     recovery_ok = protected_ok and expected_ok and not forbidden
 
-    # Output markers are task assertions, not proof that the runtime actually
-    # discovered or loaded a Skill. Objective discovery evidence must be supplied
-    # by the adapter/runtime as explicit observations in a future adapter revision.
+    # Task output is weak evidence about behavior. Protected-file hashes are
+    # harness integrity evidence, not proof of runtime permission enforcement.
+    # Discovery/loading PASS requires an adapter trace or direct runtime event.
     observations = [
-        make_observation("runtime-exit", "harness", "OBSERVED" if command_ok else "FAILED", f"exit_code={exit_code}, timed_out={timed_out}"),
-        make_observation("task-output-markers", "harness", "OBSERVED" if expected_ok and not forbidden else "FAILED", expected_note),
-        make_observation("protected-file-integrity", "harness", "OBSERVED" if protected_ok else "FAILED", "protected file hashes were unchanged" if protected_ok else "protected file hash changed"),
-        make_observation("instruction-discovery-event", "runtime", "NOT_OBSERVED", "no runtime event stream proving instruction discovery was supplied"),
-        make_observation("skill-discovery-event", "runtime", "NOT_OBSERVED", "no runtime event stream proving Skill discovery was supplied"),
-        make_observation("skill-loading-event", "runtime", "NOT_OBSERVED", "no runtime event stream proving Skill loading was supplied"),
+        make_observation("runtime-exit", "harness", "harness-integrity", "moderate", "OBSERVED" if command_ok else "FAILED", f"exit_code={exit_code}, timed_out={timed_out}"),
+        make_observation("task-output-markers", "harness", "task-assertion", "weak", "OBSERVED" if expected_ok and not forbidden else "FAILED", expected_note),
+        make_observation("protected-file-integrity", "harness", "harness-integrity", "strong", "OBSERVED" if protected_ok else "FAILED", "protected file hashes were unchanged" if protected_ok else "protected file hash changed"),
+        make_observation("instruction-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving instruction discovery was supplied"),
+        make_observation("skill-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving Skill discovery was supplied"),
+        make_observation("skill-loading-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving Skill loading was supplied"),
     ]
 
     discovery_note = "runtime did not supply objective discovery/loading observations"
@@ -203,7 +210,7 @@ def main() -> int:
             "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]},
             "started_at": now(), "finished_at": now(), "result": "UNTESTED", "exit_code": None, "timed_out": False,
             "stdout_excerpt": "", "stderr_excerpt": "", "protected_files": [],
-            "observations": [make_observation("runtime-execution", "harness", "NOT_OBSERVED", "runtime execution not requested")],
+            "observations": [make_observation("runtime-execution", "harness", "harness-integrity", "moderate", "NOT_OBSERVED", "runtime execution not requested")],
             "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS],
         }
     else:
