@@ -24,8 +24,6 @@ def ids(observations: list[dict]) -> set[str]:
 
 
 def main() -> int:
-    # A first-class MCP item is evidence of an MCP tool call only. It must not
-    # be promoted into instruction, Skill, or permission evidence by inference.
     observations, warnings, permission_denial = parse_codex_jsonl(
         event(
             "item.completed",
@@ -44,14 +42,14 @@ def main() -> int:
     assert "codex-skill-file-access" not in observed
     assert "codex-permission-denial" not in observed
 
-    # Reading a canonical SKILL.md is useful runtime evidence, but it is not
-    # equivalent to a first-class Skill-loading event.
+    # The parser intentionally recognizes canonical .agents/skills/ access as
+    # useful evidence, while keeping it distinct from first-class Skill load.
     observations, warnings, permission_denial = parse_codex_jsonl(
         event(
             "item.completed",
             {
                 "type": "command_execution",
-                "command": "cat tests/validation/fixtures/portable-skill/SKILL.md",
+                "command": "cat .agents/skills/portable-skill/SKILL.md",
                 "status": "completed",
                 "exit_code": 0,
             },
@@ -64,8 +62,6 @@ def main() -> int:
     assert "codex-skill-file-access" in observed
     assert "codex-permission-denial" not in observed
 
-    # Prompt text and ordinary command text must never manufacture a runtime
-    # permission-denial observation.
     observations, warnings, permission_denial = parse_codex_jsonl(
         event(
             "item.completed",
@@ -81,8 +77,6 @@ def main() -> int:
     assert not permission_denial
     assert "codex-permission-denial" not in ids(observations)
 
-    # A structured command failure is eligible for direct-runtime denial
-    # evidence because the denial comes from runtime event fields.
     observations, warnings, permission_denial = parse_codex_jsonl(
         event(
             "item.completed",
