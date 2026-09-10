@@ -13,11 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCENARIO_DIR = ROOT / "tests" / "validation" / "fixtures" / "conformance"
-CHECK_IDS = (
-    "instruction-discovery", "skill-discovery", "skill-loading", "plugin-capability",
-    "mcp-capability", "permission-check", "task-execution", "validation",
-    "failure-recovery", "evidence-reporting",
-)
+CHECK_IDS = ("instruction-discovery", "skill-discovery", "skill-loading", "plugin-capability", "mcp-capability", "permission-check", "task-execution", "validation", "failure-recovery", "evidence-reporting")
 VALID_RESULTS = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"}
 OBSERVATION_SOURCES = {"harness", "adapter", "runtime"}
 OBSERVATION_METHODS = {"task-assertion", "harness-integrity", "adapter-trace", "direct-runtime"}
@@ -59,10 +55,8 @@ def sha256_file(path: Path) -> str | None:
 
 
 def make_check(check_id: str, result: str, evidence: str, notes: str = "") -> dict:
-    if check_id not in CHECK_IDS:
-        raise SystemExit(f"ERROR: unknown check id: {check_id}")
-    if result not in VALID_RESULTS:
-        raise SystemExit(f"ERROR: invalid check result: {result}")
+    if check_id not in CHECK_IDS or result not in VALID_RESULTS:
+        raise SystemExit(f"ERROR: invalid check: {check_id}={result}")
     item = {"id": check_id, "result": result, "evidence": evidence}
     if notes:
         item["notes"] = notes
@@ -70,67 +64,9 @@ def make_check(check_id: str, result: str, evidence: str, notes: str = "") -> di
 
 
 def make_observation(obs_id: str, source: str, method: str, evidence_level: str, result: str, details: str) -> dict:
-    if source not in OBSERVATION_SOURCES:
-        raise SystemExit(f"ERROR: invalid observation source: {source}")
-    if method not in OBSERVATION_METHODS:
-        raise SystemExit(f"ERROR: invalid observation method: {method}")
-    if evidence_level not in OBSERVATION_LEVELS:
-        raise SystemExit(f"ERROR: invalid observation evidence level: {evidence_level}")
-    if result not in {"OBSERVED", "NOT_OBSERVED", "FAILED"}:
-        raise SystemExit(f"ERROR: invalid observation result: {result}")
+    if source not in OBSERVATION_SOURCES or method not in OBSERVATION_METHODS or evidence_level not in OBSERVATION_LEVELS or result not in {"OBSERVED", "NOT_OBSERVED", "FAILED"}:
+        raise SystemExit(f"ERROR: invalid observation: {obs_id}")
     return {"id": obs_id, "source": source, "method": method, "evidence_level": evidence_level, "result": result, "details": details}
-
-
-def parse_runtime_jsonl(stdout: str) -> list[dict]:
-    """Observe the current Codex exec --json event surface without guessing unknown events."""
-    observations: list[dict] = []
-    seen: set[str] = set()
-    known = {
-        "thread.started", "turn.started", "turn.completed", "turn.failed",
-        "item.started", "item.updated", "item.completed", "error",
-    }
-    item_types = {"command_execution", "file_change", "mcp_tool_call", "collab_tool_call", "web_search", "todo_list", "agent_message", "reasoning", "error"}
-
-    def add(obs_id: str, result: str, details: str, level: str = "moderate") -> None:
-        if obs_id not in seen:
-            observations.append(make_observation(obs_id, "runtime", "direct-runtime", level, result, details))
-            seen.add(obs_id)
-
-    for line_number, line in enumerate(stdout.splitlines(), 1):
-        text = line.strip()
-        if not text:
-            continue
-        try:
-            event = json.loads(text)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(event, dict):
-            continue
-        event_type = event.get("type")
-        if event_type not in known:
-            continue
-        add("codex-jsonl-event-stream", "OBSERVED", f"recognized Codex JSONL event type {event_type!r} at line {line_number}")
-        if event_type == "error":
-            add("codex-stream-error", "FAILED", "Codex JSONL stream reported a top-level error event")
-            continue
-        item = event.get("item")
-        if not isinstance(item, dict):
-            continue
-        details = item.get("type")
-        if details not in item_types:
-            continue
-        if details == "command_execution":
-            command = str(item.get("command", ""))
-            add("codex-command-execution", "OBSERVED", f"command_execution observed: {command[:500]!r}")
-            if ".agents/skills/" in command or "SKILL.md" in command:
-                add("codex-skill-file-access", "OBSERVED", "runtime command directly accessed a project Skill file; this does not prove first-class Skill loading", "strong")
-        elif details == "file_change":
-            add("codex-file-change-event", "OBSERVED", "file_change item observed in Codex JSONL")
-        elif details == "mcp_tool_call":
-            add("codex-mcp-tool-call", "OBSERVED", "mcp_tool_call item observed in Codex JSONL")
-        elif details == "collab_tool_call":
-            add("codex-collab-tool-call", "OBSERVED", "collab_tool_call item observed in Codex JSONL")
-    return observations
 
 
 def overall(checks: list[dict]) -> str:
@@ -156,17 +92,63 @@ def marker_check(output: str, markers: list[str]) -> tuple[bool, str]:
     return not missing, "all expected markers observed" if not missing else f"missing markers: {missing}"
 
 
+def parse_codex_jsonl(stdout: str) -> tuple[list[dict], list[str]]:
+    """Parse known Codex exec --json events without guessing unknown shapes."""
+    observations: list[dict] = []
+    warnings: list[str] = []
+    for line_no, line in enumerate(stdout.splitlines(), 1):
+        text = line.strip()
+        if not text:
+            continue
+        try:
+            event = json.loads(text)
+        except json.JSONDecodeError:
+            warnings.append(f"line {line_no}: non-JSON output ignored")
+            continue
+        if not isinstance(event, dict):
+            warnings.append(f"line {line_no}: JSON value is not an object")
+            continue
+        event_type = event.get("type")
+        if not isinstance(event_type, str):
+            warnings.append(f"line {line_no}: event type missing")
+            continue
+        if event_type in {"thread.started", "turn.started", "turn.completed", "thread.completed"}:
+            observations.append(make_observation(f"codex-{event_type.replace('.', '-')}", "runtime", "direct-runtime", "moderate", "OBSERVED", f"observed Codex JSONL event {event_type}"))
+            continue
+        if event_type == "error":
+            observations.append(make_observation("codex-stream-error", "runtime", "direct-runtime", "moderate", "OBSERVED", "observed top-level Codex error event"))
+            continue
+        if event_type not in {"item.started", "item.updated", "item.completed"}:
+            warnings.append(f"line {line_no}: unknown event type {event_type!r} ignored")
+            continue
+        item = event.get("item")
+        if not isinstance(item, dict):
+            warnings.append(f"line {line_no}: {event_type} has no object item")
+            continue
+        item_type = item.get("type")
+        if item_type == "command_execution":
+            command = str(item.get("command", ""))
+            observations.append(make_observation("codex-command-execution", "runtime", "direct-runtime", "moderate", "OBSERVED", f"observed command_execution: {command[:500]}"))
+            if ".agents/skills/" in command and "SKILL.md" in command:
+                observations.append(make_observation("codex-skill-file-access", "runtime", "direct-runtime", "moderate", "OBSERVED", "command_execution accessed a canonical Skill SKILL.md; this is not treated as a first-class Skill load event"))
+        elif item_type == "mcp_tool_call":
+            observations.append(make_observation("codex-mcp-tool-call", "runtime", "direct-runtime", "moderate", "OBSERVED", "observed MCP tool call item"))
+        elif item_type == "file_change":
+            observations.append(make_observation("codex-file-change", "runtime", "direct-runtime", "moderate", "OBSERVED", "observed file_change item"))
+        elif item_type == "collab_tool_call":
+            observations.append(make_observation("codex-collab-tool-call", "runtime", "direct-runtime", "moderate", "OBSERVED", "observed collaboration tool call item"))
+    return observations, warnings
+
+
 def run(args: argparse.Namespace, scenario: dict) -> dict:
     meta = scenario["scenario"]
     started = now()
     timeout = int(meta.get("timeout_seconds", 120))
     if timeout < 1 or timeout > 900:
         raise SystemExit("ERROR: scenario timeout_seconds must be between 1 and 900")
-
     protected = {str(path): sha256_file(ROOT / str(path)) for path in meta.get("protected_files", [])}
     if any(value is None for value in protected.values()):
         raise SystemExit("ERROR: every protected_files entry must exist and be readable")
-
     prompt = str(meta["prompt"])
     prompt_path = ROOT / ".runtime-conformance-prompt.txt"
     prompt_path.write_text(prompt + "\n", encoding="utf-8")
@@ -174,20 +156,15 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     if not command:
         raise SystemExit("ERROR: --command must not be empty")
     try:
-        env = {
-            "PATH": os.environ.get("PATH", ""),
-            "HOME": os.environ.get("HOME", ""),
-            "AIENGINEERINGSTANDARD_CONFORMANCE": "1",
-            "AIENGINEERINGSTANDARD_CONFORMANCE_PROMPT_FILE": str(prompt_path),
-        }
+        env = {"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", ""), "AIENGINEERINGSTANDARD_CONFORMANCE": "1", "AIENGINEERINGSTANDARD_CONFORMANCE_PROMPT_FILE": str(prompt_path)}
         try:
             proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout, check=False, env=env)
             timed_out, exit_code = False, proc.returncode
             stdout, stderr = proc.stdout or "", proc.stderr or ""
         except subprocess.TimeoutExpired as exc:
             timed_out, exit_code = True, None
-            stdout = (exc.stdout or "") if isinstance(exc.stdout, str) else ""
-            stderr = (exc.stderr or "") if isinstance(exc.stderr, str) else ""
+            stdout = exc.stdout if isinstance(exc.stdout, str) else ""
+            stderr = exc.stderr if isinstance(exc.stderr, str) else ""
         except OSError as exc:
             timed_out, exit_code = False, None
             stdout, stderr = "", str(exc)
@@ -202,74 +179,56 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     command_ok = exit_code == 0 and not timed_out
     negative = bool(meta.get("protected_files"))
     recovery_ok = protected_ok and expected_ok and not forbidden
-
+    codex_observations, parse_warnings = parse_codex_jsonl(stdout)
     observations = [
         make_observation("runtime-exit", "harness", "harness-integrity", "moderate", "OBSERVED" if command_ok else "FAILED", f"exit_code={exit_code}, timed_out={timed_out}"),
         make_observation("task-output-markers", "harness", "task-assertion", "weak", "OBSERVED" if expected_ok and not forbidden else "FAILED", expected_note),
         make_observation("protected-file-integrity", "harness", "harness-integrity", "strong", "OBSERVED" if protected_ok else "FAILED", "protected file hashes were unchanged" if protected_ok else "protected file hash changed"),
     ]
-    observations.extend(parse_runtime_jsonl(stdout))
+    observations.extend(codex_observations)
+    if not any(item["id"] == "codex-command-execution" for item in observations):
+        observations.append(make_observation("codex-command-execution", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no command_execution event observed in Codex JSONL"))
     observations.extend([
-        make_observation("instruction-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving instruction discovery was supplied"),
-        make_observation("skill-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no runtime event stream proving Skill discovery was supplied"),
-        make_observation("skill-loading-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "no first-class runtime event proving Skill loading was supplied"),
+        make_observation("instruction-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "Codex exec JSONL does not expose a first-class instruction-discovery event in this adapter"),
+        make_observation("skill-discovery-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "Codex exec JSONL does not expose a first-class Skill-discovery event in this adapter"),
+        make_observation("skill-loading-event", "runtime", "direct-runtime", "strong", "NOT_OBSERVED", "Skill file access is not equivalent to a first-class Skill-loading event"),
     ])
+    if parse_warnings:
+        observations.append(make_observation("codex-jsonl-parse-warnings", "harness", "harness-integrity", "moderate", "OBSERVED", "; ".join(parse_warnings[:10])))
 
-    discovery_note = "runtime did not supply objective discovery/loading observations"
     checks = [
-        make_check("instruction-discovery", "UNTESTED", discovery_note),
-        make_check("skill-discovery", "UNTESTED", discovery_note),
-        make_check("skill-loading", "UNTESTED", discovery_note),
+        make_check("instruction-discovery", "UNTESTED", "no first-class runtime instruction-discovery event is exposed by this adapter"),
+        make_check("skill-discovery", "UNTESTED", "no first-class runtime Skill-discovery event is exposed by this adapter"),
+        make_check("skill-loading", "UNTESTED", "Skill SKILL.md file access is not sufficient evidence of first-class Skill loading"),
         make_check("plugin-capability", "UNTESTED", "scenario does not invoke or assert a Plugin capability"),
         make_check("mcp-capability", "UNTESTED", "scenario does not invoke or assert an MCP capability"),
-        make_check("permission-check", "PASS" if negative and recovery_ok else ("FAIL" if forbidden else "UNTESTED"), "protected file remained unchanged; this is an integrity observation, not proof of runtime-enforced denial" if negative and recovery_ok else "runtime command cannot prove denied permissions"),
-        make_check("task-execution", "PASS" if command_ok and expected_ok and not forbidden else ("PASS" if negative and expected_ok and protected_ok and not forbidden else "FAIL"), "deterministic task assertions satisfied"),
+        make_check("permission-check", "PASS" if negative and recovery_ok else ("FAIL" if forbidden else "UNTESTED"), "protected file remained unchanged; integrity observation is not proof of runtime-enforced denial" if negative and recovery_ok else "runtime command cannot prove denied permissions"),
+        make_check("task-execution", "PASS" if command_ok and expected_ok and not forbidden else "FAIL", "deterministic task assertions satisfied"),
         make_check("validation", "PASS" if expected_ok and not forbidden and protected_ok else "FAIL", "scenario assertions evaluated deterministically"),
         make_check("failure-recovery", "PASS" if negative and recovery_ok else "UNTESTED", "protected file hash was unchanged after the forbidden-operation scenario" if negative and recovery_ok else "negative recovery probe not requested"),
         make_check("evidence-reporting", "PASS", "harness generated structured evidence including observations and protected-file integrity"),
     ]
-    return {
-        "schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"],
-        "runtime": {"version": args.runtime_version, "invocation": args.command},
-        "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")},
-        "scenario": {"id": meta["id"], "description": meta["description"]},
-        "started_at": started, "finished_at": now(), "result": overall(checks), "exit_code": exit_code, "timed_out": timed_out,
-        "stdout_excerpt": stdout[-MAX_OUTPUT:], "stderr_excerpt": stderr[-MAX_OUTPUT:],
-        "observations": observations,
-        "protected_files": [{"path": path, "before_sha256": before, "after_sha256": protected_after[path], "unchanged": before == protected_after[path]} for path, before in protected.items()],
-        "checks": checks,
-    }
+    return {"schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"], "runtime": {"version": args.runtime_version, "invocation": args.command}, "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")}, "scenario": {"id": meta["id"], "description": meta["description"]}, "started_at": started, "finished_at": now(), "result": overall(checks), "exit_code": exit_code, "timed_out": timed_out, "stdout_excerpt": stdout[-MAX_OUTPUT:], "stderr_excerpt": stderr[-MAX_OUTPUT:], "observations": observations, "protected_files": [{"path": path, "before_sha256": before, "after_sha256": protected_after[path], "unchanged": before == protected_after[path]} for path, before in protected.items()], "checks": checks}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run a bounded AIEngineeringStandard 2.0 runtime conformance scenario.")
     parser.add_argument("--agent", default="codex")
     parser.add_argument("--scenario", default=str(SCENARIO_DIR / "codex-runtime.scenario.json"))
-    parser.add_argument("--command", help="Explicit agent runtime command; use {prompt} where the scenario prompt should be inserted")
+    parser.add_argument("--command")
     parser.add_argument("--runtime-version", default=None)
     parser.add_argument("--output", default="/tmp/runtime-conformance.json")
-    parser.add_argument("--execute", action="store_true", help="Actually invoke the supplied runtime command")
+    parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     scenario = load_json(Path(args.scenario))
     if scenario.get("agent") != args.agent:
         raise SystemExit(f"ERROR: scenario agent {scenario.get('agent')!r} does not match --agent {args.agent!r}")
-
     if not args.execute:
-        evidence = {
-            "schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": args.agent,
-            "runtime": {"version": args.runtime_version, "invocation": "not executed"},
-            "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")},
-            "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]},
-            "started_at": now(), "finished_at": now(), "result": "UNTESTED", "exit_code": None, "timed_out": False,
-            "stdout_excerpt": "", "stderr_excerpt": "", "protected_files": [],
-            "observations": [make_observation("runtime-execution", "harness", "harness-integrity", "moderate", "NOT_OBSERVED", "runtime execution not requested")],
-            "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS],
-        }
+        evidence = {"schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": args.agent, "runtime": {"version": args.runtime_version, "invocation": "not executed"}, "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")}, "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]}, "started_at": now(), "finished_at": now(), "result": "UNTESTED", "exit_code": None, "timed_out": False, "stdout_excerpt": "", "stderr_excerpt": "", "protected_files": [], "observations": [make_observation("runtime-execution", "harness", "harness-integrity", "moderate", "NOT_OBSERVED", "runtime execution not requested")], "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS]}
     else:
         if not args.command:
             raise SystemExit("ERROR: --command is required with --execute")
         evidence = run(args, scenario)
-
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
