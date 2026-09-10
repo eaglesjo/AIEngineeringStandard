@@ -1,0 +1,20 @@
+{
+  "schema_version": "2.0.0",
+  "standard_version": "2.0",
+  "component": "aies-portable-skill-fixture",
+  "source": "tests/validation/fixtures/portable-skill",
+  "publisher": "AIEngineeringStandard",
+  "version_or_commit": "fixture",
+  "digest": null,
+  "trust": "REVIEWED",
+  "checks": [
+    {"id": "provenance", "result": "PASS", "evidence": "fixture source recorded"},
+    {"id": "integrity", "result": "UNTESTED"},
+    {"id": "permissions", "result": "PASS", "evidence": "no runtime permissions declared"},
+    {"id": "secrets", "result": "PASS", "evidence": "no secrets present"},
+    {"id": "execution-boundary", "result": "PASS", "evidence": "no executable resources"},
+    {"id": "instruction-safety", "result": "PASS", "evidence": "fixture contains no privilege escalation instructions"},
+    {"id": "mcp-boundary", "result": "UNTESTED"},
+    {"id": "plugin-boundary", "result": "UNTESTED"}
+  ]
+}
