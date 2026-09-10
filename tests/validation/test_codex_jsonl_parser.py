@@ -52,7 +52,8 @@ def main() -> int:
 
     unknown = event("future.event", answer="do not infer")
     observations, warnings = parse_codex_jsonl(unknown)
-    assert not observations
+    assert results(observations)["codex-jsonl-event-stream"] == ["OBSERVED"]
+    assert len(observations) == 1, "unknown events should not create semantic observations"
     assert any("unknown event type" in warning for warning in warnings)
 
     top_level_error = event("error", message="stream failure")
