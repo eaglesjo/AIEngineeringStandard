@@ -1,27 +1,311 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AIEngineeringStandard Agent Compatibility Catalog",
-  "type": "object",
-  "required": ["schema_version", "standard_version", "agents"],
-  "properties": {
-    "schema_version": {"type": "string", "const": "2.0.0"},
-    "standard_version": {"type": "string", "const": "2.0"},
-    "agents": {"type": "array", "items": {"$ref": "#/definitions/agent"}}
-  },
-  "definitions": {
-    "agent": {
-      "type": "object",
-      "required": ["id", "name", "tier", "status", "capabilities"],
-      "properties": {
-        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
-        "name": {"type": "string", "minLength": 1},
-        "tier": {"type": "string", "enum": ["P0", "P1", "P2"]},
-        "status": {"type": "string", "enum": ["PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"]},
-        "runtime_version": {"type": ["string", "null"]},
-        "capabilities": {"type": "object", "additionalProperties": {"type": "string", "enum": ["PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"]}},
-        "evidence": {"type": "array", "items": {"type": "string"}}
+  "schema_version": "2.0.0",
+  "standard_version": "2.0",
+  "agents": [
+    {
+      "id": "codex",
+      "name": "OpenAI Codex",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
       },
-      "additionalProperties": false
+      "evidence": []
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "gemini-antigravity",
+      "name": "Gemini / Antigravity",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "colab-gemini",
+      "name": "Google Colab Gemini Agent",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "roo-code",
+      "name": "Roo Code",
+      "tier": "P0",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "tier": "P1",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "continue",
+      "name": "Continue",
+      "tier": "P1",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "windsurf",
+      "name": "Windsurf",
+      "tier": "P1",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "amazon-q",
+      "name": "Amazon Q Developer",
+      "tier": "P1",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {
+        "instruction-discovery": "UNTESTED",
+        "skill-discovery": "UNTESTED",
+        "skill-loading": "UNTESTED",
+        "plugin-capability": "UNTESTED",
+        "mcp-capability": "UNTESTED",
+        "subagent": "UNTESTED",
+        "task-execution": "UNTESTED"
+      },
+      "evidence": []
+    },
+    {
+      "id": "aider",
+      "name": "Aider",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "amp",
+      "name": "Amp",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "goose",
+      "name": "Goose",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "devin",
+      "name": "Devin",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "junie",
+      "name": "JetBrains Junie",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "augment",
+      "name": "Augment",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "cortex-code",
+      "name": "Cortex Code",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "crush",
+      "name": "Crush",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "codebuddy",
+      "name": "CodeBuddy",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "command-code",
+      "name": "Command Code",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
+    },
+    {
+      "id": "ibm-bob",
+      "name": "IBM Bob",
+      "tier": "P2",
+      "status": "UNTESTED",
+      "runtime_version": null,
+      "capabilities": {},
+      "evidence": []
     }
-  }
+  ]
 }
