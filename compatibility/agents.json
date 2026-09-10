@@ -4,58 +4,22 @@
   "type": "object",
   "required": ["schema_version", "standard_version", "agents"],
   "properties": {
-    "schema_version": {
-      "type": "string",
-      "const": "2.0.0"
-    },
-    "standard_version": {
-      "type": "string",
-      "const": "2.0"
-    },
-    "agents": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/agent"
-      }
-    }
+    "schema_version": {"type": "string", "const": "2.0.0"},
+    "standard_version": {"type": "string", "const": "2.0"},
+    "agents": {"type": "array", "items": {"$ref": "#/definitions/agent"}}
   },
   "definitions": {
     "agent": {
       "type": "object",
       "required": ["id", "name", "tier", "status", "capabilities"],
       "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9._-]*$"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "tier": {
-          "type": "string",
-          "enum": ["P0", "P1", "P2"]
-        },
-        "status": {
-          "type": "string",
-          "enum": ["PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"]
-        },
-        "runtime_version": {
-          "type": ["string", "null"]
-        },
-        "capabilities": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "enum": ["PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"]
-          }
-        },
-        "evidence": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "tier": {"type": "string", "enum": ["P0", "P1", "P2"]},
+        "status": {"type": "string", "enum": ["PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"]},
+        "runtime_version": {"type": ["string", "null"]},
+        "capabilities": {"type": "object", "additionalProperties": {"type": "string", "enum": ["PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"]}},
+        "evidence": {"type": "array", "items": {"type": "string"}}
       },
       "additionalProperties": false
     }
