@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIEngineeringStandard 2.0 Security Result",
+  "type": "object",
+  "required": ["schema_version", "standard_version", "component", "trust", "checks"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "2.0.0"},
+    "standard_version": {"type": "string", "pattern": "^2\\.[0-9]+$"},
+    "component": {"type": "string", "minLength": 1},
+    "source": {"type": ["string", "null"]},
+    "publisher": {"type": ["string", "null"]},
+    "version_or_commit": {"type": ["string", "null"]},
+    "digest": {"type": ["string", "null"]},
+    "trust": {"type": "string", "enum": ["UNTRUSTED", "REVIEWED", "VERIFIED"]},
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "result"],
+        "properties": {
+          "id": {"type": "string", "enum": ["provenance", "integrity", "permissions", "secrets", "execution-boundary", "instruction-safety", "mcp-boundary", "plugin-boundary"]},
+          "result": {"type": "string", "enum": ["PASS", "FAIL", "UNTESTED"]},
+          "evidence": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
