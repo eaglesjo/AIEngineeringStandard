@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "2.0.0",
+  "standard_version": "2.0",
+  "agent": {"id": "colab-gemini", "name": "Google Colab Gemini Agent", "tier": "P0"},
+  "runtime": {"version": null, "version_policy": "record-tested-runtime"},
+  "discovery": {"project_instruction_files": [".github/instructions/colab.instructions.md"], "portable_skill_locations": [".agents/skills/"]},
+  "capabilities": {"instructions": "UNTESTED", "skills": "UNTESTED", "plugins": "UNTESTED", "mcp": "UNTESTED", "subagents": "UNTESTED", "task_execution": "UNTESTED"},
+  "permissions": {"model": "runtime-controlled", "secret_access": "explicit-policy-required", "destructive_operations": "explicit-policy-required"},
+  "conformance": {"status": "UNTESTED", "evidence": []}
+}
