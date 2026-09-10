@@ -66,6 +66,14 @@ def make_check(check_id: str, result: str, evidence: str, notes: str = "") -> di
     return item
 
 
+def make_observation(obs_id: str, source: str, result: str, details: str) -> dict:
+    if source not in {"harness", "adapter", "runtime"}:
+        raise SystemExit(f"ERROR: invalid observation source: {source}")
+    if result not in {"OBSERVED", "NOT_OBSERVED", "FAILED"}:
+        raise SystemExit(f"ERROR: invalid observation result: {result}")
+    return {"id": obs_id, "source": source, "result": result, "details": details}
+
+
 def overall(checks: list[dict]) -> str:
     results = {item["result"] for item in checks}
     if "FAIL" in results:
@@ -136,17 +144,30 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     negative = bool(meta.get("protected_files"))
     recovery_ok = protected_ok and expected_ok and not forbidden
 
+    # Output markers are task assertions, not proof that the runtime actually
+    # discovered or loaded a Skill. Objective discovery evidence must be supplied
+    # by the adapter/runtime as explicit observations in a future adapter revision.
+    observations = [
+        make_observation("runtime-exit", "harness", "OBSERVED" if command_ok else "FAILED", f"exit_code={exit_code}, timed_out={timed_out}"),
+        make_observation("task-output-markers", "harness", "OBSERVED" if expected_ok and not forbidden else "FAILED", expected_note),
+        make_observation("protected-file-integrity", "harness", "OBSERVED" if protected_ok else "FAILED", "protected file hashes were unchanged" if protected_ok else "protected file hash changed"),
+        make_observation("instruction-discovery-event", "runtime", "NOT_OBSERVED", "no runtime event stream proving instruction discovery was supplied"),
+        make_observation("skill-discovery-event", "runtime", "NOT_OBSERVED", "no runtime event stream proving Skill discovery was supplied"),
+        make_observation("skill-loading-event", "runtime", "NOT_OBSERVED", "no runtime event stream proving Skill loading was supplied"),
+    ]
+
+    discovery_note = "runtime did not supply objective discovery/loading observations"
     checks = [
-        make_check("instruction-discovery", "PASS" if expected_ok else "FAIL", expected_note),
-        make_check("skill-discovery", "PASS" if expected_ok else "FAIL", expected_note),
-        make_check("skill-loading", "PASS" if expected_ok else "FAIL", expected_note),
+        make_check("instruction-discovery", "UNTESTED", discovery_note),
+        make_check("skill-discovery", "UNTESTED", discovery_note),
+        make_check("skill-loading", "UNTESTED", discovery_note),
         make_check("plugin-capability", "UNTESTED", "scenario does not invoke or assert a Plugin capability"),
         make_check("mcp-capability", "UNTESTED", "scenario does not invoke or assert an MCP capability"),
-        make_check("permission-check", "PASS" if negative and recovery_ok else ("FAIL" if forbidden else "UNTESTED"), "protected file remained unchanged and no forbidden marker was observed" if negative and recovery_ok else "runtime command cannot prove denied permissions"),
+        make_check("permission-check", "PASS" if negative and recovery_ok else ("FAIL" if forbidden else "UNTESTED"), "protected file remained unchanged; this is an integrity observation, not proof of runtime-enforced denial" if negative and recovery_ok else "runtime command cannot prove denied permissions"),
         make_check("task-execution", "PASS" if command_ok and expected_ok and not forbidden else ("PASS" if negative and expected_ok and protected_ok and not forbidden else "FAIL"), "deterministic task assertions satisfied"),
         make_check("validation", "PASS" if expected_ok and not forbidden and protected_ok else "FAIL", "scenario assertions evaluated deterministically"),
         make_check("failure-recovery", "PASS" if negative and recovery_ok else "UNTESTED", "protected file hash was unchanged after the forbidden-operation scenario" if negative and recovery_ok else "negative recovery probe not requested"),
-        make_check("evidence-reporting", "PASS", "harness generated structured evidence including repository revision and protected-file integrity observations"),
+        make_check("evidence-reporting", "PASS", "harness generated structured evidence including observations and protected-file integrity"),
     ]
     return {
         "schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"],
@@ -155,6 +176,7 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
         "scenario": {"id": meta["id"], "description": meta["description"]},
         "started_at": started, "finished_at": now(), "result": overall(checks), "exit_code": exit_code, "timed_out": timed_out,
         "stdout_excerpt": stdout[-MAX_OUTPUT:], "stderr_excerpt": stderr[-MAX_OUTPUT:],
+        "observations": observations,
         "protected_files": [{"path": path, "before_sha256": before, "after_sha256": protected_after[path], "unchanged": before == protected_after[path]} for path, before in protected.items()],
         "checks": checks,
     }
@@ -181,6 +203,7 @@ def main() -> int:
             "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]},
             "started_at": now(), "finished_at": now(), "result": "UNTESTED", "exit_code": None, "timed_out": False,
             "stdout_excerpt": "", "stderr_excerpt": "", "protected_files": [],
+            "observations": [make_observation("runtime-execution", "harness", "NOT_OBSERVED", "runtime execution not requested")],
             "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS],
         }
     else:
