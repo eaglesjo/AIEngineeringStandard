@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Codex runtime adapter for the AIEngineeringStandard 2.0 harness.
-
-The adapter uses Codex's documented non-interactive ``codex exec`` surface.
-The conformance probe explicitly selects read-only sandboxing; the standard
-never relies on an implicit or user-overridden permission profile.
-"""
+"""Codex runtime adapter for the AIEngineeringStandard 2.0 harness."""
 from __future__ import annotations
 
 import argparse
@@ -70,15 +65,16 @@ def main() -> int:
         print("Result: UNTESTED (Codex --version could not be determined)")
         return run_harness(args, None, None)
 
-    # The conformance baseline is deliberately fixed to read-only. This avoids
-    # accepting an environment variable that could silently widen permissions.
-    # The upstream Codex CLI exposes --sandbox/-s with a read-only mode.
-    parts = [binary, "exec", "--ephemeral", "--sandbox", "read-only", "{prompt}"]
+    # JSONL is the machine-readable event surface used for runtime observations.
+    # We keep the sandbox explicitly read-only and do not accept caller-supplied
+    # flags that could silently widen permissions.
+    parts = [binary, "exec", "--json", "--ephemeral", "--sandbox", "read-only", "{prompt}"]
     command = shlex.join(parts)
 
     print(f"Codex executable: {binary}")
     print(f"Codex runtime version: {runtime_version}")
     print(f"Harness scenario: {args.scenario}")
+    print("Event surface: codex exec --json (JSONL)")
     print("Sandbox baseline: read-only (explicitly requested by adapter)")
     print("Network baseline: not widened by adapter; runtime configuration remains observable")
 
