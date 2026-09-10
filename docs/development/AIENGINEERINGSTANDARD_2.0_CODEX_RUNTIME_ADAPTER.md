@@ -6,9 +6,9 @@ The repository includes a thin Codex adapter at:
 scripts/validation/adapters/codex_runtime.py
 ```
 
-The adapter uses Codex's documented non-interactive `codex exec` surface. OpenAI documents `codex exec` specifically for scripts and CI, with a prompt supplied as a single argument; it runs in a read-only sandbox by default.
+The adapter uses Codex's non-interactive `codex exec` surface. The upstream Codex CLI exposes an explicit `--sandbox/-s` option with `read-only`, `workspace-write`, and `danger-full-access` modes. The conformance adapter deliberately selects `read-only` instead of relying on an implicit default. citeturn303file0turn307file7turn305file1
 
-Reference: https://developers.openai.com/codex/noninteractive
+OpenAI's developer documentation positions Codex as a coding agent, while the public Codex source provides the CLI implementation used by this adapter. citeturn0search0turn301file0
 
 ## Discovery mode
 
@@ -25,10 +25,10 @@ This checks whether the configured executable is available and whether `--versio
 The adapter constructs this baseline invocation:
 
 ```text
-codex exec --ephemeral "<scenario prompt>"
+codex exec --ephemeral --sandbox read-only "<scenario prompt>"
 ```
 
-`--ephemeral` prevents the conformance probe from intentionally persisting session rollout files. OpenAI documents this option for non-interactive runs.
+`--ephemeral` prevents the conformance probe from intentionally persisting session files. `--sandbox read-only` explicitly prevents filesystem writes by the Codex sandbox. The upstream source also exposes separate `workspace-write` and `danger-full-access` modes, which the conformance adapter does not select. citeturn303file0turn305file1
 
 Run an actual probe with:
 
@@ -39,14 +39,13 @@ python scripts/validation/adapters/codex_runtime.py \
   --scenario tests/validation/fixtures/conformance/codex-runtime.scenario.json
 ```
 
-For runtime-specific, version-validated options, use `CODEX_RUNTIME_ARGS`:
+The adapter intentionally does **not** accept an arbitrary `CODEX_RUNTIME_ARGS` environment variable. A free-form argument override could silently widen the sandbox or approval policy and would undermine the purpose of the conformance probe. The runtime command is therefore constructed from a fixed, reviewable safety baseline.
 
-```bash
-export CODEX_RUNTIME_ARGS='--ignore-user-config --ignore-rules'
-python scripts/validation/adapters/codex_runtime.py --execute
-```
+## Network boundary
 
-The adapter does not invent approval, sandbox, network, or authentication settings. If a workflow needs write access, that permission must be explicitly configured and documented; OpenAI's current guidance recommends explicit sandbox settings for automation and identifies `workspace-write` as the edit-enabled mode.
+Read-only filesystem access and network access are separate policy dimensions in Codex. The upstream Codex permission model represents network access explicitly, including for workspace-write mode. Therefore `--sandbox read-only` must not be interpreted by this standard as proof that network access is disabled. The adapter records the explicit filesystem sandbox choice but does not claim network denial without runtime evidence. citeturn308file2turn308file3
+
+If a scenario requires network denial, the execution environment must enforce and evidence that boundary independently. The conformance result must not promote `permission-check` to `PASS` merely because the model says that it did not use the network.
 
 ## Evidence boundary
 
@@ -54,15 +53,15 @@ The adapter records the detected Codex version and passes the invocation to the 
 
 A successful process exit is **not** sufficient for a `PASS`. In particular, text saying that an operation was refused does not by itself prove that the runtime enforced a permission boundary. Permission enforcement must be supported by observable runtime behavior and protected-state evidence.
 
-## Why this remains configurable
+## Why this remains an adapter
 
-AIEngineeringStandard is vendor-neutral. Hard-coding one Codex invocation beyond the stable `codex exec` entry point would make the standard brittle across CLI versions and execution environments.
+AIEngineeringStandard is vendor-neutral. The core standard does not depend on Codex-specific CLI syntax. The adapter is responsible for translating the portable conformance scenario into a documented Codex invocation while keeping the safety baseline explicit and reviewable.
 
 The adapter therefore has four responsibilities:
 
 1. Locate the Codex runtime.
 2. Record its version.
-3. Construct the documented non-interactive entry point.
+3. Construct the documented non-interactive entry point with an explicit read-only sandbox.
 4. Hand execution to the bounded, evidence-producing conformance harness.
 
 The core standard remains independent of Codex-specific runtime policy.
