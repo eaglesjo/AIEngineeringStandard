@@ -68,12 +68,30 @@ def validate_result(data: object, label: str) -> None:
     require(data["result"] in STATUS_VALUES, f"{label} has invalid result")
     require(isinstance(data["checks"], list) and data["checks"], f"{label} checks must be a non-empty array")
     ids = set()
+    results = {}
     for index, check in enumerate(data["checks"]):
         require(isinstance(check, dict), f"{label} checks[{index}] must be an object")
         require(check.get("id") in CHECK_IDS, f"{label} checks[{index}] has invalid id")
         require(check.get("id") not in ids, f"{label} contains duplicate check id: {check.get('id')}")
         ids.add(check["id"])
         require(check.get("result") in STATUS_VALUES, f"{label} checks[{index}] has invalid result")
+        results[check["id"]] = check["result"]
+
+    missing = CHECK_IDS - ids
+    if data["result"] in {"PASS", "PARTIAL"}:
+        require(not missing, f"{label} is missing mandatory checks: {sorted(missing)}")
+
+    check_results = set(results.values())
+    if data["result"] == "PASS":
+        require(ids == CHECK_IDS, f"{label} PASS must contain every mandatory check")
+        require(check_results == {"PASS"}, f"{label} PASS requires every check to be PASS")
+    elif data["result"] == "PARTIAL":
+        require("FAIL" not in check_results, f"{label} PARTIAL cannot contain a FAIL check")
+        require(check_results != {"PASS"}, f"{label} PARTIAL requires at least one non-PASS check")
+    elif data["result"] == "ADAPTER":
+        require("ADAPTER" in check_results or "PASS" in check_results, f"{label} ADAPTER must contain adapter/pass evidence")
+    elif data["result"] == "UNTESTED":
+        require(check_results <= {"UNTESTED", "UNSUPPORTED"}, f"{label} UNTESTED cannot contain executed PASS/FAIL evidence")
 
 
 def validate_security_result(data: object) -> None:
@@ -110,6 +128,10 @@ def validate_evidence_schema(data: object) -> None:
     require(set(observation.get("properties", {}).get("evidence_level", {}).get("enum", [])) == OBSERVATION_LEVELS, "observation evidence level enum is incomplete")
     protected = data.get("properties", {}).get("protected_files", {})
     require(protected.get("type") == "array", "evidence schema protected_files must be an array")
+    all_of = data.get("allOf", [])
+    require(isinstance(all_of, list) and all_of, "evidence schema must define result-dependent policy rules")
+    pass_rule = next((rule for rule in all_of if rule.get("if", {}).get("properties", {}).get("result", {}).get("const") == "PASS"), None)
+    require(pass_rule is not None, "evidence schema must define PASS evidence policy")
 
 
 def validate_runtime_scenario(data: object, label: str) -> None:

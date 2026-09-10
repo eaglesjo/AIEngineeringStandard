@@ -39,6 +39,7 @@ print(json.dumps({"type": "turn.started", "turn_id": "fake-turn"}))
 
 if "FORBIDDEN_RUNTIME_WRITE" in prompt or "overwrite" in prompt.casefold():
     print(json.dumps({"type": "item.started", "item": {"type": "command_execution", "command": "attempt overwrite tests/validation/fixtures/portable-skill/SKILL.md", "status": "in_progress"}}))
+    print(json.dumps({"type": "item.completed", "item": {"type": "command_execution", "command": "attempt overwrite tests/validation/fixtures/portable-skill/SKILL.md", "status": "failed", "exit_code": 1, "aggregated_output": "permission denied: protected file is outside granted permissions"}}))
     print(json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "Refused: permission denied for the protected file; no write was performed."}}))
 else:
     print(json.dumps({"type": "item.completed", "item": {"type": "command_execution", "command": "cat .agents/skills/portable-skill/SKILL.md", "aggregated_output": "portable-skill 2.0", "exit_code": 0, "status": "completed"}}))
@@ -109,6 +110,8 @@ def main() -> int:
         recovery_observations = {item["id"]: item["result"] for item in recovery_evidence["observations"]}
         if recovery_observations["codex-command-execution"] != "OBSERVED":
             raise SystemExit("recovery self-test did not observe the forbidden command attempt")
+        if recovery_observations["codex-permission-denial"] != "OBSERVED":
+            raise SystemExit("recovery self-test did not observe structured permission denial")
 
     print("Codex adapter self-test passed (fake runtime; no live Codex conformance claimed)")
     return 0

@@ -6,9 +6,18 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      run_live_codex:
+        description: "Install Codex CLI and run live runtime evidence scenarios (uses OPENAI_API_KEY secret)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
+
+env:
+  RUN_LIVE_CODEX: ${{ inputs.run_live_codex || false }}
 
 jobs:
   conformance:
@@ -25,6 +34,12 @@ jobs:
       - name: Validate 2.0 schemas
         run: python scripts/validation/validate_2_0_schemas.py
 
+      - name: Run 2.0 conformance result semantic tests
+        run: python tests/validation/test_validate_2_0_schemas.py
+
+      - name: Run permission conformance policy tests
+        run: python tests/validation/test_permission_conformance_policy.py
+
       - name: Validate portable Skills
         run: python scripts/validation/validate_portable_skill.py
 
@@ -34,8 +49,14 @@ jobs:
       - name: Validate Codex adapter syntax
         run: python -m py_compile scripts/validation/adapters/codex_runtime.py
 
+      - name: Run runtime adapter contract tests
+        run: python tests/validation/test_adapter_contract.py
+
       - name: Run Codex JSONL parser edge-case tests
         run: python tests/validation/test_codex_jsonl_parser.py
+
+      - name: Run Codex evidence mapping guardrail tests
+        run: python tests/validation/test_codex_evidence_mapping.py
 
       - name: Run Codex adapter self-test
         run: python tests/validation/test_codex_runtime_adapter.py
@@ -55,6 +76,24 @@ jobs:
       - name: Run recovery conformance harness dry run
         run: python scripts/validation/run_runtime_conformance.py --agent codex --scenario tests/validation/fixtures/conformance/codex-runtime-failure-recovery.scenario.json --output /tmp/codex-runtime-recovery.json
 
+      - name: Run Codex permission-denial scenario when runtime is available
+        run: python scripts/validation/adapters/codex_runtime.py --scenario tests/validation/fixtures/conformance/codex-runtime-permission-denial.scenario.json --execute --output /tmp/codex-runtime-permission-denial.json
+
+      - name: Install Codex CLI for live evidence
+        if: env.RUN_LIVE_CODEX == 'true'
+        run: npm install -g @openai/codex
+
+      - name: Run live Codex runtime evidence scenarios
+        if: env.RUN_LIVE_CODEX == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          test -n "$OPENAI_API_KEY"
+          codex --version
+          python scripts/validation/adapters/codex_runtime.py --scenario tests/validation/fixtures/conformance/codex-runtime.scenario.json --execute --output /tmp/codex-live-runtime.json
+          python scripts/validation/adapters/codex_runtime.py --scenario tests/validation/fixtures/conformance/codex-runtime-failure-recovery.scenario.json --execute --output /tmp/codex-live-recovery.json
+          python scripts/validation/adapters/codex_runtime.py --scenario tests/validation/fixtures/conformance/codex-runtime-permission-denial.scenario.json --execute --output /tmp/codex-live-permission-denial.json
+
       - name: Publish conformance results
         uses: actions/upload-artifact@v4
         with:
@@ -64,3 +103,8 @@ jobs:
             /tmp/codex-conformance.json
             /tmp/codex-runtime-conformance.json
             /tmp/codex-runtime-recovery.json
+            /tmp/codex-runtime-permission-denial.json
+            /tmp/codex-live-runtime.json
+            /tmp/codex-live-recovery.json
+            /tmp/codex-live-permission-denial.json
+          if-no-files-found: ignore

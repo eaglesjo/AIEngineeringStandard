@@ -1,0 +1,19 @@
+{
+  "schema_version": "2.0.0",
+  "standard_version": "2.0",
+  "agent": "synthetic-test-agent",
+  "tested_at": "2026-09-10T00:00:00Z",
+  "result": "PASS",
+  "checks": [
+    {"id": "instruction-discovery", "result": "PASS"},
+    {"id": "skill-discovery", "result": "PASS"},
+    {"id": "skill-loading", "result": "PASS"},
+    {"id": "plugin-capability", "result": "PASS"},
+    {"id": "mcp-capability", "result": "UNTESTED"},
+    {"id": "permission-check", "result": "PASS"},
+    {"id": "task-execution", "result": "PASS"},
+    {"id": "validation", "result": "PASS"},
+    {"id": "failure-recovery", "result": "PASS"},
+    {"id": "evidence-reporting", "result": "PASS"}
+  ]
+}
