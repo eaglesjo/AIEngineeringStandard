@@ -49,6 +49,9 @@ jobs:
       - name: Validate Codex adapter syntax
         run: python -m py_compile scripts/validation/adapters/codex_runtime.py
 
+      - name: Run runtime adapter contract tests
+        run: python tests/validation/test_adapter_contract.py
+
       - name: Run Codex JSONL parser edge-case tests
         run: python tests/validation/test_codex_jsonl_parser.py
 
