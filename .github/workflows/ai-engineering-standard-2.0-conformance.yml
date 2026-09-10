@@ -1,0 +1,38 @@
+name: AIEngineeringStandard 2.0 Conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate 2.0 schemas
+        run: python scripts/validation/validate_2_0_schemas.py
+
+      - name: Validate portable Skills
+        run: python scripts/validation/validate_portable_skill.py
+
+      - name: Run Codex static conformance
+        run: python scripts/validation/run_conformance.py --agent codex --output /tmp/codex-conformance.json
+
+      - name: Publish conformance result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-engineering-standard-2.0-conformance
+          path: /tmp/codex-conformance.json
