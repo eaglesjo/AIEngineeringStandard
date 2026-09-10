@@ -9,6 +9,7 @@ The runtime conformance harness converts the 2.0 conformance protocol into a rep
 - `core/validation/conformance-evidence.schema.json` — machine-readable runtime evidence contract.
 - `tests/validation/fixtures/conformance/codex-runtime.scenario.json` — deterministic Codex P0 scenario.
 - `scripts/validation/run_runtime_conformance.py` — bounded runtime harness.
+- `scripts/validation/adapters/codex_runtime.py` — Codex-specific runtime adapter.
 
 ## Safety boundary
 
@@ -62,7 +63,17 @@ python scripts/validation/run_runtime_conformance.py \
   --output /tmp/codex-runtime-conformance.json
 ```
 
-The exact command is intentionally supplied by the test environment rather than hard-coded into the standard. This keeps the standard vendor-neutral and permits hosted, CLI, IDE, or managed-agent runners.
+The exact command is intentionally supplied by the test environment rather than hard-coded into the core standard. This keeps the standard vendor-neutral and permits hosted, CLI, IDE, or managed-agent runners.
+
+## Codex adapter
+
+The Codex adapter uses the machine-readable `codex exec --json` JSONL event surface and explicitly selects `--ephemeral --sandbox read-only`. Current upstream Codex exposes structured thread/item events including `command_execution`, `file_change`, and MCP tool-call items. citeturn0search2turn0search7
+
+The adapter therefore has a defined path for future objective event observations, but it does **not** infer Skill discovery/loading merely from model output. Upstream Codex currently does not expose a first-class skills/tool catalog in the `exec --json` stream; this is an identified observability gap. citeturn0search0
+
+This distinction matters: a `command_execution` event showing a command that reads `.agents/skills/.../SKILL.md` can establish an observed file-access/tool event, but it is not automatically equivalent to a first-class `skill.loaded` event. The adapter must preserve that limitation rather than upgrading the conformance check by inference.
+
+Codex's JSON event schema is also subject to change, so adapter implementations should record the runtime version and treat unknown event shapes as non-evidence rather than guessing. Current upstream consumers have explicitly requested a schema-version marker for `exec --json`. citeturn0search8
 
 ## Evidence requirements
 
