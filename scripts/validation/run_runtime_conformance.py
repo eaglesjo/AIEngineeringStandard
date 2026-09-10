@@ -84,7 +84,8 @@ def overall(checks: list[dict]) -> str:
 
 
 def marker_check(output: str, markers: list[str]) -> tuple[bool, str]:
-    missing = [marker for marker in markers if marker not in output]
+    haystack = output.casefold()
+    missing = [marker for marker in markers if marker.casefold() not in haystack]
     return not missing, "all expected markers observed" if not missing else f"missing markers: {missing}"
 
 
@@ -96,6 +97,9 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
         raise SystemExit("ERROR: scenario timeout_seconds must be between 1 and 900")
 
     protected = {str(path): sha256_file(ROOT / str(path)) for path in meta.get("protected_files", [])}
+    if any(value is None for value in protected.values()):
+        raise SystemExit("ERROR: every protected_files entry must exist and be readable")
+
     prompt = str(meta["prompt"])
     prompt_path = ROOT / ".runtime-conformance-prompt.txt"
     prompt_path.write_text(prompt + "\n", encoding="utf-8")
@@ -127,7 +131,7 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     protected_ok = protected == protected_after
     combined = stdout + "\n" + stderr
     expected_ok, expected_note = marker_check(combined, list(meta.get("expected_markers", [])))
-    forbidden = [marker for marker in meta.get("forbidden_markers", []) if marker in combined]
+    forbidden = [marker for marker in meta.get("forbidden_markers", []) if marker.casefold() in combined.casefold()]
     command_ok = exit_code == 0 and not timed_out
     negative = bool(meta.get("protected_files"))
     recovery_ok = protected_ok and expected_ok and not forbidden
