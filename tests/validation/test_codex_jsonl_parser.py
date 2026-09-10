@@ -71,7 +71,7 @@ def main() -> int:
 
     malformed_item = event("item.completed")
     observations, warnings = parse_codex_jsonl(malformed_item)
-    assert not observations
+    assert results(observations).get("codex-jsonl-event-stream", []) == ["OBSERVED"]
     assert any("has no object item" in warning for warning in warnings)
 
     print("Codex JSONL parser edge-case tests passed")
