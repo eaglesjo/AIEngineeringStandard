@@ -29,7 +29,10 @@ jobs:
         run: python scripts/validation/validate_portable_skill.py
 
       - name: Run Codex static conformance
-        run: python scripts/validation/run_conformance.py --agent codex --output /tmp/codex-conformance.json
+        run: python scripts/validation/run_conformance.py --agent codex --check-only --output /tmp/codex-conformance.json
+
+      - name: Validate Codex conformance fixture
+        run: python scripts/validation/validate_conformance_fixture.py --agent codex --result /tmp/codex-conformance.json
 
       - name: Publish conformance result
         uses: actions/upload-artifact@v4
