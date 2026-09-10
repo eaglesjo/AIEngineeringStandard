@@ -62,8 +62,15 @@ def main() -> int:
         if basic.returncode != 0:
             raise SystemExit(f"basic adapter self-test failed:\n{basic.stdout}\n{basic.stderr}")
         basic_evidence = json.loads(basic_out.read_text(encoding="utf-8"))
-        if basic_evidence["result"] != "PASS":
-            raise SystemExit(f"basic self-test expected PASS, got {basic_evidence['result']!r}")
+        # The basic scenario intentionally leaves permission enforcement and
+        # failure recovery untested, so PARTIAL is the correct aggregate result.
+        if basic_evidence["result"] != "PARTIAL":
+            raise SystemExit(f"basic self-test expected PARTIAL, got {basic_evidence['result']!r}")
+        basic_checks = {item["id"]: item["result"] for item in basic_evidence["checks"]}
+        if basic_checks["instruction-discovery"] != "PASS":
+            raise SystemExit("basic self-test did not produce PASS instruction-discovery evidence")
+        if basic_checks["skill-discovery"] != "PASS" or basic_checks["skill-loading"] != "PASS":
+            raise SystemExit("basic self-test did not produce PASS Skill discovery/loading evidence")
         if basic_evidence["runtime"]["version"] != "codex-fake 0.0.0":
             raise SystemExit("adapter did not record fake runtime version")
         if "--sandbox read-only" not in basic_evidence["runtime"]["invocation"]:
