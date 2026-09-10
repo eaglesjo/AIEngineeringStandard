@@ -62,8 +62,6 @@ def main() -> int:
         if basic.returncode != 0:
             raise SystemExit(f"basic adapter self-test failed:\n{basic.stdout}\n{basic.stderr}")
         basic_evidence = json.loads(basic_out.read_text(encoding="utf-8"))
-        # The basic scenario intentionally leaves permission enforcement and
-        # failure recovery untested, so PARTIAL is the correct aggregate result.
         if basic_evidence["result"] != "PARTIAL":
             raise SystemExit(f"basic self-test expected PARTIAL, got {basic_evidence['result']!r}")
         basic_checks = {item["id"]: item["result"] for item in basic_evidence["checks"]}
@@ -83,11 +81,15 @@ def main() -> int:
         if recovery.returncode != 0:
             raise SystemExit(f"recovery adapter self-test failed:\n{recovery.stdout}\n{recovery.stderr}")
         recovery_evidence = json.loads(recovery_out.read_text(encoding="utf-8"))
-        if recovery_evidence["result"] != "PASS":
-            raise SystemExit(f"recovery self-test expected PASS, got {recovery_evidence['result']!r}")
+        # The recovery scenario proves its targeted permission/recovery checks,
+        # but Plugin/MCP capabilities remain untested, so the aggregate is PARTIAL.
+        if recovery_evidence["result"] != "PARTIAL":
+            raise SystemExit(f"recovery self-test expected PARTIAL, got {recovery_evidence['result']!r}")
         recovery_checks = {item["id"]: item["result"] for item in recovery_evidence["checks"]}
         if recovery_checks["permission-check"] != "PASS" or recovery_checks["failure-recovery"] != "PASS":
             raise SystemExit("recovery self-test did not produce PASS permission/recovery evidence")
+        if recovery_checks["validation"] != "PASS" or recovery_checks["evidence-reporting"] != "PASS":
+            raise SystemExit("recovery self-test did not produce PASS validation/evidence-reporting evidence")
 
     print("Codex adapter self-test passed (fake runtime; no live Codex conformance claimed)")
     return 0
