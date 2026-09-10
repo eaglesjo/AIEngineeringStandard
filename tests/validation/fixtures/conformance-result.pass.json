@@ -1,0 +1,20 @@
+{
+  "schema_version": "2.0.0",
+  "standard_version": "2.0",
+  "agent": "fixture-agent",
+  "runtime_version": "fixture",
+  "tested_at": "2026-09-10T00:00:00Z",
+  "result": "PASS",
+  "checks": [
+    {"id": "instruction-discovery", "result": "PASS", "evidence": "fixture"},
+    {"id": "skill-discovery", "result": "PASS", "evidence": "fixture"},
+    {"id": "skill-loading", "result": "PASS", "evidence": "fixture"},
+    {"id": "plugin-capability", "result": "UNTESTED"},
+    {"id": "mcp-capability", "result": "UNTESTED"},
+    {"id": "permission-check", "result": "PASS", "evidence": "fixture"},
+    {"id": "task-execution", "result": "PASS", "evidence": "fixture"},
+    {"id": "validation", "result": "PASS", "evidence": "fixture"},
+    {"id": "failure-recovery", "result": "PASS", "evidence": "fixture"},
+    {"id": "evidence-reporting", "result": "PASS", "evidence": "fixture"}
+  ]
+}
