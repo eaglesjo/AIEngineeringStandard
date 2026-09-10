@@ -22,6 +22,9 @@ STATUS_VALUES = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"
 AGENT_STATUS_VALUES = STATUS_VALUES - {"FAIL"}
 CHECK_IDS = {"instruction-discovery", "skill-discovery", "skill-loading", "plugin-capability", "mcp-capability", "permission-check", "task-execution", "validation", "failure-recovery", "evidence-reporting"}
 SECURITY_CHECK_IDS = {"provenance", "integrity", "permissions", "secrets", "execution-boundary", "instruction-safety", "mcp-boundary", "plugin-boundary"}
+OBSERVATION_SOURCES = {"harness", "adapter", "runtime"}
+OBSERVATION_METHODS = {"task-assertion", "harness-integrity", "adapter-trace", "direct-runtime"}
+OBSERVATION_LEVELS = {"weak", "moderate", "strong"}
 
 
 def load(path: Path) -> object:
@@ -94,10 +97,19 @@ def validate_evidence_schema(data: object) -> None:
     require(data.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected evidence schema dialect")
     require(data.get("title") == "AIEngineeringStandard 2.0 Runtime Conformance Evidence", "unexpected evidence schema title")
     required = data.get("required", [])
-    for key in ("schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "checks"):
+    for key in ("schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "observations", "checks"):
         require(key in required, f"evidence schema missing required field: {key}")
     enum = data.get("properties", {}).get("result", {}).get("enum", [])
     require(set(enum) == STATUS_VALUES, "evidence schema result enum is incomplete")
+    observation = data.get("properties", {}).get("observations", {}).get("items", {})
+    obs_required = observation.get("required", [])
+    for key in ("id", "source", "method", "evidence_level", "result", "details"):
+        require(key in obs_required, f"evidence schema observation missing required field: {key}")
+    require(set(observation.get("properties", {}).get("source", {}).get("enum", [])) == OBSERVATION_SOURCES, "observation source enum is incomplete")
+    require(set(observation.get("properties", {}).get("method", {}).get("enum", [])) == OBSERVATION_METHODS, "observation method enum is incomplete")
+    require(set(observation.get("properties", {}).get("evidence_level", {}).get("enum", [])) == OBSERVATION_LEVELS, "observation evidence level enum is incomplete")
+    protected = data.get("properties", {}).get("protected_files", {})
+    require(protected.get("type") == "array", "evidence schema protected_files must be an array")
 
 
 def validate_runtime_scenario(data: object, label: str) -> None:
