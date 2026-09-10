@@ -2,8 +2,8 @@
 """Codex runtime adapter for the AIEngineeringStandard 2.0 harness.
 
 The adapter uses Codex's documented non-interactive ``codex exec`` surface.
-Runtime-specific policy remains configurable and is never inferred by the
-standard itself.
+The conformance probe explicitly selects read-only sandboxing; the standard
+never relies on an implicit or user-overridden permission profile.
 """
 from __future__ import annotations
 
@@ -70,21 +70,17 @@ def main() -> int:
         print("Result: UNTESTED (Codex --version could not be determined)")
         return run_harness(args, None, None)
 
-    # OpenAI documents ``codex exec`` for scripts/CI. It runs read-only by
-    # default, which is the safest baseline for this conformance probe.
-    # CODEX_RUNTIME_ARGS may add explicit, version-validated runtime settings.
-    runtime_args = os.environ.get("CODEX_RUNTIME_ARGS", "").strip()
-    parts = [binary, "exec", "--ephemeral"]
-    if runtime_args:
-        parts.extend(shlex.split(runtime_args))
-    parts.append("{prompt}")
+    # The conformance baseline is deliberately fixed to read-only. This avoids
+    # accepting an environment variable that could silently widen permissions.
+    # The upstream Codex CLI exposes --sandbox/-s with a read-only mode.
+    parts = [binary, "exec", "--ephemeral", "--sandbox", "read-only", "{prompt}"]
     command = shlex.join(parts)
 
     print(f"Codex executable: {binary}")
     print(f"Codex runtime version: {runtime_version}")
     print(f"Harness scenario: {args.scenario}")
-    print(f"Runtime arguments source: CODEX_RUNTIME_ARGS={'set' if runtime_args else 'empty'}")
-    print("Sandbox baseline: Codex exec default read-only")
+    print("Sandbox baseline: read-only (explicitly requested by adapter)")
+    print("Network baseline: not widened by adapter; runtime configuration remains observable")
 
     return run_harness(args, command, runtime_version)
 
