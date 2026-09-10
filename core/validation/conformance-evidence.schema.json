@@ -58,6 +58,7 @@
     },
     "observations": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "required": ["id", "source", "method", "evidence_level", "result", "details"],
@@ -88,5 +89,25 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {"properties": {"result": {"const": "PASS"}}},
+      "then": {
+        "required": ["exit_code", "observations"],
+        "properties": {
+          "observations": {
+            "contains": {
+              "type": "object",
+              "properties": {
+                "result": {"const": "OBSERVED"},
+                "evidence_level": {"enum": ["moderate", "strong"]}
+              },
+              "required": ["result", "evidence_level"]
+            }
+          }
+        }
+      }
+    }
+  ],
   "additionalProperties": false
 }
