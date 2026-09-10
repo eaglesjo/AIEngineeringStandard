@@ -13,7 +13,8 @@ FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "conformance-result.pass.
 SECURITY_SCHEMA = ROOT / "core" / "validation" / "security-result.schema.json"
 SECURITY_FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "security-result.pass.json"
 
-STATUS_VALUES = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"}
+STATUS_VALUES = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"}
+AGENT_STATUS_VALUES = STATUS_VALUES - {"FAIL"}
 CHECK_IDS = {"instruction-discovery", "skill-discovery", "skill-loading", "plugin-capability", "mcp-capability", "permission-check", "task-execution", "validation", "failure-recovery", "evidence-reporting"}
 SECURITY_CHECK_IDS = {"provenance", "integrity", "permissions", "secrets", "execution-boundary", "instruction-safety", "mcp-boundary", "plugin-boundary"}
 
@@ -42,10 +43,10 @@ def validate_agents(data: object) -> None:
             require(key in agent, f"agents[{index}] missing required field: {key}")
         require(bool(re.fullmatch(r"[a-z0-9][a-z0-9._-]*", agent["id"])), f"invalid agent id: {agent['id']!r}")
         require(agent["tier"] in {"P0", "P1", "P2"}, f"invalid tier for {agent['id']}: {agent['tier']}")
-        require(agent["status"] in STATUS_VALUES, f"invalid status for {agent['id']}: {agent['status']}")
+        require(agent["status"] in AGENT_STATUS_VALUES, f"invalid status for {agent['id']}: {agent['status']}")
         require(isinstance(agent["capabilities"], dict), f"capabilities must be an object for {agent['id']}")
         for capability, status in agent["capabilities"].items():
-            require(status in STATUS_VALUES, f"invalid capability status {status!r} for {agent['id']}:{capability}")
+            require(status in AGENT_STATUS_VALUES, f"invalid capability status {status!r} for {agent['id']}:{capability}")
 
 
 def validate_result(data: object, label: str) -> None:
