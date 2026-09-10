@@ -6,7 +6,9 @@ The repository includes a thin Codex adapter at:
 scripts/validation/adapters/codex_runtime.py
 ```
 
-The adapter uses Codex's documented non-interactive `codex exec` surface. OpenAI documents `codex exec` specifically for scripts and CI, with a prompt supplied as a single argument; it runs in a read-only sandbox by default. citeturn2view0
+The adapter uses Codex's documented non-interactive `codex exec` surface. OpenAI documents `codex exec` specifically for scripts and CI, with a prompt supplied as a single argument; it runs in a read-only sandbox by default.
+
+Reference: https://developers.openai.com/codex/noninteractive
 
 ## Discovery mode
 
@@ -26,7 +28,7 @@ The adapter constructs this baseline invocation:
 codex exec --ephemeral "<scenario prompt>"
 ```
 
-`--ephemeral` prevents the conformance probe from intentionally persisting session rollout files. OpenAI documents this option for non-interactive runs. citeturn2view0
+`--ephemeral` prevents the conformance probe from intentionally persisting session rollout files. OpenAI documents this option for non-interactive runs.
 
 Run an actual probe with:
 
@@ -44,7 +46,7 @@ export CODEX_RUNTIME_ARGS='--ignore-user-config --ignore-rules'
 python scripts/validation/adapters/codex_runtime.py --execute
 ```
 
-The adapter does not invent approval, sandbox, network, or authentication settings. If a workflow needs write access, that permission must be explicitly configured and documented; OpenAI's current guidance recommends explicit sandbox settings for automation and identifies `workspace-write` as the edit-enabled mode. citeturn2view0
+The adapter does not invent approval, sandbox, network, or authentication settings. If a workflow needs write access, that permission must be explicitly configured and documented; OpenAI's current guidance recommends explicit sandbox settings for automation and identifies `workspace-write` as the edit-enabled mode.
 
 ## Evidence boundary
 
