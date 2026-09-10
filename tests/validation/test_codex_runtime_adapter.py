@@ -2,8 +2,8 @@
 """Self-test the Codex adapter and runtime harness with a deterministic fake runtime.
 
 This does not claim Codex conformance. It verifies adapter/harness plumbing,
-argument construction, evidence generation, and protected-file recovery logic
-without requiring a live Codex installation or credentials.
+JSONL event observation, argument construction, evidence generation, and
+protected-file recovery logic without requiring a live Codex installation.
 """
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ BASIC = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runt
 RECOVERY = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime-failure-recovery.scenario.json"
 
 FAKE_CODEX = r'''#!/usr/bin/env python3
+import json
 import sys
 
 if sys.argv[1:] == ["--version"]:
@@ -28,17 +29,22 @@ if sys.argv[1:] == ["--version"]:
     raise SystemExit(0)
 
 args = sys.argv[1:]
-if len(args) < 5 or args[0] != "exec" or args[1] != "--ephemeral" or args[2] != "--sandbox" or args[3] != "read-only":
+if len(args) < 6 or args[:5] != ["exec", "--json", "--ephemeral", "--sandbox", "read-only"]:
     print("unexpected invocation: " + repr(args), file=sys.stderr)
     raise SystemExit(2)
 
-prompt = args[4]
-if "FORBIDDEN_RUNTIME_WRITE" in prompt or "overwrite" in prompt.casefold():
-    print("Refused: permission denied for the protected file; no write was performed.")
-    raise SystemExit(0)
+prompt = args[5]
+print(json.dumps({"type": "thread.started", "thread_id": "fake-thread"}))
+print(json.dumps({"type": "turn.started", "turn_id": "fake-turn"}))
 
-print("portable-skill")
-print("2.0")
+if "FORBIDDEN_RUNTIME_WRITE" in prompt or "overwrite" in prompt.casefold():
+    print(json.dumps({"type": "item.started", "item": {"type": "command_execution", "command": "attempt overwrite tests/validation/fixtures/portable-skill/SKILL.md", "status": "in_progress"}}))
+    print(json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "Refused: permission denied for the protected file; no write was performed."}}))
+else:
+    print(json.dumps({"type": "item.completed", "item": {"type": "command_execution", "command": "cat .agents/skills/portable-skill/SKILL.md", "aggregated_output": "portable-skill 2.0", "exit_code": 0, "status": "completed"}}))
+    print(json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": "portable-skill 2.0"}}))
+
+print(json.dumps({"type": "turn.completed", "turn_id": "fake-turn"}))
 '''
 
 
@@ -70,14 +76,19 @@ def main() -> int:
         if basic_checks["skill-discovery"] != "UNTESTED" or basic_checks["skill-loading"] != "UNTESTED":
             raise SystemExit("basic self-test incorrectly claimed Skill discovery/loading")
         basic_observations = {item["id"]: item["result"] for item in basic_evidence["observations"]}
-        if basic_observations["instruction-discovery-event"] != "NOT_OBSERVED":
-            raise SystemExit("basic self-test did not preserve missing instruction observation")
-        if basic_observations["skill-discovery-event"] != "NOT_OBSERVED" or basic_observations["skill-loading-event"] != "NOT_OBSERVED":
-            raise SystemExit("basic self-test did not preserve missing Skill observations")
+        if basic_observations["codex-jsonl-event-stream"] != "OBSERVED":
+            raise SystemExit("basic self-test did not observe Codex JSONL events")
+        if basic_observations["codex-command-execution"] != "OBSERVED":
+            raise SystemExit("basic self-test did not observe command execution")
+        if basic_observations["codex-skill-file-access"] != "OBSERVED":
+            raise SystemExit("basic self-test did not observe Skill file access")
+        if basic_observations["skill-loading-event"] != "NOT_OBSERVED":
+            raise SystemExit("basic self-test incorrectly promoted Skill file access to Skill loading")
         if basic_evidence["runtime"]["version"] != "codex-fake 0.0.0":
             raise SystemExit("adapter did not record fake runtime version")
-        if "--sandbox read-only" not in basic_evidence["runtime"]["invocation"]:
-            raise SystemExit("adapter did not construct the read-only sandbox invocation")
+        invocation = basic_evidence["runtime"]["invocation"]
+        if "exec --json --ephemeral --sandbox read-only" not in invocation:
+            raise SystemExit("adapter did not construct the JSONL read-only invocation")
 
         recovery_out = tmp_path / "recovery.json"
         recovery = run(
@@ -95,6 +106,9 @@ def main() -> int:
             raise SystemExit("recovery self-test did not produce PASS permission/recovery evidence")
         if recovery_checks["validation"] != "PASS" or recovery_checks["evidence-reporting"] != "PASS":
             raise SystemExit("recovery self-test did not produce PASS validation/evidence-reporting evidence")
+        recovery_observations = {item["id"]: item["result"] for item in recovery_evidence["observations"]}
+        if recovery_observations["codex-command-execution"] != "OBSERVED":
+            raise SystemExit("recovery self-test did not observe the forbidden command attempt")
 
     print("Codex adapter self-test passed (fake runtime; no live Codex conformance claimed)")
     return 0
