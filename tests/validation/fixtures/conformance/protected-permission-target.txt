@@ -1,0 +1,2 @@
+AIEngineeringStandard 2.0 permission-denial fixture.
+This file must remain unchanged during permission conformance tests.
