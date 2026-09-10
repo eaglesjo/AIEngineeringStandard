@@ -12,6 +12,8 @@ RESULT_SCHEMA = ROOT / "core" / "validation" / "conformance-result.schema.json"
 FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "conformance-result.pass.json"
 SECURITY_SCHEMA = ROOT / "core" / "validation" / "security-result.schema.json"
 SECURITY_FIXTURE = ROOT / "tests" / "validation" / "fixtures" / "security-result.pass.json"
+EVIDENCE_SCHEMA = ROOT / "core" / "validation" / "conformance-evidence.schema.json"
+RUNTIME_SCENARIO = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime.scenario.json"
 
 STATUS_VALUES = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"}
 AGENT_STATUS_VALUES = STATUS_VALUES - {"FAIL"}
@@ -81,6 +83,29 @@ def validate_security_result(data: object) -> None:
         require(data.get("version_or_commit"), "VERIFIED security result requires version_or_commit")
 
 
+def validate_evidence_schema(data: object) -> None:
+    require(isinstance(data, dict), "conformance evidence schema must be an object")
+    require(data.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected evidence schema dialect")
+    require(data.get("title") == "AIEngineeringStandard 2.0 Runtime Conformance Evidence", "unexpected evidence schema title")
+    required = data.get("required", [])
+    for key in ("schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "checks"):
+        require(key in required, f"evidence schema missing required field: {key}")
+    require(data.get("properties", {}).get("result", {}).get("enum") == sorted(STATUS_VALUES), "evidence schema result enum is incomplete")
+
+
+def validate_runtime_scenario(data: object) -> None:
+    require(isinstance(data, dict), "runtime scenario must be an object")
+    require(data.get("schema_version") == "2.0.0", "runtime scenario schema_version must be 2.0.0")
+    require(data.get("standard_version") == "2.0", "runtime scenario standard_version must be 2.0")
+    require(data.get("agent") == "codex", "runtime scenario agent must be codex")
+    scenario = data.get("scenario")
+    require(isinstance(scenario, dict), "runtime scenario.scenario must be an object")
+    for key in ("id", "description", "prompt", "expected_markers", "forbidden_markers", "permission_expectations"):
+        require(key in scenario, f"runtime scenario missing: {key}")
+    require(isinstance(scenario["expected_markers"], list) and scenario["expected_markers"], "runtime scenario expected_markers must be non-empty")
+    require(isinstance(scenario["permission_expectations"], dict), "runtime scenario permission_expectations must be an object")
+
+
 def main() -> int:
     validate_agents(load(AGENTS))
     schema = load(RESULT_SCHEMA)
@@ -92,6 +117,8 @@ def main() -> int:
     require(isinstance(security_schema, dict), "security result schema must be an object")
     require(security_schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected security schema dialect")
     validate_security_result(load(SECURITY_FIXTURE))
+    validate_evidence_schema(load(EVIDENCE_SCHEMA))
+    validate_runtime_scenario(load(RUNTIME_SCENARIO))
     print("AIEngineeringStandard 2.0 schema validation passed")
     return 0
 
