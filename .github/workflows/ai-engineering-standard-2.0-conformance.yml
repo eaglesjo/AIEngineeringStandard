@@ -52,6 +52,9 @@ jobs:
       - name: Run Codex JSONL parser edge-case tests
         run: python tests/validation/test_codex_jsonl_parser.py
 
+      - name: Run Codex evidence mapping guardrail tests
+        run: python tests/validation/test_codex_evidence_mapping.py
+
       - name: Run Codex adapter self-test
         run: python tests/validation/test_codex_runtime_adapter.py
 
