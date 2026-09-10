@@ -3,7 +3,7 @@
   "$id": "https://github.com/eaglesjo/AIEngineeringStandard/blob/main/core/validation/conformance-evidence.schema.json",
   "title": "AIEngineeringStandard 2.0 Runtime Conformance Evidence",
   "type": "object",
-  "required": ["schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "checks"],
+  "required": ["schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "observations", "checks"],
   "properties": {
     "schema_version": {"type": "string", "const": "2.0.0"},
     "standard_version": {"type": "string", "pattern": "^2\\.[0-9]+$"},
@@ -42,6 +42,20 @@
     "timed_out": {"type": "boolean"},
     "stdout_excerpt": {"type": "string"},
     "stderr_excerpt": {"type": "string"},
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "source", "result", "details"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "enum": ["harness", "adapter", "runtime"]},
+          "result": {"type": "string", "enum": ["OBSERVED", "NOT_OBSERVED", "FAILED"]},
+          "details": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
     "checks": {
       "type": "array",
       "minItems": 1,
