@@ -28,8 +28,14 @@ jobs:
       - name: Validate portable Skills
         run: python scripts/validation/validate_portable_skill.py
 
+      - name: Validate Codex runtime harness syntax
+        run: python -m py_compile scripts/validation/run_runtime_conformance.py
+
       - name: Validate Codex adapter syntax
         run: python -m py_compile scripts/validation/adapters/codex_runtime.py
+
+      - name: Run Codex JSONL parser edge-case tests
+        run: python tests/validation/test_codex_jsonl_parser.py
 
       - name: Run Codex adapter self-test
         run: python tests/validation/test_codex_runtime_adapter.py
