@@ -7,7 +7,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PROFILE_DIR = ROOT / "profiles" / "agent"
-OUTPUT_DIR = ROOT / "tests" / "validation" / "fixtures" / "conformance"
 
 CHECK_IDS = [
     "instruction-discovery",
@@ -21,12 +20,7 @@ CHECK_IDS = [
     "failure-recovery",
     "evidence-reporting",
 ]
-
-
-def check(result: str, evidence: str, notes: str | None = None) -> dict[str, str]:
-    item = {"id": result if False else "", "result": ""}
-    item["result"] = evidence  # overwritten by caller; keeps construction explicit
-    raise AssertionError("check() must be called through make_check")
+VALID_RESULTS = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"}
 
 
 def make_check(check_id: str, result: str, evidence: str, notes: str | None = None) -> dict[str, str]:
@@ -52,19 +46,22 @@ def static_conformance(agent_id: str) -> dict:
 
     instruction_files = discovery.get("project_instruction_files", [])
     instruction_present = [p for p in instruction_files if (ROOT / p).is_file()]
-    if instruction_files and len(instruction_present) == len(instruction_files):
-        checks.append(make_check("instruction-discovery", "PASS", ", ".join(instruction_present)))
-    else:
-        checks.append(make_check("instruction-discovery", "FAIL", ", ".join(instruction_present) or "none"))
+    checks.append(make_check(
+        "instruction-discovery",
+        "PASS" if instruction_files and len(instruction_present) == len(instruction_files) else "FAIL",
+        ", ".join(instruction_present) or "none",
+    ))
 
     skill_locations = discovery.get("portable_skill_locations", [])
     skill_present = [p for p in skill_locations if (ROOT / p).is_dir()]
-    if skill_locations and len(skill_present) == len(skill_locations):
-        checks.append(make_check("skill-discovery", "PASS", ", ".join(skill_present)))
-    else:
-        checks.append(make_check("skill-discovery", "FAIL", ", ".join(skill_present) or "none"))
+    checks.append(make_check(
+        "skill-discovery",
+        "PASS" if skill_locations and len(skill_present) == len(skill_locations) else "FAIL",
+        ", ".join(skill_present) or "none",
+    ))
 
-    skill_files = list((ROOT / ".agents" / "skills").glob("*/SKILL.md")) if (ROOT / ".agents" / "skills").is_dir() else []
+    skill_root = ROOT / ".agents" / "skills"
+    skill_files = list(skill_root.glob("*/SKILL.md")) if skill_root.is_dir() else []
     checks.append(make_check(
         "skill-loading",
         "PASS" if skill_files else "UNTESTED",
@@ -74,9 +71,10 @@ def static_conformance(agent_id: str) -> dict:
 
     for check_id, capability_key in (("plugin-capability", "plugins"), ("mcp-capability", "mcp")):
         declared = capabilities.get(capability_key, "UNTESTED")
+        result = declared if declared in VALID_RESULTS else "UNTESTED"
         checks.append(make_check(
             check_id,
-            declared if declared in {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"} else "UNTESTED",
+            result,
             f"Profile capability declaration: {declared}",
             "Runtime capability is not exercised by the static runner.",
         ))
@@ -107,27 +105,31 @@ def validate_result(result: dict) -> None:
         raise ValueError(f"Conformance result missing fields: {sorted(missing)}")
     if result["schema_version"] != "2.0.0":
         raise ValueError("Conformance result schema_version must be 2.0.0")
-    if result["result"] not in {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"}:
+    if result["result"] not in VALID_RESULTS:
         raise ValueError("Invalid conformance result")
     ids = {item.get("id") for item in result["checks"]}
     missing_checks = set(CHECK_IDS) - ids
     if missing_checks:
         raise ValueError(f"Missing conformance checks: {sorted(missing_checks)}")
+    for item in result["checks"]:
+        if item.get("result") not in VALID_RESULTS:
+            raise ValueError(f"Invalid check result for {item.get('id')}: {item.get('result')}")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run deterministic AIEngineeringStandard 2.0 static conformance checks.")
     parser.add_argument("--agent", default="codex", help="Agent profile id under profiles/agent")
-    parser.add_argument("--output", help="Write the result JSON to this path")
+    parser.add_argument("--output", help="Write the result JSON to this path; stdout is always emitted")
     args = parser.parse_args()
 
     result = static_conformance(args.agent)
     validate_result(result)
-    output = Path(args.output) if args.output else OUTPUT_DIR / f"{args.agent}.json"
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
-    print(f"Conformance result written: {output.relative_to(ROOT) if output.is_relative_to(ROOT) else output}")
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        print(f"Conformance result written: {output}")
     return 0
 
 
