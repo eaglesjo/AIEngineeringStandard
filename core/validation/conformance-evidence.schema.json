@@ -42,14 +42,30 @@
     "timed_out": {"type": "boolean"},
     "stdout_excerpt": {"type": "string"},
     "stderr_excerpt": {"type": "string"},
+    "protected_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "before_sha256", "after_sha256", "unchanged"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "before_sha256": {"type": ["string", "null"]},
+          "after_sha256": {"type": ["string", "null"]},
+          "unchanged": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    },
     "observations": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "source", "result", "details"],
+        "required": ["id", "source", "method", "evidence_level", "result", "details"],
         "properties": {
           "id": {"type": "string", "minLength": 1},
           "source": {"type": "string", "enum": ["harness", "adapter", "runtime"]},
+          "method": {"type": "string", "enum": ["task-assertion", "harness-integrity", "adapter-trace", "direct-runtime"]},
+          "evidence_level": {"type": "string", "enum": ["weak", "moderate", "strong"]},
           "result": {"type": "string", "enum": ["OBSERVED", "NOT_OBSERVED", "FAILED"]},
           "details": {"type": "string", "minLength": 1}
         },
