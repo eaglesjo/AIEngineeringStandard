@@ -96,6 +96,7 @@ def parse_codex_jsonl(stdout: str) -> tuple[list[dict], list[str]]:
     """Parse known Codex exec --json events without guessing unknown shapes."""
     observations: list[dict] = []
     warnings: list[str] = []
+    event_stream_observed = False
     for line_no, line in enumerate(stdout.splitlines(), 1):
         text = line.strip()
         if not text:
@@ -112,6 +113,7 @@ def parse_codex_jsonl(stdout: str) -> tuple[list[dict], list[str]]:
         if not isinstance(event_type, str):
             warnings.append(f"line {line_no}: event type missing")
             continue
+        event_stream_observed = True
         if event_type in {"thread.started", "turn.started", "turn.completed", "thread.completed"}:
             observations.append(make_observation(f"codex-{event_type.replace('.', '-')}", "runtime", "direct-runtime", "moderate", "OBSERVED", f"observed Codex JSONL event {event_type}"))
             continue
@@ -137,6 +139,8 @@ def parse_codex_jsonl(stdout: str) -> tuple[list[dict], list[str]]:
             observations.append(make_observation("codex-file-change", "runtime", "direct-runtime", "moderate", "OBSERVED", "observed file_change item"))
         elif item_type == "collab_tool_call":
             observations.append(make_observation("codex-collab-tool-call", "runtime", "direct-runtime", "moderate", "OBSERVED", "observed collaboration tool call item"))
+    if event_stream_observed:
+        observations.append(make_observation("codex-jsonl-event-stream", "runtime", "direct-runtime", "strong", "OBSERVED", "observed at least one valid Codex JSONL event object"))
     return observations, warnings
 
 
