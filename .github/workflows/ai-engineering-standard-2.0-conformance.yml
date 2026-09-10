@@ -25,6 +25,9 @@ jobs:
       - name: Validate 2.0 schemas
         run: python scripts/validation/validate_2_0_schemas.py
 
+      - name: Run 2.0 conformance result semantic tests
+        run: python tests/validation/test_validate_2_0_schemas.py
+
       - name: Validate portable Skills
         run: python scripts/validation/validate_portable_skill.py
 
