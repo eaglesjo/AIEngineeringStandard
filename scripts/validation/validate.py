@@ -25,6 +25,8 @@ REQUIRED_FILES = [
     "VERSION", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALL.md",
     "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md",
     "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py",
+    "core/agent/README.md", "core/skill/README.md", "core/plugin/README.md", "core/mcp/README.md",
+    "core/validation/README.md", "core/validation/conformance-result.schema.json", "profiles/agent/README.md", "compatibility/agents.json",
     "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md", "domains/ml/skills/README.md",
     "domains/ml/skills/data/SKILL.md", "domains/ml/skills/evaluation/SKILL.md", "domains/ml/skills/experiment/SKILL.md",
     "domains/ml/skills/training/SKILL.md", "domains/ml/skills/distributed-training/SKILL.md", "domains/ml/skills/hyperparameter-optimization/SKILL.md",
@@ -36,6 +38,7 @@ REQUIRED_FILES = [
     "platform/colab/AGENT.md", "platform/colab/SKILL.md", "platform/colab/validate_runtime.py",
     "examples/colab/clean_runtime_validation.ipynb", "examples/colab/llm_qlora_validation.ipynb", "docs/development/ML_RUNTIME_VALIDATION.md",
     "tests/integration/ml_classification_smoke.py", "tests/integration/llm_qlora_strategy_smoke.py",
+    "tests/validation/fixtures/conformance-result.pass.json", "scripts/validation/validate_2_0_schemas.py",
     ".github/instructions/ml.instructions.md", ".github/instructions/colab.instructions.md",
     "scripts/installers/install-domains.ps1", "scripts/installers/install-domains.sh",
     "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/validation/validate_profiles.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py",
@@ -74,6 +77,10 @@ def run_environment_tests() -> None:
     run_checker(ROOT / "scripts" / "development" / "test_dependencies.py", "Dependency contract tests")
     run_checker(ROOT / "scripts" / "validation" / "validate-domains.py", "Domain resource validation")
     run_checker(ROOT / "scripts" / "validation" / "validate_agent_routing.py", "Agent routing validation")
+
+
+def run_2_0_validation() -> None:
+    run_checker(ROOT / "scripts" / "validation" / "validate_2_0_schemas.py", "AIEngineeringStandard 2.0 schema validation")
 
 
 def check_notebook() -> None:
@@ -141,7 +148,7 @@ def run_i18n_check() -> None:
 
 
 def main() -> None:
-    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("codingStandard validation passed")
+    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("codingStandard validation passed")
 
 
 if __name__ == "__main__": main()
