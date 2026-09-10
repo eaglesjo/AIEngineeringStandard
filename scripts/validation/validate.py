@@ -10,46 +10,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 FORBIDDEN_HARDWARE_PATTERNS = [
-    re.compile(r"RTX\s*3050", re.I),
-    re.compile(r"3050\s*Ti", re.I),
-    re.compile(r"4\s*GB\s*VRAM", re.I),
-    re.compile(r"16\s*GB\s*(RAM|System RAM)", re.I),
+    re.compile(r"RTX\s*3050", re.I), re.compile(r"3050\s*Ti", re.I),
+    re.compile(r"4\s*GB\s*VRAM", re.I), re.compile(r"16\s*GB\s*(RAM|System RAM)", re.I),
 ]
 ROUTING_FILES = [
-    "CLAUDE.md", "GEMINI.md",
-    ".github/copilot-instructions.md", ".github/instructions/ml.instructions.md", ".github/instructions/llm.instructions.md", ".github/instructions/vision.instructions.md", ".github/instructions/colab.instructions.md",
+    "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md", ".github/instructions/ml.instructions.md", ".github/instructions/llm.instructions.md", ".github/instructions/vision.instructions.md", ".github/instructions/colab.instructions.md",
     ".cursor/rules/coding-standard.mdc", ".windsurf/rules/coding-standard.md", ".clinerules/01-coding-standard.md", ".continue/rules/01-coding-standard.md", ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md",
 ]
 LEGACY_EXECUTION_REFS = ("COMMON/AGENT.md", "COMMON/SKILL.md", "COMMON/ENVIRONMENT.md", "LLM/environment.py", "LLM/memory_smoke_test.py", "VISION/memory_smoke_test.py", "scripts/validate.py", "scripts/check_i18n.py", "scripts/test_installers.py")
 REQUIRED_FILES = [
-    "VERSION", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALL.md",
-    "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md",
-    "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py",
-    "core/agent/README.md", "core/skill/README.md", "core/plugin/README.md", "core/mcp/README.md",
-    "core/validation/README.md", "core/validation/conformance-result.schema.json", "profiles/agent/README.md", "compatibility/agents.json",
-    "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md", "domains/ml/skills/README.md",
-    "domains/ml/skills/data/SKILL.md", "domains/ml/skills/evaluation/SKILL.md", "domains/ml/skills/experiment/SKILL.md",
-    "domains/ml/skills/training/SKILL.md", "domains/ml/skills/distributed-training/SKILL.md", "domains/ml/skills/hyperparameter-optimization/SKILL.md",
-    "domains/ml/skills/inference/SKILL.md", "domains/ml/skills/mlops/SKILL.md",
-    "domains/llm/AGENT.md", "domains/llm/SKILL.md", "domains/llm/ENVIRONMENT.md",
-    "domains/llm/environment.py", "domains/llm/memory_smoke_test.py", "domains/llm/experiment.py",
-    "domains/llm/skills/finetuning/SKILL.md", "domains/llm/skills/peft/SKILL.md", "domains/llm/skills/quantization/SKILL.md", "domains/llm/skills/rag/SKILL.md",
-    "domains/vision/AGENT.md", "domains/vision/SKILL.md", "domains/vision/ENVIRONMENT.md", "domains/vision/memory_smoke_test.py", "domains/vision/README.md",
-    "platform/colab/AGENT.md", "platform/colab/SKILL.md", "platform/colab/validate_runtime.py",
-    "examples/colab/clean_runtime_validation.ipynb", "examples/colab/llm_qlora_validation.ipynb", "docs/development/ML_RUNTIME_VALIDATION.md",
-    "tests/integration/ml_classification_smoke.py", "tests/integration/llm_qlora_strategy_smoke.py",
-    "tests/validation/fixtures/conformance-result.pass.json", "scripts/validation/validate_2_0_schemas.py",
-    ".github/instructions/ml.instructions.md", ".github/instructions/colab.instructions.md",
-    "scripts/installers/install-domains.ps1", "scripts/installers/install-domains.sh",
-    "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/validation/validate_profiles.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py",
-    "scripts/installers/test_installers_windows.ps1", ".github/workflows/windows-install-test.yml",
-    "tests/validation/test_i18n_consistency.py", "tests/colab/README.md", "tests/colab/codingstandard_colab_test.ipynb", "LICENSE",
+    "VERSION", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALL.md", "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md", "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py",
+    "core/agent/README.md", "core/skill/README.md", "core/skill/PORTABLE_SKILL_CONTRACT.md", "core/plugin/README.md", "core/mcp/README.md", "core/validation/README.md", "core/validation/conformance-result.schema.json", "core/validation/SECURITY_PROVENANCE_CONTRACT.md", "core/validation/security-result.schema.json", "profiles/agent/README.md", "compatibility/agents.json",
+    "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md", "domains/ml/skills/README.md", "domains/ml/skills/data/SKILL.md", "domains/ml/skills/evaluation/SKILL.md", "domains/ml/skills/experiment/SKILL.md", "domains/ml/skills/training/SKILL.md", "domains/ml/skills/distributed-training/SKILL.md", "domains/ml/skills/hyperparameter-optimization/SKILL.md", "domains/ml/skills/inference/SKILL.md", "domains/ml/skills/mlops/SKILL.md",
+    "domains/llm/AGENT.md", "domains/llm/SKILL.md", "domains/llm/ENVIRONMENT.md", "domains/llm/environment.py", "domains/llm/memory_smoke_test.py", "domains/llm/experiment.py", "domains/llm/skills/finetuning/SKILL.md", "domains/llm/skills/peft/SKILL.md", "domains/llm/skills/quantization/SKILL.md", "domains/llm/skills/rag/SKILL.md",
+    "domains/vision/AGENT.md", "domains/vision/SKILL.md", "domains/vision/ENVIRONMENT.md", "domains/vision/memory_smoke_test.py", "domains/vision/README.md", "platform/colab/AGENT.md", "platform/colab/SKILL.md", "platform/colab/validate_runtime.py", "examples/colab/clean_runtime_validation.ipynb", "examples/colab/llm_qlora_validation.ipynb", "docs/development/ML_RUNTIME_VALIDATION.md", "tests/integration/ml_classification_smoke.py", "tests/integration/llm_qlora_strategy_smoke.py",
+    "tests/validation/fixtures/conformance-result.pass.json", "tests/validation/fixtures/security-result.pass.json", "tests/validation/fixtures/portable-skill/SKILL.md", "scripts/validation/validate_2_0_schemas.py", "scripts/validation/validate_portable_skill.py",
+    ".github/instructions/ml.instructions.md", ".github/instructions/colab.instructions.md", "scripts/installers/install-domains.ps1", "scripts/installers/install-domains.sh", "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/validation/validate_profiles.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py", "scripts/installers/test_installers_windows.ps1", ".github/workflows/windows-install-test.yml", "tests/validation/test_i18n_consistency.py", "tests/colab/README.md", "tests/colab/codingstandard_colab_test.ipynb", "LICENSE",
 ]
 
 
 def fail(message: str) -> None:
-    print(f"ERROR: {message}", file=sys.stderr)
-    raise SystemExit(1)
+    print(f"ERROR: {message}", file=sys.stderr); raise SystemExit(1)
 
 
 def run_checker(path: Path, label: str) -> None:
@@ -73,22 +54,19 @@ def check_python() -> None:
 
 
 def run_environment_tests() -> None:
-    run_checker(ROOT / "scripts" / "development" / "test_environment.py", "Environment detection tests")
-    run_checker(ROOT / "scripts" / "development" / "test_dependencies.py", "Dependency contract tests")
+    for path, label in (("test_environment.py", "Environment detection tests"), ("test_dependencies.py", "Dependency contract tests")):
+        run_checker(ROOT / "scripts" / "development" / path, label)
     run_checker(ROOT / "scripts" / "validation" / "validate-domains.py", "Domain resource validation")
     run_checker(ROOT / "scripts" / "validation" / "validate_agent_routing.py", "Agent routing validation")
 
 
 def run_2_0_validation() -> None:
     run_checker(ROOT / "scripts" / "validation" / "validate_2_0_schemas.py", "AIEngineeringStandard 2.0 schema validation")
+    run_checker(ROOT / "scripts" / "validation" / "validate_portable_skill.py", "Portable Agent Skill validation")
 
 
 def check_notebook() -> None:
-    for path in (
-        ROOT / "tests" / "colab" / "codingstandard_colab_test.ipynb",
-        ROOT / "examples" / "colab" / "clean_runtime_validation.ipynb",
-        ROOT / "examples" / "colab" / "llm_qlora_validation.ipynb",
-    ):
+    for path in (ROOT / "tests" / "colab" / "codingstandard_colab_test.ipynb", ROOT / "examples" / "colab" / "clean_runtime_validation.ipynb", ROOT / "examples" / "colab" / "llm_qlora_validation.ipynb"):
         try: notebook = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc: fail(f"Invalid Colab notebook JSON: {exc}")
         if notebook.get("nbformat") != 4: fail(f"Colab notebook must use nbformat 4: {path}")
@@ -97,8 +75,7 @@ def check_notebook() -> None:
 
 def check_routing_paths() -> None:
     for rel in ROUTING_FILES:
-        path = ROOT / rel
-        text = path.read_text(encoding="utf-8")
+        text = (ROOT / rel).read_text(encoding="utf-8")
         for legacy in LEGACY_EXECUTION_REFS:
             if legacy in text: fail(f"Obsolete execution reference '{legacy}' remains in {rel}")
 
@@ -133,14 +110,8 @@ def check_version_consistency() -> None:
     if match.group(1) != version: fail(f"Version mismatch: VERSION={version}, core/common/environment.py={match.group(1)}")
 
 
-def run_structure_check() -> None:
-    run_checker(ROOT / "scripts" / "validation" / "check_structure.py", "Repository structure validation")
-
-
-def run_profile_check() -> None:
-    run_checker(ROOT / "scripts" / "validation" / "validate_profiles.py", "Architecture profile validation")
-
-
+def run_structure_check() -> None: run_checker(ROOT / "scripts" / "validation" / "check_structure.py", "Repository structure validation")
+def run_profile_check() -> None: run_checker(ROOT / "scripts" / "validation" / "validate_profiles.py", "Architecture profile validation")
 def run_i18n_check() -> None:
     run_checker(ROOT / "scripts" / "validation" / "check_i18n.py", "Multilingual localization check")
     run_checker(ROOT / "scripts" / "validation" / "check_i18n_quality.py", "i18n quality validation")
