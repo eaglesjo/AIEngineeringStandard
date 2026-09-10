@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shlex
 import subprocess
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -27,7 +27,7 @@ MAX_OUTPUT = 12000
 
 
 def now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def load_json(path: Path) -> dict:
@@ -84,9 +84,6 @@ def marker_check(output: str, markers: list[str]) -> tuple[bool, str]:
 def run(args: argparse.Namespace, scenario: dict) -> dict:
     meta = scenario["scenario"]
     started = now()
-    command = shlex.split(args.command)
-    if not command:
-        raise SystemExit("ERROR: --command must not be empty")
     timeout = int(meta.get("timeout_seconds", 120))
     if timeout < 1 or timeout > 900:
         raise SystemExit("ERROR: scenario timeout_seconds must be between 1 and 900")
@@ -94,17 +91,20 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     prompt = str(meta["prompt"])
     prompt_path = ROOT / ".runtime-conformance-prompt.txt"
     prompt_path.write_text(prompt + "\n", encoding="utf-8")
+    command_text = args.command.replace("{prompt}", prompt)
+    command = shlex.split(command_text)
+    if not command:
+        raise SystemExit("ERROR: --command must not be empty")
     try:
-        command.extend([args.prompt_flag, prompt]) if args.prompt_flag else None
+        env = {
+            "PATH": os.environ.get("PATH", ""),
+            "HOME": os.environ.get("HOME", ""),
+            "AIENGINEERINGSTANDARD_CONFORMANCE": "1",
+            "AIENGINEERINGSTANDARD_CONFORMANCE_PROMPT_FILE": str(prompt_path),
+        }
         try:
             proc = subprocess.run(
-                command,
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                check=False,
-                env={"PATH": __import__("os").environ.get("PATH", ""), "HOME": __import__("os").environ.get("HOME", "")},
+                command, cwd=ROOT, capture_output=True, text=True, timeout=timeout, check=False, env=env
             )
             timed_out = False
             exit_code = proc.returncode
@@ -162,9 +162,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run a bounded AIEngineeringStandard 2.0 runtime conformance scenario.")
     parser.add_argument("--agent", default="codex")
     parser.add_argument("--scenario", default=str(SCENARIO_DIR / "codex-runtime.scenario.json"))
-    parser.add_argument("--command", help="Explicit agent runtime command; required with --execute")
+    parser.add_argument("--command", help="Explicit agent runtime command; use {prompt} where the scenario prompt should be inserted")
     parser.add_argument("--runtime-version", default=None)
-    parser.add_argument("--prompt-flag", default="", help="Optional flag used by the agent CLI to receive the prompt, e.g. --prompt")
     parser.add_argument("--output", default="/tmp/runtime-conformance.json")
     parser.add_argument("--execute", action="store_true", help="Actually invoke the supplied runtime command")
     args = parser.parse_args()
