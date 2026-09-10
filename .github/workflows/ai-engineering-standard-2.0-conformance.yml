@@ -61,6 +61,9 @@ jobs:
       - name: Run recovery conformance harness dry run
         run: python scripts/validation/run_runtime_conformance.py --agent codex --scenario tests/validation/fixtures/conformance/codex-runtime-failure-recovery.scenario.json --output /tmp/codex-runtime-recovery.json
 
+      - name: Run Codex permission-denial scenario when runtime is available
+        run: python scripts/validation/adapters/codex_runtime.py --scenario tests/validation/fixtures/conformance/codex-runtime-permission-denial.scenario.json --execute --output /tmp/codex-runtime-permission-denial.json
+
       - name: Publish conformance results
         uses: actions/upload-artifact@v4
         with:
@@ -70,3 +73,4 @@ jobs:
             /tmp/codex-conformance.json
             /tmp/codex-runtime-conformance.json
             /tmp/codex-runtime-recovery.json
+            /tmp/codex-runtime-permission-denial.json
