@@ -28,6 +28,12 @@ jobs:
       - name: Validate portable Skills
         run: python scripts/validation/validate_portable_skill.py
 
+      - name: Validate Codex adapter syntax
+        run: python -m py_compile scripts/validation/adapters/codex_runtime.py
+
+      - name: Run Codex adapter discovery
+        run: python scripts/validation/adapters/codex_runtime.py --output /tmp/codex-runtime-adapter.json
+
       - name: Run Codex static conformance
         run: python scripts/validation/run_conformance.py --agent codex --check-only --output /tmp/codex-conformance.json
 
@@ -45,6 +51,7 @@ jobs:
         with:
           name: ai-engineering-standard-2.0-conformance
           path: |
+            /tmp/codex-runtime-adapter.json
             /tmp/codex-conformance.json
             /tmp/codex-runtime-conformance.json
             /tmp/codex-runtime-recovery.json
