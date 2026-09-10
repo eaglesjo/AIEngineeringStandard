@@ -181,6 +181,11 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
         raise SystemExit("ERROR: --command must not be empty")
     try:
         env = {"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", ""), "AIENGINEERINGSTANDARD_CONFORMANCE": "1", "AIENGINEERINGSTANDARD_CONFORMANCE_PROMPT_FILE": str(prompt_path)}
+        # Preserve only the credential needed for an explicitly configured live
+        # Codex run. The value is never copied into evidence or command output.
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        if openai_api_key:
+            env["OPENAI_API_KEY"] = openai_api_key
         try:
             proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout, check=False, env=env)
             timed_out, exit_code = False, proc.returncode
@@ -251,28 +256,25 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run a bounded AIEngineeringStandard 2.0 runtime conformance scenario.")
+    parser = argparse.ArgumentParser(description="Run bounded AIEngineeringStandard 2.0 runtime conformance evidence.")
     parser.add_argument("--agent", default="codex")
     parser.add_argument("--scenario", default=str(SCENARIO_DIR / "codex-runtime.scenario.json"))
-    parser.add_argument("--command")
-    parser.add_argument("--runtime-version", default=None)
+    parser.add_argument("--runtime-version", default="unavailable")
+    parser.add_argument("--command", default="")
     parser.add_argument("--output", default="/tmp/runtime-conformance.json")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     scenario = load_json(Path(args.scenario))
-    if scenario.get("agent") != args.agent:
-        raise SystemExit(f"ERROR: scenario agent {scenario.get('agent')!r} does not match --agent {args.agent!r}")
     if not args.execute:
-        evidence = {"schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": args.agent, "runtime": {"version": args.runtime_version, "invocation": "not executed"}, "repository": {"revision": git_value("rev-parse", "HEAD"), "dirty": git_value("status", "--porcelain") not in (None, "")}, "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]}, "started_at": now(), "finished_at": now(), "result": "UNTESTED", "exit_code": None, "timed_out": False, "stdout_excerpt": "", "stderr_excerpt": "", "protected_files": [], "observations": [make_observation("runtime-execution", "harness", "harness-integrity", "moderate", "NOT_OBSERVED", "runtime execution not requested")], "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS]}
+        result = {"schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"], "runtime": {"version": args.runtime_version, "invocation": args.command or "not executed"}, "scenario": {"id": scenario["scenario"]["id"], "description": scenario["scenario"]["description"]}, "result": "UNTESTED", "checks": [make_check(check_id, "UNTESTED", "runtime execution not requested") for check_id in CHECK_IDS], "observations": [make_observation("runtime-execution", "harness", "harness-integrity", "weak", "NOT_OBSERVED", "runtime execution not requested")]} 
     else:
         if not args.command:
-            raise SystemExit("ERROR: --command is required with --execute")
-        evidence = run(args, scenario)
-    output = Path(args.output)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(evidence, ensure_ascii=False, indent=2))
-    return 0 if evidence["result"] != "FAIL" else 1
+            raise SystemExit("ERROR: --execute requires --command")
+        result = run(args, scenario)
+    Path(args.output).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"Runtime conformance result: {result['result']}")
+    print(f"Evidence: {args.output}")
+    return 0 if result["result"] != "FAIL" else 1
 
 
 if __name__ == "__main__":
