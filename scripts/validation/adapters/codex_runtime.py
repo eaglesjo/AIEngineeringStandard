@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Codex runtime adapter for the AIEngineeringStandard 2.0 harness.
 
-The adapter intentionally does not guess authentication, sandbox, or permission
-settings. The caller supplies the Codex executable and its execution arguments.
+The adapter uses Codex's documented non-interactive ``codex exec`` surface.
+Runtime-specific policy remains configurable and is never inferred by the
+standard itself.
 """
 from __future__ import annotations
 
 import argparse
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -18,20 +20,35 @@ HARNESS = ROOT / "scripts" / "validation" / "run_runtime_conformance.py"
 DEFAULT_SCENARIO = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime.scenario.json"
 
 
-def executable() -> str:
+def executable() -> str | None:
     value = os.environ.get("CODEX_BIN", "codex")
-    resolved = shutil.which(value)
-    if not resolved:
-        raise SystemExit(f"ERROR: Codex executable not found: {value}. Set CODEX_BIN to the runtime executable.")
-    return resolved
+    return shutil.which(value)
 
 
-def version(binary: str) -> str:
-    proc = subprocess.run([binary, "--version"], cwd=ROOT, capture_output=True, text=True, check=False)
+def version(binary: str) -> str | None:
+    try:
+        proc = subprocess.run([binary, "--version"], cwd=ROOT, capture_output=True, text=True, check=False, timeout=15)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
     output = (proc.stdout or proc.stderr).strip()
     if proc.returncode != 0 or not output:
-        raise SystemExit("ERROR: unable to determine Codex runtime version with --version")
+        return None
     return output.splitlines()[0]
+
+
+def run_harness(args: argparse.Namespace, command: str | None, runtime_version: str | None) -> int:
+    cmd = [
+        sys.executable, str(HARNESS),
+        "--agent", "codex",
+        "--scenario", args.scenario,
+        "--runtime-version", runtime_version or "unavailable",
+        "--output", args.output,
+    ]
+    if command:
+        cmd.extend(["--command", command])
+    if args.execute and command:
+        cmd.append("--execute")
+    return subprocess.run(cmd, cwd=ROOT, check=False).returncode
 
 
 def main() -> int:
@@ -42,28 +59,34 @@ def main() -> int:
     args = parser.parse_args()
 
     binary = executable()
+    if not binary:
+        print("Codex executable: unavailable")
+        print("Result: UNTESTED (Codex runtime is not installed or CODEX_BIN is not resolvable)")
+        return run_harness(args, None, None)
+
     runtime_version = version(binary)
-    # CODEX_RUNTIME_ARGS is intentionally caller-controlled. The harness still
-    # bounds execution and records the exact invocation in its evidence output.
+    if not runtime_version:
+        print(f"Codex executable: {binary}")
+        print("Result: UNTESTED (Codex --version could not be determined)")
+        return run_harness(args, None, None)
+
+    # OpenAI documents ``codex exec`` for scripts/CI. It runs read-only by
+    # default, which is the safest baseline for this conformance probe.
+    # CODEX_RUNTIME_ARGS may add explicit, version-validated runtime settings.
     runtime_args = os.environ.get("CODEX_RUNTIME_ARGS", "").strip()
-    command = " ".join([binary, runtime_args, "{prompt}"]).strip()
+    parts = [binary, "exec", "--ephemeral"]
+    if runtime_args:
+        parts.extend(shlex.split(runtime_args))
+    parts.append("{prompt}")
+    command = shlex.join(parts)
 
     print(f"Codex executable: {binary}")
     print(f"Codex runtime version: {runtime_version}")
     print(f"Harness scenario: {args.scenario}")
     print(f"Runtime arguments source: CODEX_RUNTIME_ARGS={'set' if runtime_args else 'empty'}")
+    print("Sandbox baseline: Codex exec default read-only")
 
-    cmd = [
-        sys.executable, str(HARNESS),
-        "--agent", "codex",
-        "--scenario", args.scenario,
-        "--runtime-version", runtime_version,
-        "--command", command,
-        "--output", args.output,
-    ]
-    if args.execute:
-        cmd.append("--execute")
-    return subprocess.run(cmd, cwd=ROOT, check=False).returncode
+    return run_harness(args, command, runtime_version)
 
 
 if __name__ == "__main__":
