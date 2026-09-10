@@ -20,10 +20,14 @@ CHECK_IDS = [
     "failure-recovery",
     "evidence-reporting",
 ]
-VALID_RESULTS = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED"}
+VALID_RESULTS = {"PASS", "PARTIAL", "ADAPTER", "UNTESTED", "UNSUPPORTED", "FAIL"}
 
 
 def make_check(check_id: str, result: str, evidence: str, notes: str | None = None) -> dict[str, str]:
+    if check_id not in CHECK_IDS:
+        raise ValueError(f"Unknown conformance check id: {check_id}")
+    if result not in VALID_RESULTS:
+        raise ValueError(f"Invalid conformance check result: {result}")
     item = {"id": check_id, "result": result, "evidence": evidence}
     if notes:
         item["notes"] = notes
@@ -50,6 +54,7 @@ def static_conformance(agent_id: str) -> dict:
         "instruction-discovery",
         "PASS" if instruction_files and len(instruction_present) == len(instruction_files) else "FAIL",
         ", ".join(instruction_present) or "none",
+        "Static path presence only; runtime discovery was not exercised.",
     ))
 
     skill_locations = discovery.get("portable_skill_locations", [])
@@ -58,6 +63,7 @@ def static_conformance(agent_id: str) -> dict:
         "skill-discovery",
         "PASS" if skill_locations and len(skill_present) == len(skill_locations) else "FAIL",
         ", ".join(skill_present) or "none",
+        "Static path presence only; runtime discovery was not exercised.",
     ))
 
     skill_root = ROOT / ".agents" / "skills"
@@ -87,13 +93,14 @@ def static_conformance(agent_id: str) -> dict:
         make_check("evidence-reporting", "PASS", "Machine-readable conformance result generated from deterministic checks."),
     ])
 
+    overall = "FAIL" if any(check["result"] == "FAIL" for check in checks) else "UNTESTED"
     return {
         "schema_version": "2.0.0",
         "standard_version": str(profile.get("standard_version", "2.0")),
         "agent": str(agent.get("id", agent_id)),
         "runtime_version": profile.get("runtime", {}).get("version"),
         "tested_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "result": "UNTESTED",
+        "result": overall,
         "checks": checks,
     }
 
@@ -107,19 +114,25 @@ def validate_result(result: dict) -> None:
         raise ValueError("Conformance result schema_version must be 2.0.0")
     if result["result"] not in VALID_RESULTS:
         raise ValueError("Invalid conformance result")
-    ids = {item.get("id") for item in result["checks"]}
-    missing_checks = set(CHECK_IDS) - ids
+    ids = [item.get("id") for item in result["checks"]]
+    if len(ids) != len(set(ids)):
+        raise ValueError("Duplicate conformance check ids")
+    missing_checks = set(CHECK_IDS) - set(ids)
     if missing_checks:
         raise ValueError(f"Missing conformance checks: {sorted(missing_checks)}")
     for item in result["checks"]:
         if item.get("result") not in VALID_RESULTS:
             raise ValueError(f"Invalid check result for {item.get('id')}: {item.get('result')}")
+    expected_overall = "FAIL" if any(item["result"] == "FAIL" for item in result["checks"]) else "UNTESTED"
+    if result["result"] != expected_overall:
+        raise ValueError(f"Overall result {result['result']} does not match static check results; expected {expected_overall}")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run deterministic AIEngineeringStandard 2.0 static conformance checks.")
     parser.add_argument("--agent", default="codex", help="Agent profile id under profiles/agent")
     parser.add_argument("--output", help="Write the result JSON to this path; stdout is always emitted")
+    parser.add_argument("--check-only", action="store_true", help="Run checks and exit non-zero when a static contract check fails")
     args = parser.parse_args()
 
     result = static_conformance(args.agent)
@@ -130,7 +143,7 @@ def main() -> int:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         print(f"Conformance result written: {output}")
-    return 0
+    return 1 if args.check_only and result["result"] == "FAIL" else 0
 
 
 if __name__ == "__main__":
