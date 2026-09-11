@@ -1,0 +1,26 @@
+{
+  "selected_dependency": {
+    "name": "anchor-lib",
+    "version": "2.0.0"
+  },
+  "dependency_graph": {
+    "anchor-lib": {
+      "current_version": "1.5.0"
+    },
+    "compat-lib": {
+      "current_version": "1.0.0",
+      "constraints_from_selected": [">=2.0.0"]
+    },
+    "unrelated-lib": {
+      "current_version": "4.2.0"
+    }
+  },
+  "candidate_versions": {
+    "anchor-lib": ["1.5.0", "2.0.0", "2.1.0"],
+    "compat-lib": ["1.0.0", "2.0.0", "2.1.0"],
+    "unrelated-lib": ["4.2.0", "4.3.0"]
+  },
+  "expected_unrelated_versions": {
+    "unrelated-lib": "4.2.0"
+  }
+}
