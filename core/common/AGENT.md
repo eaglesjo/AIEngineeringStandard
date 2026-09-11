@@ -12,6 +12,8 @@ These rules apply to every supported project domain.
 8. After environment validation, remove unused execution branches and obsolete code unless multi-platform support is intentional.
 9. Long-running workloads should use validation, Early Stopping where meaningful, best Checkpoint, and Resume.
 10. Experiments should define a baseline, controlled variants, seeds, metrics, and resource tracking.
+11. When dependency conflicts occur, inspect the actual dependency graph and runtime before changing versions; resolve conservatively, smoke-test the affected boundary, validate regressions, lock the resolved state, and preserve a recovery path. Follow `core/validation/dependency-conflict-resolution-policy.md`.
+12. Do not use broad or unexplained dependency upgrades/downgrades merely to suppress resolver errors.
 
 ## Standard execution lifecycle
 
