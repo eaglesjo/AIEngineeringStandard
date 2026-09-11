@@ -10,13 +10,43 @@ It is additive to the 1.x standard and applies to Python packages, system packag
 
 Dependency changes are engineering changes, not installation conveniences. An agent must diagnose the environment and dependency graph before changing versions, must prefer the smallest compatible change, and must produce reproducible evidence that the resolved environment still works.
 
+When a developer explicitly selects a library or library version, that selection becomes a **compatibility anchor** for dependency analysis. The agent MUST evaluate the selected library's declared and observed compatibility constraints against the project's dependency graph before adding or changing related dependencies. The agent MUST align affected dependencies only as far as necessary to produce a compatible, validated environment; it MUST NOT silently replace the developer's selected library with another version merely to make resolution easier.
+
 The normative lifecycle is:
 
 ```text
-Discover → Detect → Measure → Resolve → Smoke Test → Lock → Implement → Validate → Record
+Select → Discover → Analyze → Detect → Measure → Resolve → Align → Smoke Test → Lock → Implement → Validate → Record
 ```
 
 ## Required behavior
+
+### 0. Developer-selected library compatibility alignment
+
+When a developer selects a library, framework, runtime component, or explicit version for use in the project, the agent MUST treat that selection as an explicit dependency intent before modifying the dependency set.
+
+The agent MUST:
+
+1. identify the selected library and requested version/range;
+2. inspect authoritative package metadata and declared dependency constraints when available;
+3. inspect the project's existing direct and transitive dependency graph;
+4. identify dependencies affected by the selected library's compatibility requirements;
+5. determine a compatible version set for the selected library and affected dependencies;
+6. prefer the smallest compatible change to existing dependencies;
+7. preserve the developer's selected library/version when a compatible solution exists;
+8. report the incompatibility instead of silently changing the selected library when no compatible solution exists under project constraints;
+9. validate the resulting environment through installation/resolution, smoke testing, and relevant regression testing;
+10. record the selected dependency, affected dependency changes, final resolved versions/constraints, and evidence supporting the alignment decision.
+
+The agent MUST distinguish between:
+
+- **selected dependency** — the library/version explicitly chosen by the developer;
+- **affected dependency** — an existing dependency whose version or constraint must change to remain compatible;
+- **transitive dependency** — a dependency introduced through another package;
+- **compatibility constraint** — a declared or observed version/runtime/platform requirement that bounds valid combinations.
+
+The agent MUST NOT interpret “make the selected library work” as permission to perform broad or unexplained upgrades/downgrades across unrelated dependencies.
+
+If multiple compatible dependency sets exist, the agent SHOULD prefer the set that minimizes unrelated changes, preserves existing known-good versions, and remains reproducible through the project's dependency mechanism.
 
 ### 1. Discover the actual environment
 
@@ -131,6 +161,7 @@ A dependency-resolution result SHOULD record enough information to reproduce and
 - repository revision;
 - runtime/environment identity;
 - dependency state before resolution;
+- developer-selected dependency intent;
 - conflict diagnosis;
 - candidate changes considered or applied;
 - final resolved versions/constraints;
@@ -173,13 +204,14 @@ Dependency resolution MUST NOT be inferred from static presence of a requirement
 A dependency conflict is considered **resolved** only when all applicable conditions are satisfied:
 
 1. The actual environment and dependency constraints were inspected.
-2. The conflict was diagnosed or bounded to a reproducible failure.
-3. A compatible candidate was selected without an unjustified broad dependency change.
-4. The affected packages install/resolve successfully.
-5. The affected runtime boundary passes a smoke test.
-6. Relevant regression validation passes.
-7. The final environment is reproducible through the project's dependency mechanism.
-8. The result and evidence are recorded.
+2. If a developer-selected dependency exists, its compatibility constraints were analyzed before related dependency changes.
+3. The conflict was diagnosed or bounded to a reproducible failure, or the selected dependency was proactively compatibility-checked.
+4. A compatible candidate was selected without an unjustified broad dependency change.
+5. The affected packages install/resolve successfully.
+6. The affected runtime boundary passes a smoke test.
+7. Relevant regression validation passes.
+8. The final environment is reproducible through the project's dependency mechanism.
+9. The result and evidence are recorded.
 
 If any required condition is not satisfied, the agent MUST report the state as unresolved, partial, or untested rather than claiming successful resolution.
 
