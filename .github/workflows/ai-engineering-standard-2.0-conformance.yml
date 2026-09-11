@@ -43,6 +43,9 @@ jobs:
       - name: Run dependency conflict resolution policy tests
         run: python tests/validation/test_dependency_conflict_policy.py
 
+      - name: Run executable dependency alignment contract tests
+        run: python -m unittest tests/validation/test_dependency_alignment_resolver.py
+
       - name: Validate portable Skills
         run: python scripts/validation/validate_portable_skill.py
 
