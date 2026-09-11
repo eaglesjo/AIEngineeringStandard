@@ -23,6 +23,9 @@ Apply rules in this order:
 - Do not expose secrets or credentials in source, fixtures, logs, or evidence artifacts.
 - Validate the smallest meaningful change first, then run the broader validation gate.
 - Record runtime version and repository revision for conformance evidence.
+- When dependency conflicts occur, inspect and measure the actual runtime and dependency graph before modifying versions.
+- Resolve dependency conflicts conservatively, avoid broad unexplained upgrades/downgrades, smoke-test the affected boundary, validate regressions, lock the resolved state, and preserve a recovery path.
+- Follow `core/validation/dependency-conflict-resolution-policy.md` for dependency conflict resolution.
 
 ## Standard execution lifecycle
 
