@@ -40,6 +40,9 @@ jobs:
       - name: Run permission conformance policy tests
         run: python tests/validation/test_permission_conformance_policy.py
 
+      - name: Run dependency conflict resolution policy tests
+        run: python tests/validation/test_dependency_conflict_policy.py
+
       - name: Validate portable Skills
         run: python scripts/validation/validate_portable_skill.py
 
