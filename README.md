@@ -16,7 +16,7 @@
 
 **Language:** English · [한국어](i18n/ko/README.md) · [Français](i18n/fr/README.md) · [Español](i18n/es/README.md) · [简体中文](i18n/zh-CN/README.md) · [日本語](i18n/ja/README.md) · [Русский](i18n/ru/README.md) · [Türkçe](i18n/tr/README.md) · [Deutsch](i18n/de/README.md) · [Italiano](i18n/it/README.md) · [Português](i18n/pt/README.md) · [العربية](i18n/ar/README.md) · [हिन्दी](i18n/hi/README.md) · [Bahasa Indonesia](i18n/id/README.md) · [Tiếng Việt](i18n/vi/README.md) · [ไทย](i18n/th/README.md) · [Nederlands](i18n/nl/README.md) · [Polski](i18n/pl/README.md) · [Svenska](i18n/sv/README.md) · [Українська](i18n/uk/README.md)
 
-> **Repository model:** `codingStandard-dev` is the public development and validation gate. Validated releases are promoted to [`eaglesjo/AIEngineeringStandard`](https://github.com/eaglesjo/AIEngineeringStandard). `codingStandard-private` is the Luna/internal continuity surface.
+> **Repository model:** `codingStandard-dev` is the canonical development, Luna activation, and validation gate. Validated releases are promoted to [`eaglesjo/AIEngineeringStandard`](https://github.com/eaglesjo/AIEngineeringStandard). `codingStandard-private` is retired from the active development flow and is not a runtime prerequisite.
 
 ## What is AI Engineering Standard?
 
