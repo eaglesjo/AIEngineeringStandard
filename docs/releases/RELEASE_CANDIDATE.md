@@ -1,25 +1,34 @@
 # Release Candidate
 
-This file marks the repository as ready for final pre-release validation. Do not publish a version tag until the required CI and platform checks pass.
+This file marks the `codingStandard-dev` branch as a **2.0.0 release-candidate preparation** surface. It does not authorize publication.
 
 ## Required checks
 
-- repository validation
-- multilingual i18n parity
-- installer integration, lifecycle, and fresh-project E2E tests
-- Windows PowerShell validation on `windows-latest`
-- deterministic RAG integration and quality gate
-- LLM QLoRA strategy and CPU memory smoke tests
-- Vision CPU memory smoke test
+- repository and architecture validation
+- policy and dependency-contract validation
+- multilingual i18n completeness, semantic parity, and consistency
+- installer integration, lifecycle, and fresh-project validation
+- Windows PowerShell validation
+- deterministic RAG integration and quality gates
+- LLM and Vision CPU memory smoke tests
 - Google Colab runtime and notebook validation
+- executable agent-conformance schema/policy validation
+- dependency alignment and isolated real pip resolver integration
+- final CI validation of the exact release-candidate commit
 
-## v1.13.0 focus
+## Release candidate invariants
 
-- installation manifest creation and ownership hashes
-- installation state and modified/missing file detection
-- update and obsolete-file reconciliation
-- safe uninstall and explicit force mode
+- Version metadata must consistently identify `2.0.0`.
+- Release documentation must describe the current 2.0 scope rather than a historical 1.x release.
+- Historical 1.x tags and commits must remain unchanged.
+- The candidate must originate from `codingStandard-dev` and be promoted only after applicable validation passes.
+- The final public candidate must receive a second full audit before release authorization.
+- Unavailable runtime evidence remains explicitly `UNTESTED` / `SKIPPED`.
 
 ## Release version
 
-1.13.0
+`2.0.0`
+
+## Publication gate
+
+**NOT AUTHORIZED YET.** Passing this preparation branch's checks is necessary but not sufficient. Promotion and the independent final public audit are still required before the `v2.0.0` tag/release may be created.

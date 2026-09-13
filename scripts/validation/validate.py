@@ -36,7 +36,11 @@ def check_python() -> None:
         except SyntaxError as exc: fail(f"Python syntax error in {path}: {exc}")
 def run_environment_tests() -> None:
     for path, label in (("test_environment.py", "Environment detection tests"), ("test_dependencies.py", "Dependency contract tests"), ("test_dependency_compatibility_policy.py", "Dependency compatibility policy tests"), ("test_dependency_alignment.py", "Dependency alignment tests")):
-        run_checker(ROOT / ("tests" / "validation" / path) if path.startswith("test_dependency_") else (ROOT / "scripts" / "development" / path), label)
+        if path.startswith("test_dependency_"):
+            checker_path = ROOT / "tests" / "validation" / path
+        else:
+            checker_path = ROOT / "scripts" / "development" / path
+        run_checker(checker_path, label)
     run_checker(ROOT / "tests" / "integration" / "test_dependency_resolver_pip.py", "Real pip dependency resolver tests")
     run_checker(ROOT / "scripts" / "validation" / "validate-domains.py", "Domain resource validation")
     run_checker(ROOT / "scripts" / "validation" / "validate_agent_routing.py", "Agent routing validation")

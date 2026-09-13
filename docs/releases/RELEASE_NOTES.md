@@ -1,49 +1,50 @@
-# 1.12.0 Release
+# 2.0.0 Release Notes
 
-This release strengthens codingStandard's runtime quality gates, multilingual resource integrity, and installer reliability for fresh projects.
+AI Engineering Standard 2.0.0 establishes the repository's agent-engineering and validation contracts as a cohesive, machine-readable release surface. It preserves the historical 1.x line while introducing explicit 2.0 architecture, conformance, provenance, and dependency-compatibility controls.
 
 ## Highlights
 
-- Align README documentation with the actual five-locale runtime resource contract.
-- Add deterministic RAG evaluation thresholds and regression quality gating.
-- Expand multilingual i18n runtime resource parity validation across `en`, `ko`, `zh-CN`, `ja`, and `ru`.
-- Add fresh-project installer end-to-end coverage for all runtime locales and installer domains.
-- Validate installer fallback, reinstall idempotence, and merge/overwrite/skip conflict behavior.
-- Run installer E2E validation across Ubuntu, macOS, and Windows PowerShell CI paths.
-- Bump development version to `1.12.0`.
+### Agent and Skill engineering
 
-## Validation
+- Add a canonical project-level `AGENTS.md` entrypoint and portable Skill contract.
+- Add agent profiles and documented integration paths for Codex, Claude Code, Gemini/Antigravity, Copilot, Cursor, Windsurf, Cline, Continue, Junie, Amazon Q, Aider, and related tooling.
+- Add explicit plugin and MCP capability documentation and discovery contracts.
 
-Final validation covers repository structure, language catalog, multilingual parity, routing, Colab runtime/notebooks, installer integration and fresh-project E2E, deterministic RAG evaluation, LLM/Vision smoke tests, and Windows PowerShell installer validation.
+### Architecture and policy
 
-## Scope
+- Add machine-readable project, architecture, policy, and agent profiles.
+- Make layer boundaries, dependency direction, runtime assumptions, and repository-wide policy explicit and machine-validatable.
+- Add dependency compatibility policy anchored to the developer-selected library/version.
+- Add deterministic dependency alignment resolution and isolated real pip resolver integration tests.
 
-No installer runtime behavior changes are included in this release preparation; the installer work is validation-focused.
+### Executable conformance
 
-## v1.13.0
+- Add conformance result and evidence schemas with explicit `PASS`, `PARTIAL`, `ADAPTER`, `UNTESTED`, `UNSUPPORTED`, and `FAIL` outcomes.
+- Add mandatory checks for instruction/Skill discovery and loading, plugin/MCP capability, permissions, task execution, validation, failure recovery, and evidence reporting.
+- Add security/provenance contracts and protected-operation integrity checks.
+- Add Codex runtime adapter and bounded runtime conformance execution when the Codex CLI is available.
 
-- Introduce a cross-platform installation manifest at `.codingstandard/installation.json`.
-- Record the installed version, locale, domain, source hashes, and installed file hashes.
-- Add installation state inspection with modified/missing file detection.
-- Add update commands that reapply the recorded installation configuration and refresh managed resources.
-- Add safe uninstall with modification protection and explicit `--force` recovery.
-- Keep the existing install CLI positional arguments compatible while routing both shell and PowerShell through one lifecycle engine.
+### Validation and reproducibility
 
-## v1.17.2
+- Expand the repository validation gate to cover the new 2.0 schemas, conformance fixtures, adapters, dependency alignment, and evidence mapping.
+- Preserve architecture, i18n, installer, Colab, RAG, LLM, Vision, and CPU smoke validation already established by the project.
+- Keep unavailable runtime capabilities explicitly marked as `UNTESTED` / `SKIPPED` rather than treating absence as success.
 
-### Repository architecture transition
+### Release boundary
 
-- Make `eaglesjo/codingStandard-dev` the canonical public development, validation, and release source of truth.
-- Keep `eaglesjo/codingStandard-private` Luna-only; it is no longer a source or release repository.
-- Preserve the existing `v1.17.1` release and historical Git history without rewriting or deleting it.
+- Formalize the release flow:
 
-### Quality and validation
+  `codingStandard-private → codingStandard-dev → AIEngineeringStandard`
 
-- Retain the architecture, policy, project-profile, repository-dependency, and layer-boundary contracts in the canonical source repository.
-- Validate the 20-locale runtime resource contract with resource completeness, semantic policy parity, and runtime/documentation consistency gates.
-- Keep the release gate covering environment contracts, installers, LLM/Vision CPU smoke tests, and related validation suites.
+- `codingStandard-private` is the Luna/internal continuity surface.
+- `codingStandard-dev` is the implementation and validation surface.
+- `AIEngineeringStandard` is the public release surface.
+- Public release must be created only from an exact validated public commit after the final audit gate.
 
-### Release model
+## Validation evidence
 
-- Bump the canonical development version to `1.17.2` only after the architecture transition is complete.
-- Promote validated releases from `codingStandard-dev` to `eaglesjo/AIEngineeringStandard`.
+The dependency-compatibility 2.0 scope was validated in development CI and promoted to the public repository. Final public conformance run `34683162767` completed successfully for all applicable executable checks. The live Codex CLI steps were skipped because the CLI was unavailable in the runner; this is an explicit evidence limitation, not a live-runtime pass.
+
+## Release gate for v2.0.0
+
+These notes describe the intended 2.0.0 release. The `v2.0.0` tag and GitHub Release remain blocked until the release-preparation changes pass development CI, are promoted to the public repository, and the final public candidate passes the required second full audit.

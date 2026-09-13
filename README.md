@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>v1.17.1 — Final Maintenance Release</strong>
+  <strong>v2.0.0 — Public Release Candidate</strong>
 </p>
 
 <p align="center">
@@ -16,98 +16,51 @@
 
 **Language:** English · [한국어](i18n/ko/README.md) · [Français](i18n/fr/README.md) · [Español](i18n/es/README.md) · [简体中文](i18n/zh-CN/README.md) · [日本語](i18n/ja/README.md) · [Русский](i18n/ru/README.md) · [Türkçe](i18n/tr/README.md) · [Deutsch](i18n/de/README.md) · [Italiano](i18n/it/README.md) · [Português](i18n/pt/README.md) · [العربية](i18n/ar/README.md) · [हिन्दी](i18n/hi/README.md) · [Bahasa Indonesia](i18n/id/README.md) · [Tiếng Việt](i18n/vi/README.md) · [ไทย](i18n/th/README.md) · [Nederlands](i18n/nl/README.md) · [Polski](i18n/pl/README.md) · [Svenska](i18n/sv/README.md) · [Українська](i18n/uk/README.md)
 
-> **Repository model:** `codingStandard-dev` is the public development and validation gate. Validated releases are promoted to [`eaglesjo/AIEngineeringStandard`](https://github.com/eaglesjo/AIEngineeringStandard). The private repository remains the development source of truth.
->
-> **Runtime resource languages:** 20 locales are validated for runtime resources: English, Korean, French, Spanish, Simplified Chinese, Japanese, Russian, Turkish, German, Italian, Portuguese, Arabic, Hindi, Indonesian, Vietnamese, Thai, Dutch, Polish, Swedish, and Ukrainian.
->
-> **v1.16 quality contract:** runtime locales must satisfy resource completeness, semantic policy parity, and runtime/documentation consistency before release promotion.
+> **Repository model:** `codingStandard-dev` is the public development and validation gate. Validated releases are promoted to [`eaglesjo/AIEngineeringStandard`](https://github.com/eaglesjo/AIEngineeringStandard). `codingStandard-private` is the Luna/internal continuity surface.
 
-## ✨ What is AI Engineering Standard?
+## What is AI Engineering Standard?
 
-`AI Engineering Standard` is a reusable engineering standard for AI-assisted development, model training, experimentation, LLM/Vision workflows, general ML/DL workflows, and AI coding agents.
+AI Engineering Standard is a reusable engineering standard for AI-assisted development, model training, experimentation, LLM/Vision workflows, general ML/DL workflows, and AI coding agents.
 
-It provides:
+Version 2.0 establishes a machine-readable architecture and policy contract, explicit agent/Skill routing, environment-aware runtime behavior, cross-platform installation lifecycle controls, multilingual runtime quality gates, executable conformance checks, and dependency-compatibility alignment rules.
 
-- canonical project instructions with thin per-tool adapters;
-- common ML/DL lifecycle guidance;
-- LLM and Vision domain guidance;
-- task-specific Skills;
-- environment and resource detection;
-- Google Colab execution/recovery policy;
-- cross-platform installers;
-- multilingual runtime resources and documentation;
-- validation and installer test suites;
-- architecture and policy profiles;
-- semantic policy intent validation;
-- runtime/documentation consistency validation;
-- reproducible training and experiment guidance.
+## 2.0.0 highlights
 
-## 🤖 Supported AI Development Tools
+- Canonical layered repository architecture with machine-readable project, architecture, and policy profiles.
+- Project-level `AGENTS.md` with common and domain-specific agent/Skill routing.
+- LLM, Vision, ML, and Google Colab lifecycle guidance with measured environment/resource resolution.
+- Cross-platform installer lifecycle with installation state, ownership hashes, update reconciliation, and protected uninstall behavior.
+- Multilingual runtime resource completeness, semantic policy parity, and runtime/documentation consistency validation across 20 runtime locales.
+- Architecture, policy, environment, installer, i18n, RAG, Colab, and CPU smoke validation gates.
+- Executable agent-conformance schema and policy with explicit PASS/PARTIAL/ADAPTER/UNTESTED/UNSUPPORTED/FAIL outcomes.
+- Codex runtime adapter and bounded evidence collection when the Codex CLI is available.
+- Dependency compatibility policy anchored to the developer-selected library/version, with deterministic alignment and isolated real pip resolver validation.
 
-The repository provides project-level adapters, instruction files, Skills, or documented integration paths for a broad set of AI development tools.
+## Supported AI development tools
 
-<table>
-  <tr>
-    <td align="center">🧑‍💻<br><strong>OpenAI Codex</strong></td>
-    <td align="center">🤖<br><strong>Claude Code</strong></td>
-    <td align="center">✨<br><strong>Gemini CLI</strong></td>
-    <td align="center">🐙<br><strong>GitHub Copilot</strong></td>
-  </tr>
-  <tr>
-    <td align="center">⌨️<br><strong>Cursor</strong></td>
-    <td align="center">🌊<br><strong>Windsurf</strong></td>
-    <td align="center">🐙<br><strong>Cline</strong></td>
-    <td align="center">🔄<br><strong>Continue</strong></td>
-  </tr>
-  <tr>
-    <td align="center">🧩<br><strong>JetBrains Junie</strong></td>
-    <td align="center">☁️<br><strong>Amazon Q Developer</strong></td>
-    <td align="center">🛠️<br><strong>Aider</strong></td>
-  </tr>
-</table>
+The repository provides documented adapters, instruction files, Skills, or integration paths for OpenAI Codex, Claude Code, Gemini CLI, GitHub Copilot, Cursor, Windsurf, Cline, Continue, JetBrains Junie, Amazon Q Developer, and Aider. Tool capabilities can differ by client and version.
 
-> Support means that the repository contains a documented adapter, instruction file, Skill, or integration path for the tool. Tool capabilities and integration details can differ by client and version.
+## Supported environments
 
-## 🐍 Supported Development Environments
-
-AI Engineering Standard is designed to work across local Python development, interactive notebook workflows, cloud notebooks, and AI-assisted IDE workflows.
-
-| Environment / Tool | Support | Use case |
-|---|---|---|
-| 🐍 **Python** | ✅ Core | Runtime detection, environment configuration, training, inference, validation, and automation |
-| 📓 **Jupyter Notebook** | ✅ Supported | Interactive experiments, analysis, training, debugging, and reproducible notebook workflows |
-| ☁️ **Google Colab** | ✅ Supported | Ephemeral cloud notebook execution, resource-aware experiments, durable checkpoints, and recovery |
-| 💻 **Visual Studio Code** | ✅ Supported | Python development, Jupyter notebooks, debugging, testing, and AI-assisted development |
-
-### Platform support
-
-| Platform | Role |
+| Environment | Status |
 |---|---|
-| **Linux** | Supported platform; the shell installer is designed for Linux-compatible environments |
-| **Ubuntu 24.04 LTS** | Linux reference environment used by CI validation |
-| **macOS** | Supported and validated by CI |
-| **Windows** | Supported and validated with Windows PowerShell and PowerShell 7 |
-| **Google Colab** | Supported as an ephemeral cloud execution target |
+| Python | Supported |
+| Jupyter Notebook | Supported |
+| Google Colab | Supported |
+| Visual Studio Code | Supported |
+| Linux | Supported |
+| macOS | Supported and CI-validated |
+| Windows PowerShell / PowerShell 7 | Supported and CI-validated |
 
-> **Important:** Linux is the supported platform category. **Ubuntu 24.04 LTS is the CI reference environment**, not a restriction that excludes other Linux distributions.
+## Quick start
 
-## 🚀 Quick Start
-
-Clone the public distribution repository in the project you want to configure:
+Clone the public distribution repository into the project you want to configure.
 
 ### Windows / PowerShell
 
 ```powershell
 git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
-```
-
-Explicit installation:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain all
-powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language ko -Domain ml
-powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain colab
 ```
 
 ### Linux / macOS
@@ -117,243 +70,61 @@ git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 ```
 
-Explicit installation:
+Available domains are `common`, `ml`, `llm`, `vision`, `colab`, and `all`. Existing files can be handled with the installer conflict policies; use dry-run mode to preview changes.
 
-```bash
-bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . en all ask false
-bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . ko ml overwrite false
-bash ./AIEngineeringStandard/scripts/installers/install-domains.sh . en colab overwrite false
-```
+## Installation lifecycle
 
-Arguments are:
+Successful installs record ownership and hashes in `.codingstandard/installation.json`. The installer supports state inspection, update/reconciliation, safe uninstall, and explicit force mode for recovery. PowerShell equivalents are provided for supported lifecycle commands.
 
-```text
-target language domain conflict-policy dry-run
-```
+See [`INSTALL.md`](INSTALL.md) for the complete installation contract.
 
-Available domains:
-
-```text
-common | ml | llm | vision | colab | all
-```
-
-Use `-DryRun` on PowerShell to preview changes. Existing files can use `-ConflictAction Ask|Merge|Overwrite|Skip`.
-
-### Installation lifecycle (v1.13.0)
-
-Every successful install records ownership and hashes in `.codingstandard/installation.json`.
-
-Inspect the installation:
-
-```bash
-bash ./AIEngineeringStandard/scripts/installers/state-domains.sh .
-```
-
-Update the recorded language/domain installation to the current release:
-
-```bash
-bash ./AIEngineeringStandard/scripts/installers/update-domains.sh .
-bash ./AIEngineeringStandard/scripts/installers/update-domains.sh . --policy overwrite
-```
-
-Safely uninstall managed files. Modified files are preserved unless force mode is explicitly selected:
-
-```bash
-bash ./AIEngineeringStandard/scripts/installers/uninstall-domains.sh .
-bash ./AIEngineeringStandard/scripts/installers/uninstall-domains.sh . --force
-```
-
-PowerShell equivalents are available as `state-domains.ps1`, `update-domains.ps1`, and `uninstall-domains.ps1`.
-
-For the full installation instructions, see [`INSTALL.md`](INSTALL.md).
-
-## 📦 Installation Domains
-
-| Domain | Installs |
-|---|---|
-| `common` | Common only |
-| `ml` | Common + general ML/DL lifecycle |
-| `llm` | Common + LLM |
-| `vision` | Common + Vision |
-| `colab` | Common + Google Colab runtime policy |
-| `all` | Common + ML + LLM + Vision + Colab |
-
-## 🧭 Repository Structure
-
-The repository uses a canonical layered structure. Tool-specific entrypoints are adapters; shared ML lifecycle policy lives in `domains/ml/`, LLM/Vision add domain-specific behavior, and `platform/colab/` adds ephemeral-runtime policy.
+## Repository structure
 
 ```text
 .
-├── core/
-│   └── common/
-├── domains/
-│   ├── ml/
-│   ├── llm/
-│   └── vision/
-├── platform/
-│   └── colab/
-├── examples/
-│   └── colab/
-├── docs/
-│   ├── development/
-│   └── releases/
+├── core/common/
+├── domains/{ml,llm,vision}/
+├── platform/colab/
+├── examples/colab/
+├── docs/{development,releases}/
 ├── i18n/
-│   ├── en/
-│   ├── ko/
-│   ├── fr/
-│   ├── es/
-│   ├── zh-CN/
-│   ├── ja/
-│   ├── ru/
-│   ├── tr/
-│   ├── de/
-│   ├── it/
-│   ├── pt/
-│   ├── ar/
-│   ├── hi/
-│   ├── id/
-│   ├── vi/
-│   ├── th/
-│   ├── nl/
-│   ├── pl/
-│   ├── sv/
-│   └── uk/
 ├── profiles/
-├── scripts/
-│   ├── development/
-│   ├── installers/
-│   └── validation/
-├── tests/
-│   └── validation/
+├── scripts/{development,installers,validation}/
+├── tests/validation/
 ├── .github/
 └── VERSION
 ```
 
-Legacy root-level `COMMON/`, `LLM/`, `MANUS/`, `VISION/`, release marker files, and old script paths are not part of the supported layout.
+Legacy root-level domain trees and obsolete script paths are not part of the supported 2.0 layout.
 
-## 🧠 Environment, ML, and Colab Policy
+## Architecture and policy profiles
 
-Runtime decisions are based on measured capabilities rather than a named machine profile. The shared profiler considers OS, Python/runtime, CPU, RAM, disk, accelerators, VRAM, CUDA/ROCm/MPS/DirectML, precision capability, and Jupyter/Colab state.
+`profiles/project.json` is the project-level contract. It resolves the canonical repository architecture and policy profiles, which define layer boundaries, dependency direction, runtime assumptions, validation, testing, reproducibility, platform, secrets, and network rules.
 
-The ML domain adds a common lifecycle for data validation, experiment design, evaluation, training, inference, distributed training, HPO, and model/artifact lineage. LLM and Vision inherit these lifecycle controls and add domain-specific Skills.
+Agents must inspect these profiles before implementation changes and apply stricter child/task policies when present.
 
-For Google Colab, `platform/colab/` treats the notebook VM as ephemeral: dependency bootstrap, measured resource resolution, smoke testing, durable checkpointing, artifact persistence, and resume validation are first-class controls.
+## Environment and ML policy
 
-For long-running ML work, use conservative runtime settings, Memory Smoke Tests, Early Stopping where meaningful, best Checkpoint, Resume, controlled ablation/experiment design, seed control, evaluation gates, resource tracking, and staged recovery from resource failures.
+The shared environment profiler measures OS, Python/runtime, CPU, RAM, disk, accelerators, VRAM, CUDA/ROCm/MPS/DirectML capability, precision support, and Jupyter/Colab state. Runtime recommendations are derived from measured capabilities rather than a named machine profile.
 
-## 🧩 Agent and Skill Routing
+The ML lifecycle covers data validation, experiment design, evaluation, training, inference, distributed training, HPO, reproducibility, resource tracking, and recovery. LLM and Vision inherit the common lifecycle and add domain-specific controls. Colab treats notebook runtimes as ephemeral and requires bootstrap, smoke testing, durable checkpointing, and resume validation for long-running work.
 
-```text
-Agent adapter
-  ↓
-AGENTS.md
-  ↓
-core/common
-  ↓
-ML / LLM / Vision domain
-  ↓
-Colab policy when applicable
-  ↓
-task-specific Skills
-```
+## Multilingual quality
 
-Cross-domain rules should be implemented once in `domains/ml/` rather than duplicated in each agent adapter or domain file.
+Twenty runtime locales are validated for resource completeness, semantic policy parity, and runtime/documentation consistency. The canonical policy-intent contract includes environment validation, resource measurement, early stopping, checkpoint recovery, and tests for behavior changes.
 
-## 🏗️ Architecture and Policy Profiles
+## Validation
 
-v1.14 introduced repository architecture and policy profiles. The profiles make layer boundaries, dependency direction, repository-wide rules, runtime assumptions, and scalability characteristics explicit and machine-readable.
-
-- `profiles/project.json` — project-level runtime, delivery, and scalability profile.
-- `profiles/architecture/repository-standard.json` — canonical layers, path roots, allowed and forbidden dependency directions.
-- `profiles/policies/repository-default.json` — repository-wide validation, testing, reproducibility, platform, secrets, and network rules.
-
-The architecture validator rejects forbidden and undeclared cross-layer dependencies while allowing declared dependency edges and same-layer imports.
-
-See [`docs/development/ARCHITECTURE_PROFILES.md`](docs/development/ARCHITECTURE_PROFILES.md), [`docs/development/POLICY_INHERITANCE.md`](docs/development/POLICY_INHERITANCE.md), and [`docs/development/PROJECT_PROFILES.md`](docs/development/PROJECT_PROFILES.md).
-
-## 🌐 i18n Quality and Semantic Policy
-
-v1.16 extends the multilingual contract from resource availability to **quality and semantic parity** across all 20 runtime locales.
-
-The quality contract has three gates:
-
-1. **Resource completeness** — required localized resources exist and map to canonical English resources.
-2. **Semantic policy parity** — each runtime locale expresses the required policy intents using locale-specific vocabulary rather than relying on sentence-by-sentence translation equality.
-3. **Runtime/documentation consistency** — locale documentation accurately describes the current runtime contract and locale catalog.
-
-The canonical policy intent vocabulary currently covers:
-
-- `environment.validate`
-- `resources.memory.measure`
-- `tasks.early_stopping`
-- `recovery.checkpoint`
-- `behavior_change.tests`
-
-Runtime locales must achieve quality grade **A** before release promotion.
-
-See [`i18n/README.md`](i18n/README.md) for the localization contract.
-
-## 🧪 Validation
-
-Run the relevant checks before publishing a release:
+Before release promotion, run the repository's applicable validation gates. The primary validation entrypoint is:
 
 ```bash
 python scripts/validation/validate.py
-python scripts/validation/check_i18n.py
-python scripts/validation/check_i18n_quality.py
-python scripts/validation/check_i18n_consistency.py
-python scripts/installers/test_installers.py
 ```
 
-The release gate validates architecture, repository structure, environment contracts, installers, i18n resource completeness, semantic parity, runtime/documentation consistency, and CPU smoke tests.
+Additional checks cover i18n quality/consistency, installer lifecycle behavior, architecture/policy contracts, deterministic RAG regression, Colab notebooks, and LLM/Vision CPU smoke tests. GitHub Actions provides cross-platform execution evidence.
 
-For ML workloads, run the relevant domain Memory Smoke Test before long-running training. For Colab, use the one-click notebooks below from a fresh runtime.
+For the release process and candidate gates, see [`docs/releases/RELEASE.md`](docs/releases/RELEASE.md), [`docs/releases/RELEASE_STATUS.md`](docs/releases/RELEASE_STATUS.md), and [`docs/releases/RELEASE_CANDIDATE.md`](docs/releases/RELEASE_CANDIDATE.md).
 
-### ☁️ Google Colab — one-click validation
+## Release provenance
 
-Open the notebook directly from GitHub in Google Colab. No private-repository credentials are required for the public distribution repository.
-
-| Validation | Purpose | Colab |
-|---|---|---|
-| Full AI Engineering Standard | Runtime, environment, LLM/Vision smoke tests and repository validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/codingstandard_colab_test.ipynb) |
-| Clean runtime | Fresh-runtime environment and checkpoint/restore smoke test | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/clean_runtime_validation.ipynb) |
-| LLM QLoRA | 4-bit/NF4 + PEFT/LoRA runtime validation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/llm_qlora_validation.ipynb) |
-| RAG | Dense embeddings + top-k retrieval + grounded prompt + generation | [Open in Colab](https://colab.research.google.com/github/eaglesjo/AIEngineeringStandard/blob/main/tests/colab/rag_validation.ipynb) |
-
-> Recommended first test: **Full AI Engineering Standard**. For the RAG capability specifically, run **RAG** in a fresh Colab runtime.
-
-### Platform validation
-
-GitHub Actions validates the repository on macOS and Ubuntu 24.04 LTS. Windows installer integration is validated using both Windows PowerShell and PowerShell 7. Installer tests cover the current multilingual runtime/resource contract, Common/ML/LLM/Vision/Colab/All, dry-run, merge preservation, Unicode/space paths, manifest lifecycle, and protected uninstall behavior.
-
-## 📚 Documentation
-
-- [Installation Guide](INSTALL.md)
-- [Korean README](i18n/ko/README.md)
-- [Language Resources](i18n/README.md)
-- [Architecture Profiles](docs/development/ARCHITECTURE_PROFILES.md)
-- [Policy Inheritance](docs/development/POLICY_INHERITANCE.md)
-- [Project Profiles](docs/development/PROJECT_PROFILES.md)
-- [Scalability Architecture](docs/development/SCALABILITY_ARCHITECTURE.md)
-- [Common Agent Rules](core/common/AGENT.md)
-- [ML Agent Rules](domains/ml/AGENT.md)
-- [ML Skill](domains/ml/SKILL.md)
-- [ML Environment](domains/ml/ENVIRONMENT.md)
-- [LLM Agent Rules](domains/llm/AGENT.md)
-- [LLM Skill](domains/llm/SKILL.md)
-- [LLM Environment](domains/llm/ENVIRONMENT.md)
-- [Vision Agent Rules](domains/vision/AGENT.md)
-- [Vision Skill](domains/vision/SKILL.md)
-- [Vision Environment](domains/vision/ENVIRONMENT.md)
-- [Colab Agent Rules](platform/colab/AGENT.md)
-- [Colab Skill](platform/colab/SKILL.md)
-- [Windows Installer Test](scripts/installers/test_installers_windows.ps1)
-- [Colab Validation](tests/colab/README.md)
-
-## 📄 License
-
-This project is released under the [MIT License](LICENSE).
-
-## 🔗 Public Distribution
-
-Validated releases are promoted from this development repository after the full validation gate passes. The private repository remains the source of truth, while `codingStandard-dev` serves as the public development and CI gate. `AIEngineeringStandard` is the official stable public distribution repository.
+`codingStandard-dev` is the source used for implementation and validation. Only validated commits are promoted to the public distribution repository. The public `AIEngineeringStandard` repository is the release surface; this development repository is not itself the final public distribution identity.

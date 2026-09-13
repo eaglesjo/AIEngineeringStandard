@@ -1,21 +1,35 @@
-Release development target: 1.17.2.
+# Release Status
 
-Status: release preparation after repository architecture transition. `codingStandard-dev` is now the canonical development, validation, and release source of truth; validated releases are promoted to `eaglesjo/AIEngineeringStandard`. `codingStandard-private` is Luna-only and is not a release source.
+Release development target: `2.0.0`.
 
-Validation focus:
+Status: **pre-release preparation**. `codingStandard-dev` main is the implementation and validation surface for the release candidate. A validated result may be promoted to `eaglesjo/AIEngineeringStandard`; no public release tag is created by this repository state alone.
+
+## Validation focus
+
 - canonical repository architecture and policy profile validation
 - repository dependency and layer-boundary validation
-- multilingual runtime resource completeness and semantic policy parity across 20 runtime locales
-- runtime/documentation consistency validation
 - environment contract and resource detection validation
-- installer dry-run/merge/overwrite/skip and lifecycle validation
-- installation manifest, update, obsolete-file reconciliation, and protected uninstall behavior
+- multilingual runtime resource completeness, semantic policy parity, and runtime/documentation consistency
+- installer dry-run, merge/overwrite/skip, manifest, update, obsolete-file reconciliation, and protected uninstall behavior
 - LLM and Vision CPU memory smoke tests
-- Colab runtime and notebook validation
+- Google Colab runtime and notebook validation
 - deterministic RAG regression and quality-gate coverage
-- final release-gate validation before creating `v1.17.2`
+- executable agent-conformance schema/policy validation
+- dependency compatibility policy and deterministic resolver validation
+- isolated real pip resolver integration validation
+- final release-gate validation on the exact release-candidate commit
 
-Release invariants:
-- preserve the existing `v1.17.1` tag and historical commits
-- do not restore AI Engineering Standard source or release workflows to `codingStandard-private`
-- promote only from validated `codingStandard-dev` source to `eaglesjo/AIEngineeringStandard`
+## Release invariants
+
+- Preserve all historical tags and commits, including the existing 1.x history.
+- Do not move AI Engineering Standard source or release responsibilities back into `codingStandard-private`.
+- Implement and validate release changes in `codingStandard-dev` before promotion.
+- Promote only an exact validated development commit to `eaglesjo/AIEngineeringStandard`.
+- Perform a second full audit on the final public candidate before creating `v2.0.0`.
+- Do not describe unavailable runtime evidence as passed; retain `UNTESTED` / `SKIPPED` where applicable.
+
+## Current gate
+
+`v2.0.0` tag/release: **NOT AUTHORIZED YET**.
+
+Required sequence: preparation → development CI → pre-promotion audit → promotion → final public full audit → release authorization → tag/release.
