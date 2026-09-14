@@ -13,7 +13,7 @@ AI Engineering Standard 是一套可复用的工程标准，面向 AI 辅助开�
 - 机器可读的架构与策略契约，以及明确的 Agent/Skill 路由。
 - 基于实际环境检测和资源测量的运行策略。
 - 跨平台安装、更新、状态管理与安全卸载生命周期。
-- 对 20 个 runtime locale 进行资源完整性、语义一致性和文档一致性验证。
+- 对 20 个运行时 locale 进行资源完整性、语义一致性和文档一致性验证。
 - AI 代码质量验证、AI/LLM 评估、证据溯源与可复现性契约。
 - 覆盖 ML、LLM、Vision 和 Google Colab 的执行与验证标准。
 
@@ -35,8 +35,8 @@ powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\install
 ## 验证
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 安装详情请参阅 [`INSTALL.md`](../../INSTALL.md)，发布流程请参阅 [`RELEASE.md`](../../docs/releases/RELEASE.md)。
