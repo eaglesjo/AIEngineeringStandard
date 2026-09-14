@@ -1,0 +1,28 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "fixture-evaluation-valid",
+  "evaluation": {"method": "deterministic", "deterministic": true},
+  "cases": [
+    {
+      "id": "case-1",
+      "input": "Return a concise answer.",
+      "expected_criteria": [
+        {"id": "criterion-1", "result": "PASS", "evidence": "required fact present"},
+        {"id": "criterion-2", "result": "PASS", "evidence": "response stayed concise"}
+      ],
+      "score": 1.0,
+      "evidence": "deterministic criterion results recorded"
+    },
+    {
+      "id": "case-2",
+      "input": "Return the required format.",
+      "expected_criteria": [
+        {"id": "criterion-1", "result": "PASS", "evidence": "format matched"},
+        {"id": "criterion-2", "result": "FAIL", "evidence": "optional field absent"}
+      ],
+      "score": 0.5,
+      "evidence": "deterministic partial score recorded"
+    }
+  ],
+  "acceptance": {"status": "ACCEPTED", "threshold": 0.75, "basis": "overall score 0.75 meets threshold"}
+}

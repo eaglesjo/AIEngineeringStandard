@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/eaglesjo/AIEngineeringStandard/blob/main/core/validation/2.0-acceptance.schema.json",
+  "title": "AI Engineering Standard 2.0 Cross-Area Acceptance Evidence",
+  "type": "object",
+  "required": ["schema_version", "candidate", "areas", "acceptance"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "2.0.0"},
+    "candidate": {
+      "type": "object",
+      "required": ["revision", "dirty"],
+      "properties": {
+        "revision": {"type": "string", "minLength": 7},
+        "dirty": {"type": "boolean", "const": false}
+      },
+      "additionalProperties": false
+    },
+    "areas": {
+      "type": "object",
+      "required": ["code_quality", "evaluation", "provenance", "reproducibility"],
+      "properties": {
+        "code_quality": {"$ref": "ai-code-quality.schema.json"},
+        "evaluation": {"$ref": "ai-evaluation.schema.json"},
+        "provenance": {"$ref": "conformance-evidence.schema.json"},
+        "reproducibility": {"$ref": "reproducibility.schema.json"}
+      },
+      "additionalProperties": false
+    },
+    "acceptance": {
+      "type": "object",
+      "required": ["status", "basis"],
+      "properties": {
+        "status": {"type": "string", "enum": ["ACCEPTED", "REJECTED", "INCOMPLETE"]},
+        "basis": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

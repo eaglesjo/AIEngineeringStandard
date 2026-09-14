@@ -3,7 +3,7 @@
   "$id": "https://github.com/eaglesjo/AIEngineeringStandard/blob/main/core/validation/conformance-evidence.schema.json",
   "title": "AIEngineeringStandard 2.0 Runtime Conformance Evidence",
   "type": "object",
-  "required": ["schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "started_at", "finished_at", "result", "observations", "checks"],
+  "required": ["schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "trace", "started_at", "finished_at", "result", "observations", "checks"],
   "properties": {
     "schema_version": {"type": "string", "const": "2.0.0"},
     "standard_version": {"type": "string", "pattern": "^2\\.[0-9]+$"},
@@ -32,6 +32,16 @@
       "properties": {
         "id": {"type": "string", "minLength": 1},
         "description": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "trace": {
+      "type": "object",
+      "required": ["action_id"],
+      "properties": {
+        "action_id": {"type": "string", "minLength": 1},
+        "parent_action_id": {"type": ["string", "null"], "minLength": 1},
+        "evidence_id": {"type": "string", "minLength": 1}
       },
       "additionalProperties": false
     },

@@ -1,0 +1,19 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "fixture-valid",
+  "candidate": {
+    "revision": "fixture-revision",
+    "dirty": false
+  },
+  "checks": [
+    {"id": "scope", "result": "PASS", "evidence": "scope reviewed"},
+    {"id": "focused_test", "result": "PASS", "evidence": "focused test passed"},
+    {"id": "quality_check", "result": "PASS", "evidence": "quality check passed"},
+    {"id": "broader_validation", "result": "PASS", "evidence": "broader validation passed"},
+    {"id": "review", "result": "PASS", "evidence": "review completed"}
+  ],
+  "acceptance": {
+    "status": "ACCEPTED",
+    "basis": "all required checks passed on a clean candidate"
+  }
+}

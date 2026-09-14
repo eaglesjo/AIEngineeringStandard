@@ -11,11 +11,14 @@ A runtime evidence result MUST identify:
 - runtime version/identity;
 - repository revision (`git rev-parse HEAD` or equivalent immutable revision);
 - scenario ID and description;
+- trace identity: unique `action_id`, optional `parent_action_id`, and unique `evidence_id`;
 - start and finish timestamps;
 - invocation boundary used by the adapter;
 - check-level results;
 - observation source, method, evidence level, and result;
 - protected-file integrity state when a protected target is part of the scenario.
+
+`action_id` identifies one development/runtime action. `parent_action_id` links a child action to the action that caused or delegated it. `evidence_id` identifies the evidence record itself. These identifiers are trace metadata only; they do not encode a provider, model, or implementation technology.
 
 ## Trust levels
 
@@ -30,6 +33,8 @@ A structurally valid JSON document is not automatically trusted evidence.
 Evidence may promote a conformance result only when the observation source and evidence level support the claimed behavior. Harness integrity can establish repository-state facts, but cannot establish an agent runtime capability that was never observed.
 
 `PASS` evidence MUST include at least one `OBSERVED` observation at moderate or strong evidence level, with direct-runtime evidence required for runtime capability claims.
+
+An acceptance or release claim MUST be traceable to the evidence records used to establish it. Evidence from an unrelated action or revision MUST NOT be silently reused.
 
 ## Immutable release evidence
 

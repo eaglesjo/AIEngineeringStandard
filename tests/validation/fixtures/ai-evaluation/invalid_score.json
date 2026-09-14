@@ -1,0 +1,18 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "fixture-evaluation-invalid",
+  "evaluation": {"method": "deterministic", "deterministic": true},
+  "cases": [
+    {
+      "id": "case-1",
+      "input": "Return the required format.",
+      "expected_criteria": [
+        {"id": "criterion-1", "result": "PASS", "evidence": "format matched"},
+        {"id": "criterion-2", "result": "FAIL", "evidence": "required field absent"}
+      ],
+      "score": 1.0,
+      "evidence": "intentionally invalid score"
+    }
+  ],
+  "acceptance": {"status": "ACCEPTED", "threshold": 0.5, "basis": "intentionally invalid: score does not match criteria"}
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "fixture-invalid-not-all-pass",
+  "candidate": {
+    "revision": "fixture-revision",
+    "dirty": false
+  },
+  "checks": [
+    {"id": "scope", "result": "PASS", "evidence": "scope reviewed"},
+    {"id": "focused_test", "result": "FAIL", "evidence": "focused test failed"},
+    {"id": "quality_check", "result": "PASS", "evidence": "quality check passed"},
+    {"id": "broader_validation", "result": "PASS", "evidence": "broader validation passed"},
+    {"id": "review", "result": "PASS", "evidence": "review completed"}
+  ],
+  "acceptance": {
+    "status": "ACCEPTED",
+    "basis": "intentionally invalid: acceptance despite failed check"
+  }
+}

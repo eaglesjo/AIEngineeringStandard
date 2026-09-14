@@ -1,0 +1,20 @@
+{
+  "schema_version": "2.0.0",
+  "task_id": "fixture-repro-valid",
+  "experiment": {
+    "experiment_id": "exp-001",
+    "variant": "baseline",
+    "seed": 42,
+    "config_hash": "0123456789abcdef",
+    "model_revision": "model-r1",
+    "dataset_revision": "dataset-r1",
+    "environment_profile": "python-3.11",
+    "git_revision": "abcdef1234567",
+    "dirty": false
+  },
+  "artifacts": [
+    {"id": "input-1", "kind": "input", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "source": "fixture", "revision": "r1"},
+    {"id": "output-1", "kind": "output", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "source": "fixture", "revision": "r1"}
+  ],
+  "acceptance": {"status": "REPRODUCIBLE", "basis": "clean revision, complete experiment identity, and immutable artifact digests"}
+}

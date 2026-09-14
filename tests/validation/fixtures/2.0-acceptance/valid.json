@@ -1,0 +1,11 @@
+{
+  "schema_version": "2.0.0",
+  "candidate": {"revision": "abcdef1234567890", "dirty": false},
+  "areas": {
+    "code_quality": {"candidate": {"revision": "abcdef1234567890", "dirty": false}, "checks": [{"result": "PASS"}], "acceptance": {"status": "ACCEPTED"}},
+    "evaluation": {"evaluation": {"deterministic": true}, "cases": [{"score": 1.0}], "acceptance": {"status": "ACCEPTED", "threshold": 1.0}},
+    "provenance": {"repository": {"revision": "abcdef1234567890"}, "result": "PASS", "trace": {"action_id": "a1", "evidence_id": "e1"}, "observations": [{"result": "OBSERVED", "evidence_level": "strong"}]},
+    "reproducibility": {"experiment": {"git_revision": "abcdef1234567890", "dirty": false}, "artifacts": [{"id": "x", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}], "acceptance": {"status": "REPRODUCIBLE"}}
+  },
+  "acceptance": {"status": "ACCEPTED", "basis": "all four areas match the same clean revision"}
+}
