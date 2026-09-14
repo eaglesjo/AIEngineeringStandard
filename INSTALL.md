@@ -186,24 +186,26 @@ The policy treats hosted notebook sessions as ephemeral and requires runtime det
 
 ## 10. Validation After Installation
 
+Run validation from the directory containing the cloned `AIEngineeringStandard` repository:
+
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 For LLM:
 
 ```bash
-python domains/llm/memory_smoke_test.py --cpu --steps 2
+python ./AIEngineeringStandard/domains/llm/memory_smoke_test.py --cpu --steps 2
 ```
 
 For Vision:
 
 ```bash
-python domains/vision/memory_smoke_test.py --device auto --image-size 224 --batch-size 1 --steps 2
+python ./AIEngineeringStandard/domains/vision/memory_smoke_test.py --device auto --image-size 224 --batch-size 1 --steps 2
 ```
 
-For Colab, run the validation notebook under `tests/colab/` from a fresh runtime and verify checkpoint persistence/resume behavior.
+For Colab, run the validation notebook under `AIEngineeringStandard/tests/colab/` from a fresh runtime and verify checkpoint persistence/resume behavior.
 
 ## Language-specific documentation
 
