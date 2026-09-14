@@ -1,6 +1,6 @@
 # AI Engineering Standard — Polski
 
-> **Standardy inżynierii tworzenia, trenowania i agentów AI**
+> **Standardy inżynierii rozwoju, trenowania i agentów AI**
 >
 > **Wersja:** v2.0.0 — publiczny kandydat do wydania
 
@@ -13,7 +13,7 @@ AI Engineering Standard to wielokrotnego użytku standard inżynieryjny dla prog
 - Maszynowo czytelne kontrakty architektury i polityk oraz jawne routowanie Agent/Skill.
 - Zachowanie środowiska uruchomieniowego oparte na faktycznie wykrytej konfiguracji i dostępnych zasobach.
 - Wieloplatformowy cykl życia instalacji, aktualizacji i bezpiecznego odinstalowania.
-- Walidacja kompletności zasobów, parytetu semantycznego i spójności dokumentacji dla 20 locale runtime.
+- Walidacja kompletności zasobów, parytetu semantycznego i spójności dokumentacji dla 20 lokalizacji runtime.
 - Weryfikacja jakości kodu AI, ewaluacja AI/LLM, proweniencja dowodów i kontrakty odtwarzalności.
 - Standardy uruchamiania i walidacji dla ML, LLM, Vision i Google Colab.
 
