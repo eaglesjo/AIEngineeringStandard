@@ -35,8 +35,8 @@ Tillgängliga domäner: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
 ## Validering
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Se [`INSTALL.md`](../../INSTALL.md) för installation och [`RELEASE.md`](../../docs/releases/RELEASE.md) för releaseprocessen.
