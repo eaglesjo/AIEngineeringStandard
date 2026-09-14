@@ -35,8 +35,8 @@ Domain yang tersedia: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
 ## Validasi
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Lihat [`INSTALL.md`](../../INSTALL.md) untuk instalasi dan [`RELEASE.md`](../../docs/releases/RELEASE.md) untuk proses rilis.
