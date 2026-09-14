@@ -14,7 +14,7 @@ AI Engineering Standard; yapay zekâ destekli geliştirme, model eğitimi, deney
 - Gerçekte algılanan ortam ve kaynaklara dayalı çalışma politikaları.
 - Platformlar arası kurulum, güncelleme ve güvenli kaldırma yaşam döngüsü.
 - 20 runtime locale için kaynak bütünlüğü, anlamsal eşdeğerlik ve dokümantasyon tutarlılığı doğrulaması.
-- AI kod kalitesi doğrulaması, AI/LLM değerlendirmesi, kanıt provenansı ve yeniden üretilebilirlik sözleşmeleri.
+- AI kod kalitesi doğrulaması, AI/LLM değerlendirmesi, kanıtların kökeni ve izlenebilirliği ile yeniden üretilebilirlik sözleşmeleri.
 - ML, LLM, Vision ve Google Colab için çalıştırma ve doğrulama standartları.
 
 ## Hızlı başlangıç
@@ -35,8 +35,8 @@ Kullanılabilir alanlar: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
 ## Doğrulama
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Kurulum ayrıntıları için [`INSTALL.md`](../../INSTALL.md), yayın süreci için [`RELEASE.md`](../../docs/releases/RELEASE.md) dosyasına bakın.
