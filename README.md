@@ -114,7 +114,7 @@ Twenty runtime locales are validated for resource completeness, semantic policy 
 The primary validation entrypoint is:
 
 ```bash
-python scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
 ```
 
 Additional checks cover i18n quality/consistency, installer lifecycle behavior, architecture/policy contracts, deterministic RAG regression, Colab notebooks, LLM/Vision CPU smoke tests, AI code quality, AI/LLM evaluation, evidence provenance, and reproducibility.
