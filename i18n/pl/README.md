@@ -35,8 +35,8 @@ Dostępne domeny: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
 ## Walidacja
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Instalacja: [`INSTALL.md`](../../INSTALL.md). Proces wydania: [`RELEASE.md`](../../docs/releases/RELEASE.md).
