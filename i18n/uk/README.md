@@ -13,7 +13,7 @@ AI Engineering Standard — це багаторазово використову
 - Машинно читані контракти архітектури та політик із чіткою маршрутизацією Agent/Skill.
 - Поведінка під час виконання на основі фактично виявленого середовища та доступних ресурсів.
 - Кросплатформений життєвий цикл встановлення, оновлення та безпечного видалення.
-- Перевірка повноти ресурсів, семантичної паритетності та узгодженості документації для 20 runtime locale.
+- Перевірка повноти ресурсів, семантичної відповідності та узгодженості документації для 20 runtime locale.
 - Перевірка якості AI-коду, оцінювання AI/LLM, походження доказів і контракти відтворюваності.
 - Стандарти виконання та перевірки для ML, LLM, Vision і Google Colab.
 
@@ -35,8 +35,8 @@ powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\install
 ## Перевірка
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Інструкції зі встановлення: [`INSTALL.md`](../../INSTALL.md). Процес релізу: [`RELEASE.md`](../../docs/releases/RELEASE.md).
