@@ -1,0 +1,19 @@
+{
+  "contract_version": "1.0",
+  "invocation_id": "INV-MA-RECOVERY-002",
+  "parent_invocation_id": "INV-MA-RECOVERY-001",
+  "task_id": "MA-001",
+  "agent": {"role": "debugger", "version": "2.0"},
+  "stage": "coding_execution",
+  "state": "EDITING",
+  "attempt": 2,
+  "objective": "apply a bounded corrective change after an Executor failure",
+  "workspace": {"repository": "eaglesjo/codingStandard-dev", "ref": "feat/multi-agent-ai-developer-v2"},
+  "allowed_scope": {"paths": ["src/"], "operations": ["read", "write"]},
+  "permissions": {"read": true, "write": true, "execute": false, "web": false, "runtime_observe": false},
+  "context": {"durable_state_refs": ["docs/development/state/CURRENT.md", "docs/development/state/HISTORY.md"], "evidence_refs": ["executor-failure-001"], "input_artifact_refs": ["minimal-reproduction"]},
+  "constraints": ["do not repeat the failed action without changed inputs", "executor owns execution"],
+  "required_evidence": ["failure classification", "owning boundary", "corrective diff"],
+  "stop_conditions": ["failure cannot be safely classified", "scope exceeds contract"],
+  "result": {"status": "PASS", "findings": [], "changes": [{"path": "src/", "operation": "write", "reason": "minimal corrective change"}], "evidence": [{"type": "recovery", "value": "Executor FAILED -> Debugger attempt=2 -> Executor -> Reviewer -> PASS"}], "risks": [], "blockers": [], "artifacts": [], "next_action": "executor"}
+}

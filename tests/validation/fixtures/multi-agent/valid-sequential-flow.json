@@ -1,0 +1,18 @@
+{
+  "contract_version": "1.0",
+  "invocation_id": "INV-MA-VALID-001",
+  "task_id": "MA-001",
+  "agent": {"role": "orchestrator", "version": "2.0"},
+  "stage": "validation_visualization",
+  "state": "VALIDATING",
+  "attempt": 1,
+  "objective": "validate the representative bounded development flow",
+  "workspace": {"repository": "eaglesjo/codingStandard-dev", "ref": "feat/multi-agent-ai-developer-v2"},
+  "allowed_scope": {"paths": [".agents/agents/", "docs/development/multi-agent/", "scripts/validation/"], "operations": ["read"]},
+  "permissions": {"read": true, "write": false, "execute": false, "web": false, "runtime_observe": false},
+  "context": {"durable_state_refs": ["docs/development/state/CURRENT.md", "docs/development/state/TASKS.md"], "evidence_refs": ["editor-change", "executor-test"], "input_artifact_refs": []},
+  "constraints": ["bounded execution", "single global state authority"],
+  "required_evidence": ["contract validation", "execution result", "review result"],
+  "stop_conditions": ["invalid contract", "scope violation", "missing evidence"],
+  "result": {"status": "PASS", "findings": [], "changes": [], "evidence": [{"type": "flow", "value": "File Picker -> Planner -> Editor -> Executor -> Reviewer -> Orchestrator -> PASS"}], "risks": [], "blockers": [], "artifacts": [], "next_action": null}
+}

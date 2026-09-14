@@ -1,0 +1,18 @@
+{
+  "contract_version": "1.0",
+  "invocation_id": "INV-MA-INVALID-001",
+  "task_id": "MA-001",
+  "agent": {"role": "reviewer", "version": "2.0"},
+  "stage": "validation_visualization",
+  "state": "REVIEWING",
+  "attempt": 1,
+  "objective": "intentionally violate the reviewer permission ceiling",
+  "workspace": {"repository": "eaglesjo/codingStandard-dev", "ref": "feat/multi-agent-ai-developer-v2"},
+  "allowed_scope": {"paths": ["src/"], "operations": ["write"]},
+  "permissions": {"read": true, "write": true, "execute": false, "web": false, "runtime_observe": false},
+  "context": {"durable_state_refs": ["docs/development/state/CURRENT.md"], "evidence_refs": [], "input_artifact_refs": []},
+  "constraints": ["read-only reviewer"],
+  "required_evidence": ["review findings"],
+  "stop_conditions": ["permission ceiling exceeded"],
+  "result": {"status": "PASS", "findings": [], "changes": [], "evidence": [], "risks": [], "blockers": [], "artifacts": [], "next_action": null}
+}
