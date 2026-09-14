@@ -13,7 +13,7 @@ AI Engineering Standard é um padrão de engenharia reutilizável para desenvolv
 - Contratos de arquitetura e políticas legíveis por máquina, com roteamento explícito de Agents e Skills.
 - Comportamento baseado no ambiente detectado e nos recursos realmente disponíveis.
 - Ciclo de vida multiplataforma para instalação, atualização e desinstalação segura.
-- Validação de integridade dos recursos, paridade semântica e consistência da documentação para 20 locales de runtime.
+- Validação de integridade dos recursos, paridade semântica e consistência da documentação para 20 localidades de runtime.
 - Verificação da qualidade de código gerado por IA, avaliação de IA/LLM, proveniência das evidências e contratos de reprodutibilidade.
 - Padrões de execução e validação para ML, LLM, Vision e Google Colab.
 
@@ -35,8 +35,8 @@ Domínios disponíveis: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
 ## Validação
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Consulte [`INSTALL.md`](../../INSTALL.md) para instalação e [`RELEASE.md`](../../docs/releases/RELEASE.md) para o processo de publicação.
