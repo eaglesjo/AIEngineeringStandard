@@ -1,21 +1,10 @@
 # AI Engineering Standard — Português
 
-> **Padrões de engenharia para desenvolvimento, treinamento e agentes de IA**
->
-> **Versão:** v2.0.0 — Candidato público a lançamento
+<p align="center"><strong>Padrões de engenharia para desenvolvimento, treinamento e agentes de IA</strong></p>
 
-**Idiomas:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · [Deutsch](../de/README.md) · [Italiano](../it/README.md) · Português · [العربية](../ar/README.md) · [हिन्दी](../hi/README.md) · [Bahasa Indonesia](../id/README.md) · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) · [Svenska](../sv/README.md) · [Українська](../uk/README.md)
+> Esta página é a porta de entrada em português para a documentação do codingStandard. O português faz parte das 20 localidades de execução e segue os mesmos controles de completude de recursos, paridade semântica e consistência entre runtime e documentação.
 
-AI Engineering Standard é um padrão de engenharia reutilizável para desenvolvimento assistido por IA, treinamento de modelos, experimentação, fluxos LLM/Vision, ML/DL em geral e agentes de programação com IA.
-
-## Destaques da 2.0.0
-
-- Contratos de arquitetura e políticas legíveis por máquina, com roteamento explícito de Agents e Skills.
-- Comportamento baseado no ambiente detectado e nos recursos realmente disponíveis.
-- Ciclo de vida multiplataforma para instalação, atualização e desinstalação segura.
-- Validação de integridade dos recursos, paridade semântica e consistência da documentação para 20 localidades de runtime.
-- Verificação da qualidade de código gerado por IA, avaliação de IA/LLM, proveniência das evidências e contratos de reprodutibilidade.
-- Padrões de execução e validação para ML, LLM, Vision e Google Colab.
+`codingStandard` é um padrão de engenharia reutilizável para desenvolvimento assistido por IA, treinamento de modelos, experimentação, fluxos de trabalho com LLM/Vision, projetos gerais de ML/DL e agentes de programação com IA.
 
 ## Início rápido
 
@@ -27,16 +16,18 @@ bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 Windows / PowerShell:
 
 ```powershell
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
-Domínios disponíveis: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
+Os domínios disponíveis são `common`, `ml`, `llm`, `vision`, `colab` e `all`. O modo dry-run permite visualizar as alterações antes da instalação, enquanto as políticas de conflito definem como os arquivos existentes serão tratados.
 
-## Validação
+## Google Colab
 
-```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
-```
+O repositório público oferece notebooks do Google Colab para validar o padrão completo, um ambiente de execução limpo e os fluxos de trabalho LLM QLoRA e RAG.
 
-Consulte [`INSTALL.md`](../../INSTALL.md) para instalação e [`RELEASE.md`](../../docs/releases/RELEASE.md) para o processo de publicação.
+## Qualidade multilíngue
+
+A documentação e os recursos de runtime são gerenciados separadamente, mas as 20 localidades de execução seguem os mesmos critérios de qualidade: completude dos recursos, paridade semântica das políticas e consistência entre runtime e documentação.
+
+Para obter os procedimentos detalhados de instalação e validação, consulte o [README em inglês](../../README.md) e o [INSTALL.md](../../INSTALL.md).

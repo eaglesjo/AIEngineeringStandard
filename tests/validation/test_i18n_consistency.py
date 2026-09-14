@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the v1.16 runtime/documentation consistency validator."""
+"""Tests for the runtime/documentation consistency validator."""
 from __future__ import annotations
 
 import importlib.util

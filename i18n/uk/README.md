@@ -1,21 +1,10 @@
 # AI Engineering Standard — Українська
 
-> **Стандарти інженерії для розробки, навчання та AI-агентів**
->
-> **Версія:** v2.0.0 — публічний кандидат на реліз
+<p align="center"><strong>Інженерні стандарти для розробки, навчання моделей та AI-агентів</strong></p>
 
-**Мови:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · [Deutsch](../de/README.md) · [Italiano](../it/README.md) · [Português](../pt/README.md) · [العربية](../ar/README.md) · [हिन्दी](../hi/README.md) · [Bahasa Indonesia](../id/README.md) · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) · [Svenska](../sv/README.md) · Українська
+> Ця сторінка є україномовною точкою входу до документації codingStandard. Українська — одна з 20 локалей середовища виконання та проходить такі самі перевірки повноти ресурсів, семантичної відповідності й узгодженості між середовищем виконання та документацією.
 
-AI Engineering Standard — це багаторазово використовуваний інженерний стандарт для розробки за допомогою ШІ, навчання моделей, експериментів, робочих процесів LLM/Vision, загального ML/DL та AI-агентів для програмування.
-
-## Основні можливості 2.0.0
-
-- Машинно читані контракти архітектури та політик із чіткою маршрутизацією Agent/Skill.
-- Поведінка під час виконання на основі фактично виявленого середовища та доступних ресурсів.
-- Кросплатформений життєвий цикл встановлення, оновлення та безпечного видалення.
-- Перевірка повноти ресурсів, семантичної відповідності та узгодженості документації для 20 локалей середовища виконання.
-- Перевірка якості AI-коду, оцінювання AI/LLM, походження доказів і контракти відтворюваності.
-- Стандарти виконання та перевірки для ML, LLM, Vision і Google Colab.
+`codingStandard` — це багаторазово використовуваний інженерний стандарт для розробки за допомогою AI, навчання моделей, експериментів, робочих процесів LLM/Vision, загальних ML/DL-проєктів та AI-агентів для програмування.
 
 ## Швидкий старт
 
@@ -27,16 +16,18 @@ bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 Windows / PowerShell:
 
 ```powershell
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
-Доступні домени: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
+Доступні домени: `common`, `ml`, `llm`, `vision`, `colab` і `all`. Режим dry-run дає змогу попередньо переглянути зміни, а політики конфліктів визначають спосіб обробки наявних файлів.
 
-## Перевірка
+## Google Colab
 
-```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
-```
+Публічний репозиторій містить ноутбуки Google Colab для перевірки всього стандарту, чистого середовища виконання, а також робочих процесів LLM QLoRA і RAG.
 
-Інструкції зі встановлення: [`INSTALL.md`](../../INSTALL.md). Процес релізу: [`RELEASE.md`](../../docs/releases/RELEASE.md).
+## Багатомовна якість
+
+Документація та ресурси середовища виконання керуються окремо, але для всіх 20 локалей застосовуються однакові критерії якості: повнота ресурсів, семантична відповідність політик та узгодженість між середовищем виконання і документацією.
+
+Докладні інструкції зі встановлення та перевірки наведено в [README англійською](../../README.md) і [INSTALL.md](../../INSTALL.md).

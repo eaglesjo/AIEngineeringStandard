@@ -1,21 +1,10 @@
 # AI Engineering Standard — Bahasa Indonesia
 
-> **Standar rekayasa untuk pengembangan, pelatihan, dan agen AI**
->
-> **Versi:** v2.0.0 — Kandidat rilis publik
+<p align="center"><strong>Standar rekayasa untuk pengembangan, pelatihan, dan agen AI</strong></p>
 
-**Bahasa:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · [Deutsch](../de/README.md) · [Italiano](../it/README.md) · [Português](../pt/README.md) · [العربية](../ar/README.md) · [हिन्दी](../hi/README.md) · Bahasa Indonesia · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) · [Svenska](../sv/README.md) · [Українська](../uk/README.md)
+> Halaman ini adalah pintu masuk dokumentasi codingStandard dalam bahasa Indonesia. Bahasa Indonesia merupakan salah satu dari 20 lokal runtime dan menjalani pemeriksaan yang sama untuk kelengkapan sumber daya, kesepadanan semantik, serta konsistensi antara runtime dan dokumentasi.
 
-AI Engineering Standard adalah standar rekayasa yang dapat digunakan kembali untuk pengembangan berbantuan AI, pelatihan model, eksperimen, alur kerja LLM/Vision, ML/DL umum, dan agen coding AI.
-
-## Sorotan 2.0.0
-
-- Kontrak arsitektur dan kebijakan yang dapat dibaca mesin, dengan routing Agent/Skill yang eksplisit.
-- Perilaku runtime berdasarkan lingkungan yang terdeteksi dan sumber daya yang benar-benar tersedia.
-- Siklus hidup instalasi, pembaruan, dan penghapusan aman lintas platform.
-- Validasi kelengkapan sumber daya, paritas semantik, dan konsistensi dokumentasi untuk 20 runtime locale.
-- Verifikasi kualitas kode AI, evaluasi AI/LLM, provenance bukti, dan kontrak reproduktibilitas.
-- Standar eksekusi dan validasi untuk ML, LLM, Vision, dan Google Colab.
+`codingStandard` adalah standar rekayasa yang dapat digunakan kembali untuk pengembangan berbantuan AI, pelatihan model, eksperimen, alur kerja LLM/Vision, proyek ML/DL umum, dan agen pemrograman AI.
 
 ## Mulai cepat
 
@@ -27,16 +16,18 @@ bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 Windows / PowerShell:
 
 ```powershell
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
-Domain yang tersedia: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
+Domain yang tersedia adalah `common`, `ml`, `llm`, `vision`, `colab`, dan `all`. Mode dry-run memungkinkan Anda melihat perubahan terlebih dahulu, sedangkan kebijakan konflik menentukan cara menangani berkas yang sudah ada.
 
-## Validasi
+## Google Colab
 
-```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
-```
+Repositori publik menyediakan notebook Google Colab untuk memvalidasi standar secara menyeluruh, clean runtime, serta alur kerja LLM QLoRA dan RAG.
 
-Lihat [`INSTALL.md`](../../INSTALL.md) untuk instalasi dan [`RELEASE.md`](../../docs/releases/RELEASE.md) untuk proses rilis.
+## Kualitas multibahasa
+
+Dokumentasi dan sumber daya runtime dikelola secara terpisah, tetapi seluruh 20 lokal runtime mengikuti kriteria kualitas yang sama: kelengkapan sumber daya, kesepadanan semantik kebijakan, serta konsistensi antara runtime dan dokumentasi.
+
+Untuk prosedur instalasi dan validasi selengkapnya, lihat [README bahasa Inggris](../../README.md) dan [INSTALL.md](../../INSTALL.md).

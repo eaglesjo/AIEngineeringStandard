@@ -1,21 +1,10 @@
 # AI Engineering Standard — Deutsch
 
-> **Engineering-Standards für KI-Entwicklung, Training und Agenten**
->
-> **Version:** v2.0.0 — Öffentlicher Release Candidate
+<p align="center"><strong>Ingenieurstandards für KI-Entwicklung, Training und Agenten</strong></p>
 
-**Sprachen:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · Deutsch · [Italiano](../it/README.md) · [Português](../pt/README.md) · [العربية](../ar/README.md) · [हिन्दी](../hi/README.md) · [Bahasa Indonesia](../id/README.md) · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) · [Svenska](../sv/README.md) · [Українська](../uk/README.md)
+> Diese Seite ist der deutsche Einstieg in die Dokumentation von codingStandard. Deutsch gehört zu den 20 Laufzeit-Lokalisierungen und unterliegt denselben Prüfungen auf Ressourcen-Vollständigkeit, semantische Übereinstimmung sowie Konsistenz zwischen Laufzeit und Dokumentation.
 
-AI Engineering Standard ist ein wiederverwendbarer Engineering-Standard für KI-gestützte Entwicklung, Modelltraining, Experimente, LLM/Vision-Workflows, allgemeine ML/DL-Workflows und KI-Coding-Agenten.
-
-## Die wichtigsten Neuerungen in 2.0.0
-
-- Maschinenlesbare Architektur- und Richtlinienverträge mit explizitem Agent-/Skill-Routing.
-- Laufzeitverhalten auf Basis der tatsächlich erkannten Umgebung und verfügbaren Ressourcen.
-- Plattformübergreifender Lebenszyklus für Installation, Aktualisierung und sichere Deinstallation.
-- Prüfung der Ressourcen-Vollständigkeit, semantischen Parität und Dokumentationskonsistenz für 20 Runtime-Lokalisierungen.
-- Prüfung der KI-Codequalität, KI/LLM-Evaluierung, Evidenz-Provenienz und Reproduzierbarkeitsverträge.
-- Ausführungs- und Validierungsstandards für ML, LLM, Vision und Google Colab.
+`codingStandard` ist ein wiederverwendbarer Engineering-Standard für KI-gestützte Entwicklung, Modelltraining, Experimente, LLM-/Vision-Workflows, allgemeine ML-/DL-Projekte und KI-Programmieragenten.
 
 ## Schnellstart
 
@@ -27,16 +16,18 @@ bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 Windows / PowerShell:
 
 ```powershell
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
-Verfügbare Bereiche: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
+Verfügbar sind die Bereiche `common`, `ml`, `llm`, `vision`, `colab` und `all`. Mit dem Dry-Run-Modus können Änderungen vorab geprüft werden; Konfliktrichtlinien legen fest, wie vorhandene Dateien behandelt werden.
 
-## Validierung
+## Google Colab
 
-```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
-```
+Das öffentliche Repository stellt Google-Colab-Notebooks zur Verfügung, mit denen der vollständige Standard, eine saubere Laufzeitumgebung sowie die Workflows für LLM QLoRA und RAG validiert werden können.
 
-Installationsdetails stehen in [`INSTALL.md`](../../INSTALL.md), der Veröffentlichungsprozess in [`RELEASE.md`](../../docs/releases/RELEASE.md).
+## Mehrsprachige Qualität
+
+Dokumentation und Laufzeitressourcen werden getrennt verwaltet, aber für alle 20 Laufzeit-Lokalisierungen gelten dieselben Qualitätskriterien: Ressourcen-Vollständigkeit, semantische Übereinstimmung der Richtlinien und Konsistenz zwischen Laufzeit und Dokumentation.
+
+Ausführliche Installations- und Validierungsanweisungen finden Sie im [englischen README](../../README.md) und in [INSTALL.md](../../INSTALL.md).

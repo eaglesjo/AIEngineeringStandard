@@ -1,21 +1,10 @@
 # AI Engineering Standard — Nederlands
 
-> **Engineeringstandaarden voor AI-ontwikkeling, training en agents**
->
-> **Versie:** v2.0.0 — Publieke releasekandidaat
+<p align="center"><strong>Technische standaarden voor AI-ontwikkeling, modeltraining en AI-agents</strong></p>
 
-**Talen:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · [Deutsch](../de/README.md) · [Italiano](../it/README.md) · [Português](../pt/README.md) · [العربية](../ar/README.md) · [हिन्दी](../hi/README.md) · [Bahasa Indonesia](../id/README.md) · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · Nederlands · [Polski](../pl/README.md) · [Svenska](../sv/README.md) · [Українська](../uk/README.md)
+> Deze pagina is het Nederlandstalige startpunt voor de documentatie van codingStandard. Nederlands is een van de 20 runtime-locales en wordt aan dezelfde controles onderworpen voor volledigheid van resources, semantische gelijkwaardigheid en consistentie tussen runtime en documentatie.
 
-AI Engineering Standard is een herbruikbare engineeringstandaard voor AI-ondersteunde ontwikkeling, modeltraining, experimenten, LLM/Vision-workflows, algemene ML/DL-workflows en AI-codeeragents.
-
-## Hoogtepunten van 2.0.0
-
-- Machineleesbare architectuur- en beleidscontracten met expliciete Agent/Skill-routing.
-- Runtimegedrag op basis van de daadwerkelijk gedetecteerde omgeving en beschikbare resources.
-- Platformonafhankelijke levenscyclus voor installatie, updates en veilige verwijdering.
-- Validatie van resourcevolledigheid, semantische pariteit en documentatieconsistentie voor 20 runtime-locales.
-- AI-codekwaliteitscontrole, AI/LLM-evaluatie, provenance van bewijs en reproduceerbaarheidscontracten.
-- Uitvoerings- en validatiestandaarden voor ML, LLM, Vision en Google Colab.
+`codingStandard` is een herbruikbare technische standaard voor AI-ondersteunde ontwikkeling, modeltraining, experimenten, LLM/Vision-workflows, algemene ML/DL-projecten en AI-codeeragents.
 
 ## Snel starten
 
@@ -27,16 +16,18 @@ bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 Windows / PowerShell:
 
 ```powershell
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
-Beschikbare domeinen: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
+Beschikbare domeinen zijn `common`, `ml`, `llm`, `vision`, `colab` en `all`. Met de dry-runmodus kun je wijzigingen vooraf bekijken; conflictbeleid bepaalt hoe bestaande bestanden worden afgehandeld.
 
-## Validatie
+## Google Colab
 
-```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
-```
+De openbare repository bevat Google Colab-notebooks waarmee de volledige standaard, een schone runtime en de LLM QLoRA- en RAG-workflows kunnen worden gevalideerd.
 
-Zie [`INSTALL.md`](../../INSTALL.md) voor installatie en [`RELEASE.md`](../../docs/releases/RELEASE.md) voor het releaseproces.
+## Meertalige kwaliteit
+
+Documentatie en runtime-resources worden afzonderlijk beheerd, maar voor alle 20 runtime-locales gelden dezelfde kwaliteitscriteria: volledigheid van resources, semantische gelijkwaardigheid van beleid en consistentie tussen runtime en documentatie.
+
+Raadpleeg voor de volledige installatie- en validatieprocedure de [Engelse README](../../README.md) en [INSTALL.md](../../INSTALL.md).

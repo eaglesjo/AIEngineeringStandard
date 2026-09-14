@@ -1,21 +1,10 @@
 # AI Engineering Standard — Svenska
 
-> **Tekniska standarder för AI-utveckling, träning och agenter**
->
-> **Version:** v2.0.0 — Offentlig releasekandidat
+<p align="center"><strong>Tekniska standarder för AI-utveckling, modellträning och AI-agenter</strong></p>
 
-**Språk:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · [Deutsch](../de/README.md) · [Italiano](../it/README.md) · [Português](../pt/README.md) · [العربية](../ar/README.md) · [हिन्दी](../hi/README.md) · [Bahasa Indonesia](../id/README.md) · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) · Svenska · [Українська](../uk/README.md)
+> Den här sidan är den svenska ingången till dokumentationen för codingStandard. Svenska är en av 20 runtime-lokaliseringar och omfattas av samma kontroller för resursfullständighet, semantisk överensstämmelse och konsekvens mellan runtime och dokumentation.
 
-AI Engineering Standard är en återanvändbar teknisk standard för AI-assisterad utveckling, modellträning, experiment, LLM/Vision-arbetsflöden, generell ML/DL och AI-baserade kodningsagenter.
-
-## Höjdpunkter i 2.0.0
-
-- Maskinläsbara arkitektur- och policykontrakt med tydlig Agent/Skill-routing.
-- Körbeteende baserat på den faktiska miljön och de resurser som upptäcks.
-- Plattformoberoende livscykel för installation, uppdatering och säker avinstallation.
-- Validering av resursfullständighet, semantisk paritet och dokumentationskonsistens för 20 runtime-lokaliseringar.
-- Kvalitetskontroll av AI-kod, AI/LLM-utvärdering, evidensproveniens och reproducerbarhetskontrakt.
-- Körnings- och valideringsstandarder för ML, LLM, Vision och Google Colab.
+`codingStandard` är en återanvändbar teknisk standard för AI-assisterad utveckling, modellträning, experiment, LLM/Vision-arbetsflöden, allmänna ML/DL-projekt och AI-agenter för programmering.
 
 ## Snabbstart
 
@@ -27,16 +16,18 @@ bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 Windows / PowerShell:
 
 ```powershell
+git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
 ```
 
-Tillgängliga domäner: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
+Tillgängliga områden är `common`, `ml`, `llm`, `vision`, `colab` och `all`. Med dry-run-läget kan du förhandsgranska ändringarna, och konfliktreglerna anger hur befintliga filer ska hanteras.
 
-## Validering
+## Google Colab
 
-```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
-```
+Det offentliga arkivet innehåller Google Colab-notebooks för att validera hela standarden, en ren runtime-miljö samt arbetsflöden för LLM QLoRA och RAG.
 
-Se [`INSTALL.md`](../../INSTALL.md) för installation och [`RELEASE.md`](../../docs/releases/RELEASE.md) för releaseprocessen.
+## Flerspråkig kvalitet
+
+Dokumentation och runtime-resurser hanteras separat, men alla 20 runtime-lokaliseringar följer samma kvalitetskriterier: fullständiga resurser, semantisk överensstämmelse mellan policyer och konsekvens mellan runtime och dokumentation.
+
+För detaljerade installations- och valideringssteg, se [README på engelska](../../README.md) och [INSTALL.md](../../INSTALL.md).

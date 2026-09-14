@@ -8,7 +8,7 @@
 git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 ```
 
-Run the installer from the repository root of the project you want to configure.
+Clone the distribution into the project root you want to configure. The commands below assume the cloned repository is available at `./AIEngineeringStandard`.
 
 ## 2. Choose Language and Domain
 
@@ -85,7 +85,7 @@ TARGET LANGUAGE DOMAIN CONFLICT_POLICY DRY_RUN
 PowerShell:
 
 ```powershell
-... -Language en -Domain all -DryRun
+powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target . -Language en -Domain all -DryRun
 ```
 
 Bash:
@@ -186,7 +186,7 @@ The policy treats hosted notebook sessions as ephemeral and requires runtime det
 
 ## 10. Validation After Installation
 
-Run validation from the directory containing the cloned `AIEngineeringStandard` repository:
+From the project root containing `./AIEngineeringStandard`:
 
 ```bash
 python ./AIEngineeringStandard/scripts/validation/validate.py
@@ -205,7 +205,7 @@ For Vision:
 python ./AIEngineeringStandard/domains/vision/memory_smoke_test.py --device auto --image-size 224 --batch-size 1 --steps 2
 ```
 
-For Colab, run the validation notebook under `AIEngineeringStandard/tests/colab/` from a fresh runtime and verify checkpoint persistence/resume behavior.
+For Colab, run the validation notebook under `./AIEngineeringStandard/tests/colab/` from a fresh runtime and verify checkpoint persistence/resume behavior.
 
 ## Language-specific documentation
 
@@ -213,4 +213,4 @@ See the language catalog in [`i18n/languages.json`](i18n/languages.json) and the
 
 ## Public distribution
 
-Validated releases are promoted through `codingStandard-dev` to `AIEngineeringStandard`.
+Validated releases are promoted through the release process to `AIEngineeringStandard`.

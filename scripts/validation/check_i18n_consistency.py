@@ -11,6 +11,32 @@ CATALOG = ROOT / "i18n" / "languages.json"
 QUALITY = ROOT / "i18n" / "quality.json"
 REQUIRED_COMMON = ("core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md")
 
+# Localized terms accepted as explicit references to runtime/execution support.
+# The validator checks the semantic claim in the locale's own language rather
+# than requiring the English word "runtime" to appear in every README.
+RUNTIME_TERMS: dict[str, tuple[str, ...]] = {
+    "ar": ("التشغيل", "بيئة التشغيل"),
+    "de": ("Laufzeit", "Laufzeitumgebung"),
+    "en": ("runtime",),
+    "es": ("ejecución", "entorno de ejecución"),
+    "fr": ("exécution", "environnement d’exécution", "environnement d'exécution"),
+    "hi": ("रनटाइम", "रनटाइम वातावरण"),
+    "id": ("runtime", "waktu proses", "lingkungan runtime"),
+    "it": ("runtime", "ambiente di esecuzione"),
+    "ja": ("ランタイム", "実行環境"),
+    "ko": ("런타임", "실행 환경"),
+    "nl": ("runtime", "runtimeomgeving"),
+    "pl": ("uruchomieni", "środowiskiem uruchomieniowym", "środowisko uruchomieniowe"),
+    "pt": ("runtime", "ambiente de execução"),
+    "ru": ("среда выполнения", "выполнения"),
+    "sv": ("runtime", "körningsmiljö"),
+    "th": ("รันไทม์", "สภาพแวดล้อมรันไทม์"),
+    "tr": ("çalışma zamanı", "çalışma zamanında"),
+    "uk": ("середовище виконання", "виконання"),
+    "vi": ("runtime", "môi trường chạy", "môi trường thực thi"),
+    "zh-CN": ("运行时", "运行环境"),
+}
+
 
 def load_json(path: Path) -> dict:
     try:
@@ -59,7 +85,8 @@ def validate_documentation_claim(locale: str, entry: dict, required_count: int) 
     if isinstance(display_name, str) and display_name.strip() and display_name not in text:
         errors.append(f"{locale}: documentation does not identify locale as {display_name}")
 
-    if "runtime" not in text.casefold():
+    runtime_terms = RUNTIME_TERMS.get(locale, ("runtime",))
+    if not any(term.casefold() in text.casefold() for term in runtime_terms):
         errors.append(f"{locale}: documentation does not describe runtime support")
 
     # Every runtime locale README must expose the current contract size so stale
