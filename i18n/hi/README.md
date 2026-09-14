@@ -6,7 +6,7 @@
 
 **भाषाएँ:** [English](../../README.md) · [한국어](../ko/README.md) · [Français](../fr/README.md) · [Español](../es/README.md) · [简体中文](../zh-CN/README.md) · [日本語](../ja/README.md) · [Русский](../ru/README.md) · [Türkçe](../tr/README.md) · [Deutsch](../de/README.md) · [Italiano](../it/README.md) · [Português](../pt/README.md) · [العربية](../ar/README.md) · हिन्दी · [Bahasa Indonesia](../id/README.md) · [Tiếng Việt](../vi/README.md) · [ไทย](../th/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) · [Svenska](../sv/README.md) · [Українська](../uk/README.md)
 
-AI Engineering Standard AI-सहायित विकास, मॉडल प्रशिक्षण, प्रयोग, LLM/Vision वर्कफ़्लो, सामान्य ML/DL वर्कफ़्लो और AI कोडिंग एजेंटों के लिए पुन: उपयोग योग्य इंजीनियरिंग मानक है।
+AI Engineering Standard AI-सहायित विकास, मॉडल प्रशिक्षण, प्रयोग, LLM/Vision वर्कफ़्लो, सामान्य ML/DL वर्कफ़्लो और AI कोडिंग एजेंटों के लिए एक पुन: उपयोग योग्य इंजीनियरिंग मानक है।
 
 ## 2.0.0 की प्रमुख बातें
 
@@ -35,8 +35,8 @@ powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\install
 ## सत्यापन
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 इंस्टॉलेशन के लिए [`INSTALL.md`](../../INSTALL.md) और रिलीज़ प्रक्रिया के लिए [`RELEASE.md`](../../docs/releases/RELEASE.md) देखें।
