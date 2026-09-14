@@ -13,7 +13,7 @@ AI Engineering Standard är en återanvändbar teknisk standard för AI-assister
 - Maskinläsbara arkitektur- och policykontrakt med tydlig Agent/Skill-routing.
 - Körbeteende baserat på den faktiska miljön och de resurser som upptäcks.
 - Plattformoberoende livscykel för installation, uppdatering och säker avinstallation.
-- Validering av resursfullständighet, semantisk paritet och dokumentationskonsistens för 20 runtime-lokaler.
+- Validering av resursfullständighet, semantisk paritet och dokumentationskonsistens för 20 runtime-lokaliseringar.
 - Kvalitetskontroll av AI-kod, AI/LLM-utvärdering, evidensproveniens och reproducerbarhetskontrakt.
 - Körnings- och valideringsstandarder för ML, LLM, Vision och Google Colab.
 
