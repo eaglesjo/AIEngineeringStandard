@@ -35,8 +35,8 @@ Các domain khả dụng: `common`, `ml`, `llm`, `vision`, `colab`, `all`.
 ## Kiểm định
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 Xem [`INSTALL.md`](../../INSTALL.md) để biết cách cài đặt và [`RELEASE.md`](../../docs/releases/RELEASE.md) để biết quy trình phát hành.
