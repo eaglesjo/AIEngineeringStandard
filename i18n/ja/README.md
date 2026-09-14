@@ -35,8 +35,8 @@ powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\install
 ## 検証
 
 ```bash
-python scripts/validation/validate.py
-python scripts/installers/test_installers.py
+python ./AIEngineeringStandard/scripts/validation/validate.py
+python ./AIEngineeringStandard/scripts/installers/test_installers.py
 ```
 
 インストール方法は [`INSTALL.md`](../../INSTALL.md)、公開リリース手順は [`RELEASE.md`](../../docs/releases/RELEASE.md) を参照してください。
