@@ -1,6 +1,6 @@
 # Release Candidate
 
-This file marks the `codingStandard-dev` branch as a **2.0.0 release-candidate preparation** surface. It does not authorize publication.
+This document records the public 2.0.0 release-candidate scope. It does not by itself authorize publication.
 
 ## Required checks
 
@@ -14,16 +14,20 @@ This file marks the `codingStandard-dev` branch as a **2.0.0 release-candidate p
 - Google Colab runtime and notebook validation
 - executable agent-conformance schema/policy validation
 - dependency alignment and isolated real pip resolver integration
-- final CI validation of the exact release-candidate commit
+- AI code-quality verification
+- AI/LLM evaluation
+- provenance and traceability validation
+- data/model reproducibility validation
+- final CI validation of the exact release-candidate revision
 
 ## Release candidate invariants
 
 - Version metadata must consistently identify `2.0.0`.
-- Release documentation must describe the current 2.0 scope rather than a historical 1.x release.
-- Historical 1.x tags and commits must remain unchanged.
-- The candidate must originate from `codingStandard-dev` and be promoted only after applicable validation passes.
-- The final public candidate must receive a second full audit before release authorization.
-- Unavailable runtime evidence remains explicitly `UNTESTED` / `SKIPPED`.
+- Release documentation must describe the current 2.0 scope.
+- Historical release tags and commits must remain unchanged.
+- The candidate must originate from the canonical development repository and be promoted only after applicable validation passes.
+- The final public candidate must receive an independent audit before release authorization.
+- Unavailable runtime evidence remains explicitly `UNTESTED` or `SKIPPED`.
 
 ## Release version
 
@@ -31,4 +35,4 @@ This file marks the `codingStandard-dev` branch as a **2.0.0 release-candidate p
 
 ## Publication gate
 
-**NOT AUTHORIZED YET.** Passing this preparation branch's checks is necessary but not sufficient. Promotion and the independent final public audit are still required before the `v2.0.0` tag/release may be created.
+**NOT AUTHORIZED YET.** Passing release-candidate checks is necessary but not sufficient. The final public audit and explicit release authorization must be completed before the `v2.0.0` tag and GitHub Release are created.
