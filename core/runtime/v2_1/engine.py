@@ -27,9 +27,13 @@ class WorkUnit:
     attempts: int = 0
     retry_reason: str | None = None
     failure_evidence_refs: tuple[str, ...] = ()
+    _lineage_locked: bool = False
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "_lineage_locked", True)
 
     def __setattr__(self, name: str, value: Any) -> None:
-        if name == "parent_id" and hasattr(self, "parent_id"):
+        if name == "parent_id" and getattr(self, "_lineage_locked", False):
             raise AttributeError("work unit parent lineage is immutable")
         object.__setattr__(self, name, value)
 
