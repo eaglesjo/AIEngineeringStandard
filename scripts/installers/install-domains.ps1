@@ -1,6 +1,6 @@
 param(
   [string]$Target='.',
-  [ValidateSet('en','ko','zh-CN','ja','ru')][string]$Language,
+  [string]$Language,
   [ValidateSet('common','ml','llm','vision','colab','all')][string]$Domain,
   [ValidateSet('Ask','Merge','Overwrite','Skip')][string]$ConflictAction='Ask',
   [switch]$DryRun
