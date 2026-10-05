@@ -4,12 +4,12 @@
 
 `AIEngineeringStandard` is the only development, validation, and release repository.
 
-```text
+```
 feature/fix/docs branch
         ↓
 pull request
         ↓
-GitHub Actions validation
+local validation
         ↓
 main
         ↓
@@ -22,12 +22,15 @@ GitHub Release
 
 There is no `codingStandard-private`, `codingStandard-dev`, staging repository, or public-promotion step in the current architecture.
 
+Version 2.1 architecture work is contract-first: define or update canonical schemas and acceptance rules before implementing runtime adapters.
+
 ## Branches
 
 - `main`: releasable source of truth.
 - `feature/*`: feature work.
 - `fix/*`: corrective work.
 - `docs/*`: documentation-only work.
+- `architecture/*`: temporary architecture and contract work; merge only after the v2.0 gates and v2.1 contract validation pass.
 - `release/*`: optional release preparation when a release requires multiple coordinated changes.
 
 Do not develop directly on `main` unless making an explicitly authorized emergency fix.
@@ -39,6 +42,7 @@ At minimum, run:
 ```bash
 python3 scripts/validation/validate.py
 python3 scripts/installers/test_installers.py
+python3 scripts/validation/validate_2_1_contracts.py
 ```
 
 For focused changes, run the relevant checker first and then the complete validation before merge.
