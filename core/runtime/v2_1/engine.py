@@ -25,6 +25,8 @@ class WorkUnit:
     parent_id: str | None = None
     status: str = "CREATED"
     attempts: int = 0
+    retry_reason: str | None = None
+    failure_evidence_refs: tuple[str, ...] = ()
 
 @dataclass(frozen=True)
 class Evidence:
@@ -134,11 +136,34 @@ class RuntimeEngine:
         wu.status = evaluation.acceptance
         self.evaluations[evaluation.id] = evaluation
 
-    def retry(self, work_unit_id: str, reason: str) -> WorkUnit:
+    def retry(
+        self,
+        work_unit_id: str,
+        reason: str,
+        failure_evidence_refs: tuple[str, ...],
+    ) -> WorkUnit:
         parent = self.work_units[work_unit_id]
         if parent.status not in {"BLOCKED", "REJECTED"}:
             raise RuntimeError("only blocked or rejected work may be retried")
-        retry = WorkUnit(f"{parent.id}.retry-{parent.attempts + 1}", parent.objective, parent.owner, parent.acceptance_criteria, parent.id)
+        if not reason.strip():
+            raise ValueError("retry requires a reason")
+        if not failure_evidence_refs:
+            raise ValueError("retry requires failure evidence references")
+        for ref in failure_evidence_refs:
+            evidence = self.evidence.get(ref)
+            if evidence is None:
+                raise ValueError("retry references missing failure evidence")
+            if evidence.work_unit_id != parent.id:
+                raise ValueError("failure evidence must belong to retried work unit")
+        retry = WorkUnit(
+            f"{parent.id}.retry-{parent.attempts + 1}",
+            parent.objective,
+            parent.owner,
+            parent.acceptance_criteria,
+            parent.id,
+            retry_reason=reason,
+            failure_evidence_refs=failure_evidence_refs,
+        )
         self.create_work_unit(retry)
         return retry
 
