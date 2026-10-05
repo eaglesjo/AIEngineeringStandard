@@ -101,3 +101,8 @@ This keeps ownership and lineage referentially valid before execution begins; it
 ## Agent Contract binding integrity
 
 The reference runtime requires an Agent Contract to bind to the Work Unit owner and rejects a second contract for a Work Unit. This makes the contract binding a single canonical authorization boundary before execution begins.
+
+
+## Evaluation actor authorization
+
+The reference runtime authorizes an agent evaluation actor only when the actor is the Work Unit owner or the receiver of a recorded handoff for that Work Unit. A registered agent that has no ownership or handoff provenance cannot manufacture an evaluation outcome. Human actors remain separately authorized by explicit human-approval evidence.
