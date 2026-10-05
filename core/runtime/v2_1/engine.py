@@ -115,6 +115,8 @@ class RuntimeEngine:
         effective = agent.permission_ceiling & role.allowed_permissions
         if contract.effective_permissions != effective:
             raise PermissionError("effective permissions must equal agent/role intersection")
+        if contract.id in self.contracts:
+            raise ValueError("agent contract already exists")
         if wu.status != "CREATED":
             raise RuntimeError("agent contract may only bind a CREATED work unit")
         if contract.agent_id != wu.owner:
@@ -123,8 +125,6 @@ class RuntimeEngine:
             raise ValueError("work unit already has an agent contract")
         if not contract.evidence_requirements:
             raise ValueError("agent contract requires evidence requirements")
-        if contract.id in self.contracts:
-            raise ValueError("agent contract already exists")
         self.contracts[contract.id] = contract
         wu.status = "READY"
 
