@@ -94,3 +94,5 @@ Acceptance is a separate decision inside the evaluation contract. It may be:
 - `INCOMPLETE`
 
 Acceptance cannot be `ACCEPTED` when a required evaluation is `FAIL`, `UNTESTED`, or `BLOCKED`.
+
+Agent evaluation actors must be authorized by Work Unit provenance: the actor is either the Work Unit owner or a receiver recorded in a handoff for that Work Unit. Registration alone does not authorize evaluation.
