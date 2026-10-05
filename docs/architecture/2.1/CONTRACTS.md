@@ -33,7 +33,7 @@ The Agent Contract binds an agent and role to a specific work unit. It declares:
 - completion criteria;
 - evidence requirements.
 
-An agent contract cannot grant permissions that are absent from either the agent capability set or role ceiling.
+An agent contract cannot grant permissions that are absent from either the agent capability set or role ceiling. The contract agent must be the Work Unit owner, and a Work Unit has one active Agent Contract binding.
 
 ## Work Unit
 
