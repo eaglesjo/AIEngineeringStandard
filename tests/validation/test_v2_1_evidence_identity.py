@@ -1,9 +1,12 @@
-from core.runtime.v2_1.engine import Evidence, RuntimeEngine, WorkUnit
+from core.runtime.v2_1.engine import Agent, Evidence, RuntimeEngine, WorkUnit
 import pytest
 
 
 def _runtime():
     runtime = RuntimeEngine()
+    runtime.register_agent(
+        Agent("planner", frozenset({"read"}), frozenset({"read"}))
+    )
     runtime.create_work_unit(
         WorkUnit("wu-1", "evidence identity", "planner", ("tests pass",))
     )
