@@ -1,5 +1,5 @@
 """Canonical v2.1 parallel work and join conformance fixture."""
-from core.runtime.v2_1.engine import Agent, AgentContract, Evidence, Evaluation, Role, RuntimeEngine, WorkUnit
+from core.runtime.v2_1.engine import Acceptance, Agent, AgentContract, Evidence, Evaluation, Role, RuntimeEngine, WorkUnit
 
 def _bind_and_start(runtime, work_unit, agent_id, contract_id):
     runtime.bind(AgentContract(contract_id, work_unit.id, agent_id, agent_id, frozenset({"read", "execute"}), {}, {}, work_unit.acceptance_criteria, ("test-result",)))
@@ -21,8 +21,8 @@ def run() -> dict[str, object]:
     _bind_and_start(runtime, branch_b, "implementer-b", "contract-parallel-b")
     runtime.record_evidence(Evidence("e-parallel-a", branch_a.id, "implementer-a", "test-result", "branch-a-pass", "fixture"))
     runtime.record_evidence(Evidence("e-parallel-b", branch_b.id, "implementer-b", "test-result", "branch-b-pass", "fixture"))
-    runtime.evaluate(Evaluation("eval-parallel-a", branch_a.id, branch_a.acceptance_criteria, ("e-parallel-a",), "PASS", "ACCEPTED", "branch A evidence","implementer-a","agent"))
-    runtime.evaluate(Evaluation("eval-parallel-b", branch_b.id, branch_b.acceptance_criteria, ("e-parallel-b",), "PASS", "ACCEPTED", "branch B evidence","implementer-b","agent"))
+    runtime.evaluate(Evaluation("eval-parallel-a", branch_a.id, branch_a.acceptance_criteria, ("e-parallel-a",), "PASS", Acceptance("ACCEPTED", "branch A evidence"),"implementer-a","agent"))
+    runtime.evaluate(Evaluation("eval-parallel-b", branch_b.id, branch_b.acceptance_criteria, ("e-parallel-b",), "PASS", Acceptance("ACCEPTED", "branch B evidence"),"implementer-b","agent"))
 
     runtime.bind(AgentContract("contract-parallel-root", root.id, "planner", "planner", frozenset({"read", "execute"}), {}, {}, root.acceptance_criteria, ("test-result",)))
     runtime.start(root.id)
