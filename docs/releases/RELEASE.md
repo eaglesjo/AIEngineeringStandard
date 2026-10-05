@@ -9,7 +9,7 @@ feature/fix/docs branch
         ↓
 Pull Request
         ↓
-GitHub Actions CI
+Local validation gate
         ↓
 main
         ↓
@@ -29,17 +29,17 @@ There is no `codingStandard-private`, `codingStandard-dev`, staging repository, 
 1. Make the required implementation and documentation changes in a feature/fix/release branch.
 2. Run focused validation during development.
 3. Open a pull request against `main`.
-4. Require GitHub Actions CI to pass.
+4. Require Local validation gate to pass.
 5. Merge only a validated commit into `main`.
 6. Update `VERSION` and matching release metadata.
 7. Create tag `v<VERSION>` from the exact `main` commit.
-8. The release workflow validates the tagged commit.
-9. The workflow publishes the GitHub Release only after validation succeeds.
+8. Run `python3 scripts/release/check_release.py` from the exact `main` commit.
+9. Run `python3 scripts/release/publish_release.py` to create the annotated tag and GitHub Release explicitly.
 
 ## Evidence rules
 
 - Record the exact source commit and release tag.
-- Treat CI as execution evidence only when the corresponding workflow completed successfully.
+- Treat validation as execution evidence only when the corresponding local gate completed successfully; record the environment and exact commit.
 - Mark unavailable checks as `UNTESTED`, `UNSUPPORTED`, `SKIPPED`, or `BLOCKED`.
 - Never convert missing live-runtime evidence into a pass by assumption.
 - Preserve historical tags and commits.
