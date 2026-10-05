@@ -27,6 +27,6 @@ def run() -> dict[str, object]:
     runtime.bind(AgentContract("contract-parallel-root", root.id, "planner", "planner", frozenset({"read", "execute"}), {}, {}, root.acceptance_criteria, ("test-result",)))
     runtime.start(root.id)
     runtime.record_evidence(Evidence("e-parallel-join", root.id, "planner", "test-result", "both-branches-accepted", "fixture"))
-    runtime.evaluate(Evaluation("eval-parallel-root", root.id, root.acceptance_criteria, ("e-parallel-join",), "PASS", "ACCEPTED", "explicit join evidence after both child evaluations","planner","agent"))
+    runtime.evaluate(Evaluation("eval-parallel-root", root.id, root.acceptance_criteria, ("e-parallel-join",), "PASS", Acceptance("ACCEPTED", "explicit join evidence after both child evaluations"), "planner", "agent"))
 
     return {"work_units": {root.id: root.status, branch_a.id: branch_a.status, branch_b.id: branch_b.status}, "parents": {branch_a.id: branch_a.parent_id, branch_b.id: branch_b.parent_id}, "evaluations": sorted(runtime.evaluations), "join_evidence": ["e-parallel-join"]}
