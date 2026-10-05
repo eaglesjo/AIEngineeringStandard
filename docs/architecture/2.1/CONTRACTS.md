@@ -48,7 +48,7 @@ It contains:
 - output references;
 - acceptance criteria.
 
-A Work Unit may contain child work units, but child work must retain parent lineage.
+A Work Unit may contain child work units, but child work must retain parent lineage. The Work Unit `parent_id` is immutable after creation; lineage changes require a new Work Unit identity rather than rewriting an existing parent reference.
 
 ## Handoff
 

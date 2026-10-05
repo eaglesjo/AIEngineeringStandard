@@ -46,3 +46,31 @@ def test_parallel_child_may_reference_existing_parent():
         WorkUnit("wu-child", "child", "implementer", ("done",), parent_id="wu-root")
     )
     assert runtime.work_units["wu-child"].parent_id == "wu-root"
+
+
+def test_work_unit_parent_lineage_is_immutable():
+    runtime = _runtime()
+    runtime.create_work_unit(
+        WorkUnit("wu-a", "a", "planner", ("done",))
+    )
+    runtime.create_work_unit(
+        WorkUnit("wu-b", "b", "implementer", ("done",), parent_id="wu-a")
+    )
+    with pytest.raises(AttributeError, match="parent lineage is immutable"):
+        runtime.work_units["wu-a"].parent_id = "wu-b"
+
+
+def test_work_unit_deep_lineage_remains_acyclic():
+    runtime = _runtime()
+    runtime.create_work_unit(
+        WorkUnit("wu-a", "a", "planner", ("done",))
+    )
+    runtime.create_work_unit(
+        WorkUnit("wu-b", "b", "implementer", ("done",), parent_id="wu-a")
+    )
+    runtime.create_work_unit(
+        WorkUnit("wu-c", "c", "implementer", ("done",), parent_id="wu-b")
+    )
+    assert runtime.work_units["wu-c"].parent_id == "wu-b"
+    assert runtime.work_units["wu-b"].parent_id == "wu-a"
+    assert runtime.work_units["wu-a"].parent_id is None
