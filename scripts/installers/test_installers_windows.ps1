@@ -12,11 +12,11 @@ if ($errors.Count -gt 0) { $errors | Format-List | Out-String | Write-Error; thr
 
 $root = Join-Path $env:RUNNER_TEMP ("codingstandard-windows-{0}" -f [guid]::NewGuid().ToString("N")); New-Item -ItemType Directory -Force -Path $root | Out-Null
 function Invoke-Installer {
-    param([string]$Target,[ValidateSet("en", "ko")][string]$Language,[ValidateSet("common", "ml", "llm", "vision", "colab", "all")][string]$Domain,[ValidateSet("Ask", "Merge", "Overwrite", "Skip")][string]$ConflictAction = "Overwrite",[switch]$DryRun)
+    param([string]$Target,[string]$Language,[ValidateSet("common", "ml", "llm", "vision", "colab", "all")][string]$Domain,[ValidateSet("Ask", "Merge", "Overwrite", "Skip")][string]$ConflictAction = "Overwrite",[switch]$DryRun)
     $arguments = @{Target=$Target; Language=$Language; Domain=$Domain; ConflictAction=$ConflictAction}; if ($DryRun) { $arguments.DryRun=$true }; & $Installer @arguments
 }
 try {
-    foreach ($language in @("en", "ko")) {
+    foreach ($language in @("en", "ko", "fr")) {
         foreach ($domain in @("common", "ml", "llm", "vision", "colab", "all")) {
             $target = Join-Path $root "$language-$domain"; New-Item -ItemType Directory -Force -Path $target | Out-Null
             Invoke-Installer -Target $target -Language $language -Domain $domain

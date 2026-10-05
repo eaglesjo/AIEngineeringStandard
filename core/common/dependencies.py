@@ -35,7 +35,7 @@ def check_python_version() -> None:
     version = sys.version_info[:2]
     if version < PYTHON_MIN or version >= PYTHON_MAX_EXCLUSIVE:
         raise RuntimeError(
-            "codingStandard 1.7 requires Python 3.10-3.14; "
+            "AIEngineeringStandard 2.x requires Python 3.10-3.14; "
             f"detected Python {version[0]}.{version[1]}"
         )
 

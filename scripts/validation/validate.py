@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PUBLIC_EXPORT = not (ROOT / ".github" / "workflows").is_dir()
 FORBIDDEN_HARDWARE_PATTERNS = [re.compile(r"RTX\s*3050", re.I), re.compile(r"3050\s*Ti", re.I), re.compile(r"4\s*GB\s*VRAM", re.I), re.compile(r"16\s*GB\s*(RAM|System RAM)", re.I)]
 ROUTING_FILES = ["CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md", ".github/instructions/ml.instructions.md", ".github/instructions/llm.instructions.md", ".github/instructions/vision.instructions.md", ".github/instructions/colab.instructions.md", ".cursor/rules/coding-standard.mdc", ".windsurf/rules/coding-standard.md", ".clinerules/01-coding-standard.md", ".continue/rules/01-coding-standard.md", ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md"]
 LEGACY_EXECUTION_REFS = ("COMMON/AGENT.md", "COMMON/SKILL.md", "COMMON/ENVIRONMENT.md", "LLM/environment.py", "LLM/memory_smoke_test.py", "VISION/memory_smoke_test.py", "scripts/validate.py", "scripts/check_i18n.py", "scripts/test_installers.py")
@@ -16,9 +15,8 @@ REQUIRED_FILES = [
     "VERSION", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALL.md", "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md", "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py", "core/common/dependency-compatibility-policy.md", "core/agent/README.md", "core/skill/README.md", "core/skill/PORTABLE_SKILL_CONTRACT.md", "core/plugin/README.md", "core/mcp/README.md", "core/validation/README.md", "core/validation/conformance-result.schema.json", "core/validation/conformance-evidence.schema.json", "core/validation/SECURITY_PROVENANCE_CONTRACT.md", "core/validation/security-result.schema.json", "profiles/agent/README.md", "compatibility/agents.json",
     "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md", "domains/ml/skills/README.md", "domains/ml/skills/data/SKILL.md", "domains/ml/skills/evaluation/SKILL.md", "domains/ml/skills/experiment/SKILL.md", "domains/ml/skills/training/SKILL.md", "domains/ml/skills/distributed-training/SKILL.md", "domains/ml/skills/hyperparameter-optimization/SKILL.md", "domains/ml/skills/inference/SKILL.md", "domains/ml/skills/mlops/SKILL.md", "domains/llm/AGENT.md", "domains/llm/SKILL.md", "domains/llm/ENVIRONMENT.md", "domains/llm/environment.py", "domains/llm/memory_smoke_test.py", "domains/llm/experiment.py", "domains/llm/skills/finetuning/SKILL.md", "domains/llm/skills/peft/SKILL.md", "domains/llm/skills/quantization/SKILL.md", "domains/llm/skills/rag/SKILL.md", "domains/vision/AGENT.md", "domains/vision/SKILL.md", "domains/vision/ENVIRONMENT.md", "domains/vision/memory_smoke_test.py", "domains/vision/README.md", "platform/colab/AGENT.md", "platform/colab/SKILL.md", "platform/colab/validate_runtime.py", "examples/colab/clean_runtime_validation.ipynb", "examples/colab/llm_qlora_validation.ipynb", "docs/development/ML_RUNTIME_VALIDATION.md", "tests/integration/ml_classification_smoke.py", "tests/integration/llm_qlora_strategy_smoke.py", "tests/integration/test_dependency_resolver_pip.py",
     "tests/validation/fixtures/conformance-result.pass.json", "tests/validation/fixtures/conformance/codex-static.expected.json", "tests/validation/fixtures/conformance/codex-runtime.scenario.json", "tests/validation/fixtures/conformance/codex-runtime-failure-recovery.scenario.json", "tests/validation/fixtures/security-result.pass.json", "tests/validation/fixtures/portable-skill/SKILL.md", "tests/validation/fixtures/dependency-alignment-selected-library.json", "tests/validation/test_dependency_alignment.py", "tests/validation/test_dependency_compatibility_policy.py", "scripts/validation/resolve_dependency_alignment.py", "scripts/validation/validate_2_0_schemas.py", "scripts/validation/validate_portable_skill.py", "scripts/validation/run_conformance.py", "scripts/validation/validate_conformance_fixture.py", "scripts/validation/run_runtime_conformance.py",
-    ".github/instructions/ml.instructions.md", ".github/instructions/colab.instructions.md", "scripts/installers/install-domains.ps1", "scripts/installers/install-domains.sh", "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/validation/validate_profiles.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py", "scripts/installers/test_installers_windows.ps1", ".github/workflows/windows-install-test.yml", "tests/validation/test_i18n_consistency.py", "tests/colab/README.md", "tests/colab/codingstandard_colab_test.ipynb", "LICENSE",
+    ".github/instructions/ml.instructions.md", ".github/instructions/colab.instructions.md", "scripts/installers/install-domains.ps1", "scripts/installers/install-domains.sh", "scripts/validation/check_i18n.py", "scripts/validation/check_i18n_quality.py", "scripts/validation/check_i18n_consistency.py", "scripts/validation/check_structure.py", "scripts/validation/validate-domains.py", "scripts/validation/validate_agent_routing.py", "scripts/validation/validate_profiles.py", "scripts/installers/test_installers.py", "scripts/development/test_environment.py", "scripts/development/test_dependencies.py", "scripts/installers/test_installers_windows.ps1", "tests/validation/test_i18n_consistency.py", "tests/colab/README.md", "tests/colab/codingstandard_colab_test.ipynb", "LICENSE",
 ]
-PUBLIC_EXCLUDED_REQUIRED = {"AGENTS.md", ".github/workflows/windows-install-test.yml"}
 
 
 def fail(message: str) -> None:
@@ -37,7 +35,7 @@ def run_checker(path: Path, label: str, *args: str) -> None:
 
 
 def check_required_files() -> None:
-    required = [path for path in REQUIRED_FILES if not (PUBLIC_EXPORT and path in PUBLIC_EXCLUDED_REQUIRED)]
+    required = REQUIRED_FILES
     missing = [path for path in required if not (ROOT / path).is_file()]
     if missing:
         fail("Missing required files: " + ", ".join(missing))
@@ -109,16 +107,15 @@ def check_no_legacy_installer() -> None:
 
 
 def check_windows_workflow() -> None:
-    workflow_path = ROOT / ".github" / "workflows" / "windows-install-test.yml"
-    if PUBLIC_EXPORT and not workflow_path.exists():
-        print("Public export: Windows workflow is intentionally excluded; installer lifecycle evidence is validated in codingStandard-dev CI.")
-        return
+    workflow_path = ROOT / ".github" / "workflows" / "ci.yml"
+    if not workflow_path.exists():
+        fail("Windows workflow is required in the independent repository")
     workflow = workflow_path.read_text(encoding="utf-8")
     if "runs-on: windows-latest" not in workflow:
-        fail("Windows workflow must use the windows-latest runner")
+        fail("CI must include a windows-latest runner")
     test_script = (ROOT / "scripts" / "installers" / "test_installers_windows.ps1").read_text(encoding="utf-8")
     haystack = workflow + "\n" + test_script
-    for required in ("powershell", "pwsh", "-DryRun", "-ConflictAction Merge", "domains/ml", "platform/colab"):
+    for required in ("powershell", "pwsh", "test_installers_windows.ps1"):
         if required.lower() not in haystack.lower():
             fail(f"Windows validation missing: {required}")
 
@@ -150,7 +147,7 @@ def run_i18n_check() -> None:
 
 
 def main() -> None:
-    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("codingStandard validation passed")
+    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("AIEngineeringStandard validation passed")
 
 
 if __name__ == "__main__":

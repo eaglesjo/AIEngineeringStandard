@@ -1,38 +1,53 @@
 # Release Process
 
-This document defines the release boundary for AI Engineering Standard.
+## Repository role
 
-## Repository roles
+`AIEngineeringStandard` is the canonical development, validation, and release repository.
 
 ```text
-codingStandard-private  →  codingStandard-dev  →  AIEngineeringStandard
-        Luna/internal          implementation/validation       public release
+feature/fix/docs branch
+        ↓
+Pull Request
+        ↓
+GitHub Actions CI
+        ↓
+main
+        ↓
+version bump
+        ↓
+annotated release tag
+        ↓
+tag validation
+        ↓
+GitHub Release
 ```
 
-- `codingStandard-private` contains Luna activation, continuity state, history, and internal operating policy.
-- `codingStandard-dev` is the implementation, integration, testing, and release-candidate validation surface.
-- `AIEngineeringStandard` is the public release surface.
+There is no `codingStandard-private`, `codingStandard-dev`, staging repository, promotion repository, or public-export repository.
 
-A public release must not be developed directly in the release repository before development validation.
+## Release contract
 
-## 2.0.0 release sequence
-
-1. Align version and release metadata in `codingStandard-dev`.
-2. Validate the complete repository and release-candidate contract in CI.
-3. Record the exact validated development SHA and evidence.
-4. Promote that exact validated scope to `eaglesjo/AIEngineeringStandard`.
-5. Run an independent second full audit on the final public candidate.
-6. Authorize release only if the second audit passes and no required evidence is missing.
-7. Create the `v2.0.0` tag and GitHub Release from the audited public commit.
+1. Make the required implementation and documentation changes in a feature/fix/release branch.
+2. Run focused validation during development.
+3. Open a pull request against `main`.
+4. Require GitHub Actions CI to pass.
+5. Merge only a validated commit into `main`.
+6. Update `VERSION` and matching release metadata.
+7. Create tag `v<VERSION>` from the exact `main` commit.
+8. The release workflow validates the tagged commit.
+9. The workflow publishes the GitHub Release only after validation succeeds.
 
 ## Evidence rules
 
-- Record exact commit SHAs for source, promotion, and final public identity.
-- Treat CI as execution evidence only when the corresponding workflow actually completed successfully.
-- Mark unavailable checks as `UNTESTED`, `UNSUPPORTED`, `SKIPPED`, or `BLOCKED` as appropriate.
+- Record the exact source commit and release tag.
+- Treat CI as execution evidence only when the corresponding workflow completed successfully.
+- Mark unavailable checks as `UNTESTED`, `UNSUPPORTED`, `SKIPPED`, or `BLOCKED`.
 - Never convert missing live-runtime evidence into a pass by assumption.
-- Preserve historical release tags and commits.
+- Preserve historical tags and commits.
 
 ## Release gate
 
-The release is blocked if version metadata is inconsistent, release documentation describes an obsolete target, applicable validation is failing, provenance is incomplete, or the final public candidate has not received the required second full audit.
+A release is blocked if version metadata is inconsistent, required validation fails, release documentation describes an obsolete repository model, or the release tag does not exactly match `VERSION`.
+
+## Historical releases
+
+`v2.0.0` is preserved as historical provenance from the former promotion-based release model. It is not reproduced or rewritten as part of the independent-release transition.
