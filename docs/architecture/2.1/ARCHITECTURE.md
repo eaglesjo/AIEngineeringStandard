@@ -69,3 +69,8 @@ Parallel agents are allowed only when their work units have explicit ownership a
 ## Compatibility
 
 Version 2.1 does not mandate a specific model, agent framework, MCP implementation, IDE, scheduler, or message bus. An implementation conforms by producing the canonical contracts and evidence defined here.
+
+
+## Lifecycle enforcement
+
+The reference runtime enforces the canonical Work Unit lifecycle at operation boundaries. Agent contracts bind only to `CREATED` work units; `start` moves `READY` to `EXECUTING`; handoff requires `EXECUTING` and moves the unit to `HANDOFF_PENDING`; evaluation is allowed from `EXECUTING` or `HANDOFF_PENDING`, records `EVALUATING`, and then maps acceptance to `ACCEPTED`, `REJECTED`, or `BLOCKED`. Completed work units cannot be evaluated again.
