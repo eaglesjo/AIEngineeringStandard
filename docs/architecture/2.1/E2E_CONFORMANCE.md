@@ -39,3 +39,8 @@ The human approval fixture demonstrates that human intervention is represented b
 - PASS → ACCEPTED acceptance.
 
 The reference runtime rejects human acceptance without matching approval evidence and rejects ACCEPTED evaluations whose result is not PASS.
+
+
+## Handoff provenance scenario
+
+The handoff conformance fixture requires the sender and receiver to be registered agents, the sender to own the Work Unit and hold its authorized Agent Contract, and every referenced evidence item to belong to that Work Unit. Payload and reason are also explicit required transfer fields.

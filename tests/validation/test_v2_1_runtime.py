@@ -4,6 +4,7 @@ import pytest
 def ready_engine():
     r=RuntimeEngine()
     r.register_agent(Agent("planner",frozenset({"read","execute"}),frozenset({"read","execute"})))
+    r.register_agent(Agent("reviewer",frozenset({"read","execute"}),frozenset({"read","execute"})))
     r.register_role(Role("implementer",("implement","verify"),frozenset({"read","execute"})))
     r.create_work_unit(WorkUnit("wu-1","implement contract","planner",("tests pass",)))
     r.bind(AgentContract("contract-1","wu-1","planner","implementer",frozenset({"read","execute"}),{}, {},("tests pass",),("test-result",)))
@@ -46,4 +47,4 @@ def test_evaluation_actor_must_be_registered_agent():
     r=ready_engine(); r.start("wu-1")
     r.record_evidence(Evidence("e-actor","wu-1","planner","test-result","pass","fixture"))
     with pytest.raises(ValueError, match="not registered"):
-        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS","ACCEPTED","unknown actor","reviewer","agent"))
+        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS","ACCEPTED","unknown actor","unregistered","agent"))
