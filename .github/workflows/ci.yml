@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Validate repository
+        run: python scripts/validation/validate.py
+      - name: Test installer lifecycle
+        run: python scripts/installers/test_installers.py
+
+  windows:
+    name: Windows installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Validate Python syntax
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse -Filter *.py | ForEach-Object {
+            python -m py_compile $_.FullName
+          }
+      - name: Test PowerShell installer
+        shell: pwsh
+        run: |
+          ./scripts/installers/test_installers_windows.ps1
