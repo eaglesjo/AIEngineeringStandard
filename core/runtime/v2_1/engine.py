@@ -100,6 +100,12 @@ class RuntimeEngine:
     def create_work_unit(self, work_unit: WorkUnit) -> None:
         if work_unit.id in self.work_units:
             raise ValueError("work unit already exists")
+        if work_unit.owner not in self.agents:
+            raise ValueError("work unit owner agent is not registered")
+        if work_unit.parent_id == work_unit.id:
+            raise ValueError("work unit cannot be its own parent")
+        if work_unit.parent_id is not None and work_unit.parent_id not in self.work_units:
+            raise ValueError("work unit parent does not exist")
         self.work_units[work_unit.id] = work_unit
 
     def bind(self, contract: AgentContract) -> None:
