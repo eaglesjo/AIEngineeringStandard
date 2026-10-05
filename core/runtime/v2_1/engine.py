@@ -128,6 +128,8 @@ class RuntimeEngine:
             raise ValueError("handoff sender agent is not registered")
         if handoff.receiver not in self.agents:
             raise ValueError("handoff receiver agent is not registered")
+        if wu.owner != handoff.sender:
+            raise ValueError("handoff sender must own the work unit")
         contract = next(
             (item for item in self.contracts.values()
              if item.work_unit_id == handoff.work_unit_id and item.agent_id == handoff.sender),
@@ -135,8 +137,6 @@ class RuntimeEngine:
         )
         if contract is None:
             raise ValueError("handoff sender is not the authorized work unit agent")
-        if wu.owner != handoff.sender:
-            raise ValueError("handoff sender must own the work unit")
         if not handoff.reason.strip():
             raise ValueError("handoff requires a reason")
         if not handoff.payload_ref.strip():
