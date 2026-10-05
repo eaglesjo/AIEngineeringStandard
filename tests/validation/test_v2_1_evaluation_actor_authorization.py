@@ -41,8 +41,7 @@ def _evaluation(actor_id: str) -> Evaluation:
         ("accepted",),
         ("e-actor",),
         "PASS",
-        "ACCEPTED",
-        "authorized evaluation",
+        Acceptance("ACCEPTED", "authorized evaluation"),
         actor_id,
         "agent",
     )
