@@ -25,7 +25,7 @@ def _contract(contract_id: str, work_unit_id: str = "wu-1", agent_id: str = "pla
         work_unit_id,
         agent_id,
         "implementer",
-        frozenset({"read", "execute"}),
+        frozenset({"read"}) if agent_id == "reviewer" else frozenset({"read", "execute"}),
         {},
         {},
         ("tests pass",),
