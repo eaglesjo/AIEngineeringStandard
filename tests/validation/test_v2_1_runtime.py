@@ -4,6 +4,7 @@ import pytest
 def ready_engine():
     r=RuntimeEngine()
     r.register_agent(Agent("planner",frozenset({"read","execute"}),frozenset({"read","execute"})))
+    r.register_agent(Agent("reviewer",frozenset({"read","execute"}),frozenset({"read","execute"})))
     r.register_role(Role("implementer",("implement","verify"),frozenset({"read","execute"})))
     r.create_work_unit(WorkUnit("wu-1","implement contract","planner",("tests pass",)))
     r.bind(AgentContract("contract-1","wu-1","planner","implementer",frozenset({"read","execute"}),{}, {},("tests pass",),("test-result",)))
