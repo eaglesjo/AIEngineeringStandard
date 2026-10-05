@@ -48,3 +48,56 @@ def test_evaluation_actor_must_be_registered_agent():
     r.record_evidence(Evidence("e-actor","wu-1","planner","test-result","pass","fixture"))
     with pytest.raises(ValueError, match="not registered"):
         r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS",Acceptance("ACCEPTED","unknown actor"),"unregistered","agent"))
+
+def test_work_unit_lineage_lock_is_internal_only():
+    runtime = ready_engine()
+    work_unit = runtime.work_units["wu-1"]
+    assert "_lineage_locked" not in repr(work_unit)
+    assert work_unit.__dataclass_fields__["_lineage_locked"].init is False
+    assert work_unit.__dataclass_fields__["_lineage_locked"].compare is False
+
+
+@pytest.mark.parametrize(
+    "evaluation",
+    [
+        Evaluation(
+            "eval-invalid",
+            "wu-1",
+            (),
+            ("e-actor",),
+            "PASS",
+            Acceptance("ACCEPTED", "basis"),
+            "planner",
+            "agent",
+        ),
+        Evaluation(
+            "eval-invalid",
+            "wu-1",
+            ("tests pass",),
+            (),
+            "PASS",
+            Acceptance("ACCEPTED", "basis"),
+            "planner",
+            "agent",
+        ),
+        Evaluation(
+            "eval-invalid",
+            "wu-1",
+            ("tests pass",),
+            ("e-actor",),
+            "INVALID",
+            Acceptance("ACCEPTED", "basis"),
+            "planner",
+            "agent",
+        ),
+    ],
+)
+def test_evaluation_rejects_schema_invalid_semantics(evaluation):
+    runtime = ready_engine()
+    runtime.start("wu-1")
+    runtime.record_evidence(
+        Evidence("e-actor", "wu-1", "planner", "test-result", "pass", "fixture")
+    )
+    with pytest.raises(ValueError):
+        runtime.evaluate(evaluation)
+\n
