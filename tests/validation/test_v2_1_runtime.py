@@ -100,4 +100,4 @@ def test_evaluation_rejects_schema_invalid_semantics(evaluation):
     )
     with pytest.raises(ValueError):
         runtime.evaluate(evaluation)
-\n
+
