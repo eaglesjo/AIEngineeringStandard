@@ -124,8 +124,27 @@ class RuntimeEngine:
 
     def handoff(self, handoff: Handoff) -> None:
         wu = self.work_units[handoff.work_unit_id]
+        if handoff.sender not in self.agents:
+            raise ValueError("handoff sender agent is not registered")
+        if handoff.receiver not in self.agents:
+            raise ValueError("handoff receiver agent is not registered")
+        contract = next(
+            (item for item in self.contracts.values()
+             if item.work_unit_id == handoff.work_unit_id and item.agent_id == handoff.sender),
+            None,
+        )
+        if contract is None:
+            raise ValueError("handoff sender is not the authorized work unit agent")
+        if wu.owner != handoff.sender:
+            raise ValueError("handoff sender must own the work unit")
+        if not handoff.reason.strip():
+            raise ValueError("handoff requires a reason")
+        if not handoff.payload_ref.strip():
+            raise ValueError("handoff requires a payload reference")
         if not handoff.evidence_refs or any(ref not in self.evidence for ref in handoff.evidence_refs):
             raise ValueError("handoff requires existing evidence references")
+        if any(self.evidence[ref].work_unit_id != wu.id for ref in handoff.evidence_refs):
+            raise ValueError("handoff evidence must belong to the work unit")
         wu.status = "HANDOFF_PENDING"
         self.handoffs[handoff.id] = handoff
 
