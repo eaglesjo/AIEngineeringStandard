@@ -48,7 +48,7 @@ The unit of standardization is the **Work Unit**, not a chat message, model call
 8. Retries create a new invocation identity while retaining parent lineage.
 9. v2.0 contracts remain valid; v2.1 adds contracts rather than replacing existing evidence and validation rules.
 10. Runtime implementations are adapters to these contracts, not sources of canonical semantics.
-11. Canonical registry identities are immutable; duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.
+11. Canonical registry identities are immutable; duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.\n12. Work Unit ownership and parent lineage references must resolve to registered canonical identities.
 
 ## Lifecycle
 
@@ -87,3 +87,10 @@ The reference runtime treats evidence IDs as immutable provenance identities. Re
 The reference runtime treats every canonical registry ID as an immutable provenance identity. Registration or creation with an existing Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence ID is rejected rather than replacing the original record.
 
 This prevents a later registration from silently changing the entity referenced by an existing contract, handoff, evaluation, retry lineage, or evidence record. Implementations that need a revised entity must create a new canonical identity and preserve the lineage explicitly.
+
+
+## Work Unit lineage integrity
+
+The reference runtime requires every Work Unit owner to be a registered Agent. Optional parent references must resolve to an existing Work Unit and may not point to the Work Unit itself. Parallel child Work Units may share an existing parent while retaining independent ownership and identity.
+
+This keeps ownership and lineage referentially valid before execution begins; it does not impose scheduler ordering or require a specific parent/child execution strategy.
