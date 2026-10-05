@@ -21,7 +21,8 @@ A v2.1 implementation is acceptable only when:
 15. Work Unit owners and parent lineage references resolve to valid canonical identities.
 16. each Work Unit has at most one Agent Contract and that contract agent is the Work Unit owner.
 17. agent Evaluation actors are authorized by Work Unit ownership or recorded handoff receiver provenance.
-18. all existing v2.0 validation gates remain green.
+18. Work Unit parent lineage is immutable after creation, preventing indirect lineage cycles from being introduced by parent reassignment.
+19. all existing v2.0 validation gates remain green.
 
 ## Minimum conformance scenario
 
