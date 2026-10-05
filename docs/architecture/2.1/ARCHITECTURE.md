@@ -50,6 +50,7 @@ The unit of standardization is the **Work Unit**, not a chat message, model call
 10. Runtime implementations are adapters to these contracts, not sources of canonical semantics.
 11. Canonical registry identities are immutable; duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.
 12. Work Unit ownership and parent lineage references must resolve to registered canonical identities.
+13. Each Work Unit has at most one bound Agent Contract, and its contract agent must be the Work Unit owner.
 
 ## Lifecycle
 
@@ -95,3 +96,8 @@ This prevents a later registration from silently changing the entity referenced 
 The reference runtime requires every Work Unit owner to be a registered Agent. Optional parent references must resolve to an existing Work Unit and may not point to the Work Unit itself. Parallel child Work Units may share an existing parent while retaining independent ownership and identity.
 
 This keeps ownership and lineage referentially valid before execution begins; it does not impose scheduler ordering or require a specific parent/child execution strategy.
+
+
+## Agent Contract binding integrity
+
+The reference runtime requires an Agent Contract to bind to the Work Unit owner and rejects a second contract for a Work Unit. This makes the contract binding a single canonical authorization boundary before execution begins.
