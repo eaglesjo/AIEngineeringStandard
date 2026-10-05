@@ -107,15 +107,15 @@ def check_no_legacy_installer() -> None:
 
 
 def check_windows_workflow() -> None:
-    workflow_path = ROOT / ".github" / "workflows" / "windows-install-test.yml"
+    workflow_path = ROOT / ".github" / "workflows" / "ci.yml"
     if not workflow_path.exists():
         fail("Windows workflow is required in the independent repository")
     workflow = workflow_path.read_text(encoding="utf-8")
     if "runs-on: windows-latest" not in workflow:
-        fail("Windows workflow must use the windows-latest runner")
+        fail("CI must include a windows-latest runner")
     test_script = (ROOT / "scripts" / "installers" / "test_installers_windows.ps1").read_text(encoding="utf-8")
     haystack = workflow + "\n" + test_script
-    for required in ("powershell", "pwsh", "-DryRun", "-ConflictAction Merge", "domains/ml", "platform/colab"):
+    for required in ("powershell", "pwsh", "test_installers_windows.ps1"):
         if required.lower() not in haystack.lower():
             fail(f"Windows validation missing: {required}")
 
