@@ -11,25 +11,28 @@ A v2.1 implementation is acceptable only when:
 5. retry lineage is preserved;
 6. required evidence has an explicit provenance identity;
 7. evaluation results distinguish PASS from UNTESTED/BLOCKED;
-8. acceptance is derived from evaluation rather than asserted independently;
-9. the implementation does not require a specific orchestration framework;
-10. all existing v2.0 validation gates remain green.
+8. every Evaluation identifies an explicit agent or human actor;
+9. human acceptance is backed by human-approval evidence from that actor;
+10. acceptance is derived from evaluation rather than asserted independently;
+11. the implementation does not require a specific orchestration framework;
+12. all existing v2.0 validation gates remain green.
 
 ## Minimum conformance scenario
 
 A reference implementation must demonstrate:
 
-```
 create work unit
 → assign role
 → execute agent contract
 → produce evidence
 → handoff to reviewer
 → evaluate evidence
+→ identify evaluation actor
 → accept or reject
-```
 
 A second scenario must demonstrate failure and retry without losing the failed attempt's provenance.
+
+A human-intervention scenario must demonstrate that human acceptance is explicit, actor-bound, and evidence-backed.
 
 ## Non-goals
 
