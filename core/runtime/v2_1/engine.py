@@ -117,6 +117,10 @@ class RuntimeEngine:
             raise PermissionError("effective permissions must equal agent/role intersection")
         if wu.status != "CREATED":
             raise RuntimeError("agent contract may only bind a CREATED work unit")
+        if contract.agent_id != wu.owner:
+            raise ValueError("agent contract agent must own the work unit")
+        if any(item.work_unit_id == wu.id for item in self.contracts.values()):
+            raise ValueError("work unit already has an agent contract")
         if not contract.evidence_requirements:
             raise ValueError("agent contract requires evidence requirements")
         if contract.id in self.contracts:
