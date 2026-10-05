@@ -102,11 +102,11 @@ class RuntimeEngine:
         agent = self.agents[contract.agent_id]
         role = self.roles[contract.role_id]
         wu = self.work_units[contract.work_unit_id]
-        if wu.status != "CREATED":
-            raise RuntimeError("agent contract may only bind a CREATED work unit")
         effective = agent.permission_ceiling & role.allowed_permissions
         if contract.effective_permissions != effective:
             raise PermissionError("effective permissions must equal agent/role intersection")
+        if wu.status != "CREATED":
+            raise RuntimeError("agent contract may only bind a CREATED work unit")
         if not contract.evidence_requirements:
             raise ValueError("agent contract requires evidence requirements")
         self.contracts[contract.id] = contract
