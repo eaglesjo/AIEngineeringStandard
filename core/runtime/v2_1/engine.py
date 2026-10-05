@@ -28,6 +28,11 @@ class WorkUnit:
     retry_reason: str | None = None
     failure_evidence_refs: tuple[str, ...] = ()
 
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name == "parent_id" and hasattr(self, "parent_id"):
+            raise AttributeError("work unit parent lineage is immutable")
+        object.__setattr__(self, name, value)
+
 @dataclass(frozen=True)
 class Evidence:
     id: str
