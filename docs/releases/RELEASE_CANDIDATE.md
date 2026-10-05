@@ -14,7 +14,7 @@ This document defines the release-candidate gate for the current single-reposito
 - Google Colab runtime and notebook validation
 - executable agent-conformance schema/policy validation
 - dependency alignment and isolated real pip resolver validation
-- final CI validation of the exact release commit
+- final local validation of the exact release commit
 
 ## Release candidate invariants
 
@@ -32,4 +32,4 @@ The former `v2.0.0` release remains historical. The next release is `v2.0.1` und
 
 ## Publication gate
 
-A `v2.0.1` release is authorized only when the pull request is merged to `main`, the release version is consistent, and the tagged commit passes the release workflow.
+A release is authorized only when the pull request is merged to `main`, the release version is consistent, and `scripts/release/check_release.py` passes on the exact release commit.
