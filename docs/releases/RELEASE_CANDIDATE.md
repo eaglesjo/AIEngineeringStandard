@@ -1,6 +1,6 @@
 # Release Candidate
 
-This file marks the `codingStandard-dev` branch as a **2.0.0 release-candidate preparation** surface. It does not authorize publication.
+This document defines the release-candidate gate for the current single-repository model.
 
 ## Required checks
 
@@ -13,22 +13,23 @@ This file marks the `codingStandard-dev` branch as a **2.0.0 release-candidate p
 - LLM and Vision CPU memory smoke tests
 - Google Colab runtime and notebook validation
 - executable agent-conformance schema/policy validation
-- dependency alignment and isolated real pip resolver integration
-- final CI validation of the exact release-candidate commit
+- dependency alignment and isolated real pip resolver validation
+- final CI validation of the exact release commit
 
 ## Release candidate invariants
 
-- Version metadata must consistently identify `2.0.0`.
-- Release documentation must describe the current 2.0 scope rather than a historical 1.x release.
-- Historical 1.x tags and commits must remain unchanged.
-- The candidate must originate from `codingStandard-dev` and be promoted only after applicable validation passes.
-- The final public candidate must receive a second full audit before release authorization.
+- `VERSION` is the canonical release version.
+- `core/common/environment.py::STANDARD_VERSION` must match `VERSION`.
+- Release documentation must describe the current single-repository model.
+- Historical tags and commits remain unchanged.
+- The candidate is developed and validated in this repository.
+- No promotion from another repository is permitted.
 - Unavailable runtime evidence remains explicitly `UNTESTED` / `SKIPPED`.
 
-## Release version
+## Current transition
 
-`2.0.0`
+The former `v2.0.0` release remains historical. The next release is `v2.0.1` under the independent development and release contract.
 
 ## Publication gate
 
-**NOT AUTHORIZED YET.** Passing this preparation branch's checks is necessary but not sufficient. Promotion and the independent final public audit are still required before the `v2.0.0` tag/release may be created.
+A `v2.0.1` release is authorized only when the pull request is merged to `main`, the release version is consistent, and the tagged commit passes the release workflow.
