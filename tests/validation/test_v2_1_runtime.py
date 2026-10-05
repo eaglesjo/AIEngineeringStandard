@@ -29,7 +29,15 @@ def test_missing_evidence_blocks_handoff():
     with pytest.raises(ValueError): r.handoff(Handoff("h-1","wu-1","planner","reviewer","result",("missing",),"review",r.timestamp()))
 
 def test_failure_preserves_retry_lineage():
-    r=ready_engine(); r.start("wu-1"); r.work_units["wu-1"].status="BLOCKED"
-    retry=r.retry("wu-1","runtime failure")
+    r=ready_engine(); r.start("wu-1")
+    r.record_evidence(Evidence("failure-1","wu-1","runtime","log","failure-1","blocked"))
+    r.work_units["wu-1"].status="BLOCKED"
+    retry=r.retry("wu-1","runtime failure",("failure-1",))
     assert retry.parent_id=="wu-1"
     assert retry.status=="CREATED"
+    assert retry.retry_reason=="runtime failure"
+    assert retry.failure_evidence_refs==("failure-1",)
+
+def test_retry_rejects_missing_failure_provenance():
+    r=ready_engine(); r.start("wu-1"); r.work_units["wu-1"].status="BLOCKED"
+    with pytest.raises(ValueError): r.retry("wu-1","runtime failure",("missing",))
