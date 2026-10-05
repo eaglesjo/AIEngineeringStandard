@@ -21,7 +21,7 @@ COMMON = [
     "AGENTS.md", ".agents/skills/ai-engineering-standard/SKILL.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md",
     ".cursor/rules/coding-standard.mdc", ".windsurf/rules/coding-standard.md",
     ".clinerules/01-coding-standard.md", ".continue/rules/01-coding-standard.md",
-    ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md", "docs/development/CONVENTIONS.md", ".aider.conf.yml",
+    ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md", ".aider.conf.yml",
     "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md", "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py",
 ]
 DOMAIN_FIXED = {
