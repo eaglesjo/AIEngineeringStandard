@@ -21,7 +21,7 @@ This repository is the canonical development, validation, and release source for
 
 ## Development rules
 
-- Work in a feature/fix/docs branch; keep `main` releasable.
+- Work in a feature/fix/docs branch; keep `main` releasable. The repository may temporarily use a development branch, but the final remote branch set remains `main` only.
 - Do not commit secrets, credentials, local runtime state, generated caches, or machine-specific paths.
 - Do not weaken validation to make a release pass.
 - Keep unavailable runtime evidence explicitly `UNTESTED`, `UNSUPPORTED`, `SKIPPED`, or `BLOCKED`.
@@ -30,7 +30,7 @@ This repository is the canonical development, validation, and release source for
 
 ## Release rules
 
-A release is created from this repository only. The release workflow validates the exact tag commit and then creates the GitHub Release. Never promote source from another repository.
+A release is created from this repository only. Run `python3 scripts/release/check_release.py` from an exact, clean `main` checkout, then use `python3 scripts/release/publish_release.py` to create the annotated tag and GitHub Release. GitHub Actions is not part of the release architecture. Never promote source from another repository.
 
 ## Agent/tool adapters
 
