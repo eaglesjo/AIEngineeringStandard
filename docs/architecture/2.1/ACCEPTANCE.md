@@ -19,7 +19,8 @@ A v2.1 implementation is acceptable only when:
 13. evidence identities are immutable and duplicate evidence IDs are rejected.
 14. all canonical registry identities are immutable and duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.
 15. Work Unit owners and parent lineage references resolve to valid canonical identities.
-16. all existing v2.0 validation gates remain green.
+16. each Work Unit has at most one Agent Contract and that contract agent is the Work Unit owner.
+17. all existing v2.0 validation gates remain green.
 
 
 ## Minimum conformance scenario
