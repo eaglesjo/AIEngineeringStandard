@@ -186,6 +186,13 @@ class RuntimeEngine:
             raise ValueError("evaluation actor agent is not registered")
         if evaluation.actor_type == "human" and evaluation.actor_id in self.agents:
             raise ValueError("human evaluation actor must not be an agent identity")
+        if evaluation.actor_type == "agent":
+            authorized = evaluation.actor_id == wu.owner or any(
+                handoff.work_unit_id == wu.id and handoff.receiver == evaluation.actor_id
+                for handoff in self.handoffs.values()
+            )
+            if not authorized:
+                raise ValueError("evaluation actor is not authorized for the work unit")
         if evaluation.result in {"FAIL", "UNTESTED", "BLOCKED"} and evaluation.acceptance == "ACCEPTED":
             raise ValueError("unacceptable evaluation cannot be accepted")
         if evaluation.acceptance not in {"ACCEPTED", "REJECTED", "INCOMPLETE"}:
