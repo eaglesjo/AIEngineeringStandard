@@ -10,6 +10,7 @@ This repository is the canonical development, validation, and release source for
 2. Inspect `profiles/project.json` and the relevant architecture/policy profiles.
 3. Preserve the canonical directory layout.
 4. Run the narrowest relevant validation while developing, then the full validation before merge or release.
+5. For v2.1 contract changes, preserve the canonical Agent → Role → Contract → Work Unit → Handoff → Evidence → Evaluation → Acceptance model.
 
 ## Source of truth
 
@@ -27,6 +28,10 @@ This repository is the canonical development, validation, and release source for
 - Keep unavailable runtime evidence explicitly `UNTESTED`, `UNSUPPORTED`, `SKIPPED`, or `BLOCKED`.
 - Prefer small, auditable commits.
 - Update tests and documentation when a contract changes.
+
+## v2.1 architecture contract
+
+The canonical multi-agent model is defined by `core/contracts/2.1/`. Runtime adapters must map their native concepts into these contracts and must not redefine their semantics. A Work Unit owns the trace boundary; Handoffs carry explicit provenance; Evaluation cannot silently convert unavailable evidence into PASS; Acceptance is downstream of Evaluation.
 
 ## Release rules
 
