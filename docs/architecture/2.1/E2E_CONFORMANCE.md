@@ -44,3 +44,8 @@ The reference runtime rejects human acceptance without matching approval evidenc
 ## Handoff provenance scenario
 
 The handoff conformance fixture requires the sender and receiver to be registered agents, the sender to own the Work Unit and hold its authorized Agent Contract, and every referenced evidence item to belong to that Work Unit. Payload and reason are also explicit required transfer fields.
+
+
+## Lifecycle state conformance
+
+The lifecycle fixture verifies that runtime operations cannot bypass canonical state boundaries: binding is limited to `CREATED`, handoff requires `EXECUTING`, evaluation requires `EXECUTING` or `HANDOFF_PENDING`, incomplete evaluation maps to `BLOCKED`, cross-Work-Unit evaluation evidence is rejected, and completed work cannot be evaluated twice.
