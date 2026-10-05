@@ -16,12 +16,12 @@ COMMON = [
     "AGENTS.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md",
     ".cursor/rules/coding-standard.mdc", ".windsurf/rules/coding-standard.md",
     ".clinerules/01-coding-standard.md", ".continue/rules/01-coding-standard.md",
-    ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md", "docs/development/CONVENTIONS.md", ".aider.conf.yml",
+    ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md", ".aider.conf.yml",
     "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md", "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py",
 ]
 ML = [".github/instructions/ml.instructions.md", "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md"]
 COLAB = ["platform/colab/AGENT.md", "platform/colab/SKILL.md"]
-LOCALES = {"ko": "한국어", "zh-CN": "简体中文", "ja": "日本語", "ru": "Русский"}
+LOCALES = {"ko", "fr", "es", "zh-CN", "ja", "ru", "tr", "de", "it", "pt", "ar", "hi", "id", "vi", "th", "nl", "pl", "sv", "uk"}
 
 
 def run(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -78,7 +78,7 @@ def test_bash() -> None:
         run(["bash", str(SH), str(target), "en", "all", "overwrite", "false"])
         check(target, COMMON + ML + COLAB)
         lifecycle(target)
-        for locale in LOCALES:
+        for locale in sorted(LOCALES):
             locale_target = Path(tmp) / f"{locale}-project"
             result = run(["bash", str(SH), str(locale_target), locale, "common", "overwrite", "false"])
             check(locale_target, COMMON)
