@@ -1,14 +1,14 @@
 # Release Status
 
-## Current target
+## Current release
 
-Release target: **2.0.2**
+Release: **2.0.2**
 
-Status: **local-first CI/release architecture**
+Status: **published**
 
 ## Repository model
 
-`AIEngineeringStandard` is now the only source for implementation, validation, and release.
+`AIEngineeringStandard` is the only source for implementation, validation, and release.
 
 The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary is retired.
 
@@ -25,6 +25,7 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 - executable agent-conformance schema/policy validation
 - dependency compatibility and resolver validation
 - final release-gate validation on the exact tagged commit
+- v2.1 canonical multi-agent contract validation
 
 ## Release invariants
 
@@ -34,10 +35,8 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 - Release tags must match `VERSION`.
 - Do not describe unavailable runtime evidence as passed.
 
-## Gate
+## v2.1 development boundary
 
-`v2.0.2`: **release candidate**
+v2.1 architecture and contract work is developed in temporary branches and merged to `main` only after the v2.0 validation gates and the v2.1 contract gate pass.
 
-Required sequence:
-
-`development → local validation → main → release preflight → annotated tag → GitHub Release`.
+The next release version is assigned only when v2.1 implementation work is release-ready.
