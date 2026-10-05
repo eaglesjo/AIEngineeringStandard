@@ -31,7 +31,7 @@ feature/fix/docs
       ↓
 Pull Request
       ↓
-GitHub Actions CI
+local validation gate
       ↓
 main
       ↓
@@ -89,7 +89,7 @@ See [`INSTALL.md`](INSTALL.md) for the complete installation contract.
 ├── compatibility/
 ├── scripts/{development,installers,validation}/
 ├── tests/
-├── .github/workflows/
+├── scripts/release/
 └── VERSION
 ```
 
@@ -104,10 +104,10 @@ python3 scripts/validation/validate.py
 python3 scripts/installers/test_installers.py
 ```
 
-GitHub Actions executes the same validation on Linux and macOS, with dedicated Windows installer validation.
+Run the same validation locally on the supported development environments. Windows installer validation is part of the release gate when Windows evidence is required.
 
 ## Release provenance
 
-Release tags and GitHub Releases are created from this repository only. The release workflow validates that the tag exactly matches `VERSION`, runs the complete validation gates on the tagged commit, and then publishes the GitHub Release.
+Release tags and GitHub Releases are created from this repository only. `scripts/release/check_release.py` validates the exact local `main` state, and `scripts/release/publish_release.py` creates the annotated tag and GitHub Release explicitly. No GitHub Actions workflow is required.
 
 Historical tags and commits, including `v2.0.0`, are preserved.
