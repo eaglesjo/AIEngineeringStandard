@@ -2,9 +2,9 @@
 
 ## Current target
 
-Release target: **2.0.1**
+Release target: **2.0.2**
 
-Status: **independent development/release transition**
+Status: **local-first CI/release architecture**
 
 ## Repository model
 
@@ -36,7 +36,7 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 
 ## Gate
 
-`v2.0.1`: **in transition**
+`v2.0.2`: **release candidate**
 
 Required sequence:
 
