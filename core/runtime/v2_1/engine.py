@@ -88,9 +88,13 @@ class RuntimeEngine:
     def register_agent(self, agent: Agent) -> None:
         if not agent.permission_ceiling <= agent.capabilities:
             raise PermissionError("agent permission ceiling exceeds capabilities")
+        if agent.id in self.agents:
+            raise ValueError("agent already exists")
         self.agents[agent.id] = agent
 
     def register_role(self, role: Role) -> None:
+        if role.id in self.roles:
+            raise ValueError("role already exists")
         self.roles[role.id] = role
 
     def create_work_unit(self, work_unit: WorkUnit) -> None:
@@ -109,6 +113,8 @@ class RuntimeEngine:
             raise RuntimeError("agent contract may only bind a CREATED work unit")
         if not contract.evidence_requirements:
             raise ValueError("agent contract requires evidence requirements")
+        if contract.id in self.contracts:
+            raise ValueError("agent contract already exists")
         self.contracts[contract.id] = contract
         wu.status = "READY"
 
@@ -151,6 +157,8 @@ class RuntimeEngine:
             raise ValueError("handoff requires existing evidence references")
         if any(self.evidence[ref].work_unit_id != wu.id for ref in handoff.evidence_refs):
             raise ValueError("handoff evidence must belong to the work unit")
+        if handoff.id in self.handoffs:
+            raise ValueError("handoff already exists")
         wu.status = "HANDOFF_PENDING"
         self.handoffs[handoff.id] = handoff
 
