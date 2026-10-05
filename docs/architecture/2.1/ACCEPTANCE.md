@@ -17,7 +17,9 @@ A v2.1 implementation is acceptable only when:
 11. the implementation does not require a specific orchestration framework;
 12. runtime operations enforce the canonical Work Unit lifecycle and reject invalid state transitions.
 13. evidence identities are immutable and duplicate evidence IDs are rejected.
-14. all existing v2.0 validation gates remain green.
+14. all canonical registry identities are immutable and duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.
+15. all existing v2.0 validation gates remain green.
+
 
 ## Minimum conformance scenario
 
