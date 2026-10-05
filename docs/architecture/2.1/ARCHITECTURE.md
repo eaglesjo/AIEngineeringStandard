@@ -51,6 +51,7 @@ The unit of standardization is the **Work Unit**, not a chat message, model call
 11. Canonical registry identities are immutable; duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.
 12. Work Unit ownership and parent lineage references must resolve to registered canonical identities.
 13. Each Work Unit has at most one bound Agent Contract, and its contract agent must be the Work Unit owner.
+14. A Work Unit parent reference is immutable after creation; lineage changes require a new canonical Work Unit identity.
 
 ## Lifecycle
 
@@ -95,7 +96,7 @@ This prevents a later registration from silently changing the entity referenced 
 
 The reference runtime requires every Work Unit owner to be a registered Agent. Optional parent references must resolve to an existing Work Unit and may not point to the Work Unit itself. Parallel child Work Units may share an existing parent while retaining independent ownership and identity.
 
-This keeps ownership and lineage referentially valid before execution begins; it does not impose scheduler ordering or require a specific parent/child execution strategy.
+This keeps ownership and lineage referentially valid before execution begins; it does not impose scheduler ordering or require a specific parent/child execution strategy. The reference runtime makes `parent_id` immutable after Work Unit creation, so an existing node cannot be reassigned to a descendant and create an indirect cycle.
 
 
 ## Agent Contract binding integrity
