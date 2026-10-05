@@ -1,3 +1,27 @@
+# 2.0.2 Release Notes
+
+AI Engineering Standard 2.0.2 establishes the local-first CI and release architecture introduced after the 2.0.1 independent-release transition.
+
+## Highlights
+
+- Remove repository GitHub Actions CI and release workflows.
+- Make the repository validation gate reject reintroduced GitHub Actions workflows.
+- Add deterministic release preflight with exact `main`/`origin/main` matching, full validation, installer lifecycle validation, and duplicate-tag protection.
+- Add explicit annotated-tag and GitHub Release publishing through the authenticated `gh` CLI.
+- Preserve the single-repository development, validation, and release model.
+
+## Release boundary
+
+The release flow is now:
+
+`development → local validation → main → release preflight → annotated tag → GitHub Release`
+
+There is no separate CI service, promotion repository, or automated release publisher.
+
+## Validation evidence
+
+The release preflight runs the complete repository validation and installer lifecycle tests before creating the release tag.
+
 # 2.0.0 Release Notes
 
 AI Engineering Standard 2.0.0 establishes the repository's agent-engineering and validation contracts as a cohesive, machine-readable release surface. It preserves the historical 1.x line while introducing explicit 2.0 architecture, conformance, provenance, and dependency-compatibility controls.
