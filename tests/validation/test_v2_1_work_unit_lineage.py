@@ -43,6 +43,6 @@ def test_parallel_child_may_reference_existing_parent():
         WorkUnit("wu-root", "root", "planner", ("done",))
     )
     runtime.create_work_unit(
-        WorkUnit("wu-child", "child", "implement", ("done",), parent_id="wu-root")
+        WorkUnit("wu-child", "child", "implementer", ("done",), parent_id="wu-root")
     )
     assert runtime.work_units["wu-child"].parent_id == "wu-root"
