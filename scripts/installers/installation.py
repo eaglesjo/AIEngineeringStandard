@@ -10,12 +10,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-SUPPORTED_LANGUAGES = ("en", "ko", "zh-CN", "ja", "ru")
 SUPPORTED_DOMAINS = ("common", "ml", "llm", "vision", "colab", "all")
 SUPPORTED_POLICIES = ("ask", "merge", "overwrite", "skip")
 MANIFEST_DIR = ".codingstandard"
 MANIFEST_FILE = "installation.json"
 SCHEMA_VERSION = 1
+CATALOG_FILE = "i18n/languages.json"
 
 COMMON = [
     "AGENTS.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md",
@@ -34,6 +34,18 @@ DOMAIN_FIXED = {
 
 def read_version(root: Path) -> str:
     return (root / "VERSION").read_text(encoding="utf-8").strip()
+
+
+def supported_languages(root: Path) -> tuple[str, ...]:
+    catalog = root / CATALOG_FILE
+    try:
+        data = json.loads(catalog.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"Invalid language catalog: {catalog}: {exc}") from exc
+    locales = {str(item["locale"]) for item in data.get("runtime_resources", []) if isinstance(item, dict) and item.get("locale")}
+    if "en" not in locales:
+        locales.add("en")
+    return tuple(sorted(locales))
 
 
 def sha256_file(path: Path) -> str:
@@ -83,9 +95,9 @@ def resolve_source(root: Path, language: str, rel: str) -> Path:
 
 
 def prompt_language() -> str:
-    print("Language: 1) English  2) Korean  3) Simplified Chinese  4) Japanese  5) Russian")
-    choice = input("Language [1]: ").strip()
-    return {"2": "ko", "3": "zh-CN", "4": "ja", "5": "ru"}.get(choice, "en")
+    print("Available languages: " + ", ".join(supported_languages(Path(__file__).resolve().parents[2])))
+    choice = input("Language [en]: ").strip()
+    return choice or "en"
 
 
 def prompt_domain() -> str:
@@ -119,8 +131,9 @@ def write_text(path: Path, text: str) -> None:
 
 
 def install(root: Path, target: Path, language: str, domain: str, policy: str, dry_run: bool) -> int:
-    if language not in SUPPORTED_LANGUAGES:
-        raise SystemExit(f"language: {'|'.join(SUPPORTED_LANGUAGES)}")
+    languages = supported_languages(root)
+    if language not in languages:
+        raise SystemExit(f"language: {'|'.join(languages)}")
     if domain not in SUPPORTED_DOMAINS:
         raise SystemExit(f"domain: {'|'.join(SUPPORTED_DOMAINS)}")
     if policy not in SUPPORTED_POLICIES:
