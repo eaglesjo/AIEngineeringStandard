@@ -18,7 +18,7 @@ A v2.1 implementation is acceptable only when:
 12. runtime operations enforce the canonical Work Unit lifecycle and reject invalid state transitions.
 13. evidence identities are immutable and duplicate evidence IDs are rejected.
 14. all canonical registry identities are immutable and duplicate Agent, Role, Work Unit, Agent Contract, Handoff, Evaluation, or Evidence IDs are rejected.
-15. all existing v2.0 validation gates remain green.
+15. Work Unit owners and parent lineage references resolve to valid canonical identities.\n16. all existing v2.0 validation gates remain green.
 
 
 ## Minimum conformance scenario
