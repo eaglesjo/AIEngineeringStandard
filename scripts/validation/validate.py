@@ -106,18 +106,10 @@ def check_no_legacy_installer() -> None:
         fail(f"Legacy installer must not exist before release: {path.name}")
 
 
-def check_windows_workflow() -> None:
-    workflow_path = ROOT / ".github" / "workflows" / "ci.yml"
-    if not workflow_path.exists():
-        fail("Windows workflow is required in the independent repository")
-    workflow = workflow_path.read_text(encoding="utf-8")
-    if "runs-on: windows-latest" not in workflow:
-        fail("CI must include a windows-latest runner")
-    test_script = (ROOT / "scripts" / "installers" / "test_installers_windows.ps1").read_text(encoding="utf-8")
-    haystack = workflow + "\n" + test_script
-    for required in ("powershell", "pwsh", "test_installers_windows.ps1"):
-        if required.lower() not in haystack.lower():
-            fail(f"Windows validation missing: {required}")
+def check_no_github_actions() -> None:
+    workflows = ROOT / ".github" / "workflows"
+    if workflows.exists() and any(workflows.glob("*")):
+        fail("GitHub Actions workflows are not part of the local CI/release architecture")
 
 
 def check_version_consistency() -> None:
@@ -147,7 +139,7 @@ def run_i18n_check() -> None:
 
 
 def main() -> None:
-    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_windows_workflow(); check_version_consistency(); run_i18n_check(); print("AIEngineeringStandard validation passed")
+    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_no_github_actions(); check_version_consistency(); run_i18n_check(); print("AIEngineeringStandard validation passed")
 
 
 if __name__ == "__main__":
