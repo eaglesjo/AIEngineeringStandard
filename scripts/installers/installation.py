@@ -18,7 +18,7 @@ SCHEMA_VERSION = 1
 CATALOG_FILE = "i18n/languages.json"
 
 COMMON = [
-    "AGENTS.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md",
+    "AGENTS.md", ".agents/skills/ai-engineering-standard/SKILL.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md",
     ".cursor/rules/coding-standard.mdc", ".windsurf/rules/coding-standard.md",
     ".clinerules/01-coding-standard.md", ".continue/rules/01-coding-standard.md",
     ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md", "docs/development/CONVENTIONS.md", ".aider.conf.yml",
