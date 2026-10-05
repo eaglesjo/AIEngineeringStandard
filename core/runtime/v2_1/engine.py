@@ -105,6 +105,8 @@ class RuntimeEngine:
         effective = agent.permission_ceiling & role.allowed_permissions
         if contract.effective_permissions != effective:
             raise PermissionError("effective permissions must equal agent/role intersection")
+        if wu.status != "CREATED":
+            raise RuntimeError("agent contract may only bind a CREATED work unit")
         if not contract.evidence_requirements:
             raise ValueError("agent contract requires evidence requirements")
         self.contracts[contract.id] = contract
@@ -124,6 +126,8 @@ class RuntimeEngine:
 
     def handoff(self, handoff: Handoff) -> None:
         wu = self.work_units[handoff.work_unit_id]
+        if wu.status != "EXECUTING":
+            raise RuntimeError("handoff requires an EXECUTING work unit")
         if handoff.sender not in self.agents:
             raise ValueError("handoff sender agent is not registered")
         if handoff.receiver not in self.agents:
@@ -150,6 +154,10 @@ class RuntimeEngine:
 
     def evaluate(self, evaluation: Evaluation) -> None:
         wu = self.work_units[evaluation.work_unit_id]
+        if wu.status not in {"EXECUTING", "HANDOFF_PENDING"}:
+            raise RuntimeError("evaluation requires an EXECUTING or HANDOFF_PENDING work unit")
+        if evaluation.id in self.evaluations:
+            raise ValueError("evaluation already exists")
         if any(ref not in self.evidence for ref in evaluation.evidence_refs):
             raise ValueError("evaluation references missing evidence")
         if evaluation.actor_type not in {"agent", "human"} or not evaluation.actor_id.strip():
@@ -164,13 +172,21 @@ class RuntimeEngine:
             raise ValueError("invalid acceptance status")
         if evaluation.acceptance == "ACCEPTED" and evaluation.result != "PASS":
             raise ValueError("only PASS evaluations can be accepted")
+        if any(self.evidence[ref].work_unit_id != wu.id for ref in evaluation.evidence_refs):
+            raise ValueError("evaluation evidence must belong to the work unit")
         if evaluation.actor_type == "human" and not any(
             self.evidence[ref].type == "human-approval" and self.evidence[ref].source == evaluation.actor_id
             for ref in evaluation.evidence_refs
         ):
             raise ValueError("human acceptance requires human-approval evidence from the actor")
-        wu.status = evaluation.acceptance
+        wu.status = "EVALUATING"
         self.evaluations[evaluation.id] = evaluation
+        if evaluation.acceptance == "ACCEPTED":
+            wu.status = "ACCEPTED"
+        elif evaluation.acceptance == "REJECTED":
+            wu.status = "REJECTED"
+        else:
+            wu.status = "BLOCKED"
 
     def retry(
         self,
