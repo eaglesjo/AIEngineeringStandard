@@ -1,4 +1,4 @@
-from core.runtime.v2_1.engine import Agent, AgentContract, Evaluation, Evidence, Handoff, Role, RuntimeEngine, WorkUnit
+from core.runtime.v2_1.engine import Acceptance, Agent, AgentContract, Evaluation, Evidence, Handoff, Role, RuntimeEngine, WorkUnit
 import pytest
 
 def ready_engine():
@@ -14,7 +14,7 @@ def test_reference_lifecycle_and_acceptance():
     r=ready_engine(); r.start("wu-1")
     r.record_evidence(Evidence("e-1","wu-1","pytest","test-result","tests/validation/test_v2_1_runtime.py","deterministic"))
     r.handoff(Handoff("h-1","wu-1","planner","reviewer","result-1",("e-1",),"review",r.timestamp()))
-    r.evaluate(Evaluation("eval-1","wu-1",("tests pass",),("e-1",),"PASS","ACCEPTED","required tests passed","planner","agent"))
+    r.evaluate(Evaluation("eval-1","wu-1",("tests pass",),("e-1",),"PASS",Acceptance("ACCEPTED","required tests passed"),"planner","agent"))
     assert r.work_units["wu-1"].status=="ACCEPTED"
 
 def test_permission_ceiling_is_enforced():
@@ -47,4 +47,4 @@ def test_evaluation_actor_must_be_registered_agent():
     r=ready_engine(); r.start("wu-1")
     r.record_evidence(Evidence("e-actor","wu-1","planner","test-result","pass","fixture"))
     with pytest.raises(ValueError, match="not registered"):
-        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS","ACCEPTED","unknown actor","unregistered","agent"))
+        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS",Acceptance("ACCEPTED","unknown actor"),"unregistered","agent"))
