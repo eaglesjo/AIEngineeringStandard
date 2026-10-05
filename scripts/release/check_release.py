@@ -23,6 +23,11 @@ def main() -> int:
     if not version:
         fail("VERSION is empty")
 
+    fetch = run("git", "fetch", "--prune", "origin", "main")
+    if fetch.returncode != 0:
+        print(fetch.stderr, file=sys.stderr, end="")
+        fail("unable to refresh origin/main")
+
     branch = run("git", "branch", "--show-current")
     if branch.returncode != 0 or branch.stdout.strip() != "main":
         fail("release must be prepared from local main")
