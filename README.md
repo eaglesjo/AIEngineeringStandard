@@ -1,12 +1,7 @@
 # AI Engineering Standard
 
-<p align="center">
-  <strong>AI Development, Training & Agent Engineering Standards</strong>
-</p>
-
-<p align="center">
-  <strong>v2.0.1 — Independent Development & Release</strong>
-</p>
+<p align="center"><strong>AI Development, Training & Agent Engineering Standards</strong></p>
+<p align="center"><strong>v2.0.2 — Local-First Validation & Release</strong></p>
 
 <p align="center">
   <a href="https://github.com/eaglesjo/AIEngineeringStandard/releases"><img src="https://img.shields.io/github/v/release/eaglesjo/AIEngineeringStandard?label=release" alt="Release"></a>
@@ -19,13 +14,13 @@
 
 AI Engineering Standard is a reusable engineering standard for AI-assisted development, model training, experimentation, LLM/Vision workflows, general ML/DL workflows, and AI coding agents.
 
-Version 2 establishes a machine-readable architecture and policy contract, explicit agent/Skill routing, environment-aware runtime behavior, cross-platform installation lifecycle controls, multilingual runtime quality gates, executable conformance checks, and dependency-compatibility alignment rules.
+Version 2 establishes a machine-readable architecture and policy contract, explicit agent/Skill routing, environment-aware runtime behavior, cross-platform installation lifecycle controls, multilingual runtime quality gates, executable conformance checks, and dependency-compatibility alignment rules. Version 2.1 extends this foundation with framework-neutral multi-agent contracts for Agent, Agent Role, Agent Contract, Work Unit, Handoff, Evidence, Evaluation, and Acceptance.
 
 ## Independent repository model
 
 This repository is the **single source of truth for development, validation, and release**.
 
-```text
+```
 feature/fix/docs
       ↓
 Pull Request
@@ -43,9 +38,11 @@ GitHub Release
 
 There is no separate private repository, development repository, staging repository, or promotion/export step.
 
-## 2.0.1 transition
+## 2.1 architecture
 
-Version 2.0.0 remains preserved as historical release provenance. Starting with 2.0.1, development and release are performed directly in this repository under the independent release contract.
+Version 2.1 extends the 2.0 foundation without replacing it. The canonical unit is the Work Unit, with explicit Agent/Role contracts, Handoffs, Evidence, Evaluation, and Acceptance. Contract definitions live under `core/contracts/2.1/`; architecture guidance lives under `docs/architecture/2.1/`.
+
+Version 2.0.0 and 2.0.1 remain preserved as historical release provenance. Starting with 2.0.1, development and release are performed directly in this repository under the independent release contract.
 
 ## Quick start
 
@@ -75,24 +72,21 @@ See [`INSTALL.md`](INSTALL.md) for the complete installation contract.
 
 ## Repository structure
 
-```text
+```
 .
 ├── AGENTS.md
-├── core/{agent,common,mcp,plugin,skill,validation}/
+├── core/{agent,common,contracts,mcp,plugin,skill,validation}/
 ├── domains/{ml,llm,vision}/
 ├── platform/colab/
 ├── examples/colab/
-├── docs/{development,releases}/
+├── docs/{architecture,development,releases}/
 ├── i18n/
 ├── profiles/
 ├── compatibility/
 ├── scripts/{development,installers,release,validation}/
 ├── tests/
-├── scripts/release/
 └── VERSION
 ```
-
-Legacy root-level domain trees and obsolete script paths are not part of the supported 2.x layout.
 
 ## Validation
 
@@ -101,9 +95,8 @@ Run the complete repository gate before merge or release:
 ```bash
 python3 scripts/validation/validate.py
 python3 scripts/installers/test_installers.py
+python3 scripts/validation/validate_2_1_contracts.py
 ```
-
-Run the same validation locally on the supported development environments. Windows installer validation is part of the release gate when Windows evidence is required.
 
 ## Release workflow
 
