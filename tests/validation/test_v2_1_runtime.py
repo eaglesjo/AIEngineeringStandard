@@ -47,4 +47,4 @@ def test_evaluation_actor_must_be_registered_agent():
     r=ready_engine(); r.start("wu-1")
     r.record_evidence(Evidence("e-actor","wu-1","planner","test-result","pass","fixture"))
     with pytest.raises(ValueError, match="not registered"):
-        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS","ACCEPTED","unknown actor","reviewer","agent"))
+        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS","ACCEPTED","unknown actor","unregistered","agent"))
