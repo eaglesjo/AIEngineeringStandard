@@ -60,14 +60,18 @@ class Handoff:
     timestamp: str
 
 @dataclass(frozen=True)
+class Acceptance:
+    status: str
+    basis: str
+
+@dataclass(frozen=True)
 class Evaluation:
     id: str
     work_unit_id: str
     criteria: tuple[str, ...]
     evidence_refs: tuple[str, ...]
     result: str
-    acceptance: str
-    basis: str
+    acceptance: Acceptance
     actor_id: str
     actor_type: str
 
@@ -202,11 +206,13 @@ class RuntimeEngine:
             )
             if not authorized:
                 raise ValueError("evaluation actor is not authorized for the work unit")
-        if evaluation.result in {"FAIL", "UNTESTED", "BLOCKED"} and evaluation.acceptance == "ACCEPTED":
+        if evaluation.acceptance.status in {"ACCEPTED"} and evaluation.result in {"FAIL", "UNTESTED", "BLOCKED"}:
             raise ValueError("unacceptable evaluation cannot be accepted")
-        if evaluation.acceptance not in {"ACCEPTED", "REJECTED", "INCOMPLETE"}:
+        if evaluation.acceptance.status not in {"ACCEPTED", "REJECTED", "INCOMPLETE"}:
             raise ValueError("invalid acceptance status")
-        if evaluation.acceptance == "ACCEPTED" and evaluation.result != "PASS":
+        if not evaluation.acceptance.basis.strip():
+            raise ValueError("evaluation acceptance requires a basis")
+        if evaluation.acceptance.status == "ACCEPTED" and evaluation.result != "PASS":
             raise ValueError("only PASS evaluations can be accepted")
         if any(self.evidence[ref].work_unit_id != wu.id for ref in evaluation.evidence_refs):
             raise ValueError("evaluation evidence must belong to the work unit")
@@ -217,9 +223,9 @@ class RuntimeEngine:
             raise ValueError("human acceptance requires human-approval evidence from the actor")
         wu.status = "EVALUATING"
         self.evaluations[evaluation.id] = evaluation
-        if evaluation.acceptance == "ACCEPTED":
+        if evaluation.acceptance.status == "ACCEPTED":
             wu.status = "ACCEPTED"
-        elif evaluation.acceptance == "REJECTED":
+        elif evaluation.acceptance.status == "REJECTED":
             wu.status = "REJECTED"
         else:
             wu.status = "BLOCKED"

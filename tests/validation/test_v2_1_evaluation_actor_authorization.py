@@ -1,4 +1,4 @@
-from core.runtime.v2_1.engine import Agent, AgentContract, Evaluation, Evidence, Handoff, Role, RuntimeEngine, WorkUnit
+from core.runtime.v2_1.engine import Acceptance, Agent, AgentContract, Evaluation, Evidence, Handoff, Role, RuntimeEngine, WorkUnit
 import pytest
 
 
@@ -41,8 +41,7 @@ def _evaluation(actor_id: str) -> Evaluation:
         ("accepted",),
         ("e-actor",),
         "PASS",
-        "ACCEPTED",
-        "authorized evaluation",
+        Acceptance("ACCEPTED", "authorized evaluation"),
         actor_id,
         "agent",
     )

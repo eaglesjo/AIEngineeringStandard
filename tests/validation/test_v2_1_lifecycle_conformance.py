@@ -1,4 +1,4 @@
-from core.runtime.v2_1.engine import Agent, AgentContract, Evaluation, Evidence, Handoff, Role, RuntimeEngine, WorkUnit
+from core.runtime.v2_1.engine import Acceptance, Agent, AgentContract, Evaluation, Evidence, Handoff, Role, RuntimeEngine, WorkUnit
 import pytest
 
 
@@ -35,8 +35,7 @@ def test_evaluation_requires_active_work_unit():
     _evidence(runtime)
     with pytest.raises(RuntimeError, match="EXECUTING or HANDOFF_PENDING"):
         runtime.evaluate(Evaluation(
-            "eval-1", "wu-1", ("complete",), ("e-1",), "PASS", "ACCEPTED",
-            "not started", "planner", "agent"
+            "eval-1", "wu-1", ("complete",), ("e-1",), "PASS", Acceptance("ACCEPTED", "not started"), "planner", "agent"
         ))
 
 
@@ -45,8 +44,7 @@ def test_incomplete_evaluation_blocks_work_unit():
     runtime.start("wu-1")
     _evidence(runtime)
     runtime.evaluate(Evaluation(
-        "eval-1", "wu-1", ("complete",), ("e-1",), "PARTIAL", "INCOMPLETE",
-        "partial evidence", "planner", "agent"
+        "eval-1", "wu-1", ("complete",), ("e-1",), "PARTIAL", Acceptance("INCOMPLETE", "partial evidence"), "planner", "agent"
     ))
     assert runtime.work_units["wu-1"].status == "BLOCKED"
 
@@ -60,8 +58,7 @@ def test_evaluation_rejects_cross_work_unit_evidence():
     runtime.start("wu-1")
     with pytest.raises(ValueError, match="belong to the work unit"):
         runtime.evaluate(Evaluation(
-            "eval-1", "wu-1", ("complete",), ("e-2",), "PASS", "ACCEPTED",
-            "wrong provenance", "planner", "agent"
+            "eval-1", "wu-1", ("complete",), ("e-2",), "PASS", Acceptance("ACCEPTED", "wrong provenance"), "planner", "agent"
         ))
 
 
@@ -70,11 +67,9 @@ def test_completed_work_unit_cannot_be_evaluated_twice():
     runtime.start("wu-1")
     _evidence(runtime)
     runtime.evaluate(Evaluation(
-        "eval-1", "wu-1", ("complete",), ("e-1",), "PASS", "ACCEPTED",
-        "complete", "planner", "agent"
+        "eval-1", "wu-1", ("complete",), ("e-1",), "PASS", Acceptance("ACCEPTED", "complete"), "planner", "agent"
     ))
     with pytest.raises(RuntimeError, match="EXECUTING or HANDOFF_PENDING"):
         runtime.evaluate(Evaluation(
-            "eval-2", "wu-1", ("complete",), ("e-1",), "PASS", "ACCEPTED",
-            "duplicate", "planner", "agent"
+            "eval-2", "wu-1", ("complete",), ("e-1",), "PASS", Acceptance("ACCEPTED", "duplicate"), "planner", "agent"
         ))
