@@ -18,6 +18,6 @@
     "compute": "cpu-first",
     "state": "stateless-preferred",
     "async_work": "optional",
-    "observability": "ci-and-validation"
+    "observability": "local-validation"
   }
 }
