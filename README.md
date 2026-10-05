@@ -66,7 +66,7 @@ git clone https://github.com/eaglesjo/AIEngineeringStandard.git
 bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
 ```
 
-Available domains are `common`, `ml`, `llm`, `vision`, `colab`, and `all`. Supported locales are defined by `i18n/languages.json`; the installer derives its accepted locale set from that catalog.
+Available domains are `common`, `ml`, `llm`, `vision`, `colab`, and `all`. The runtime currently supports 20 locales. Supported locales are defined by `i18n/languages.json`; the installer derives its accepted locale set from that catalog.
 
 ## Installation lifecycle
 
