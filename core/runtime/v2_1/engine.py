@@ -122,6 +122,8 @@ class RuntimeEngine:
     def record_evidence(self, evidence: Evidence) -> None:
         if evidence.work_unit_id not in self.work_units:
             raise ValueError("unknown work unit")
+        if evidence.id in self.evidence:
+            raise ValueError("evidence already exists")
         self.evidence[evidence.id] = evidence
 
     def handoff(self, handoff: Handoff) -> None:

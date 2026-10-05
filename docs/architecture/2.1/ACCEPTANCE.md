@@ -16,7 +16,8 @@ A v2.1 implementation is acceptable only when:
 10. acceptance is derived from evaluation rather than asserted independently;
 11. the implementation does not require a specific orchestration framework;
 12. runtime operations enforce the canonical Work Unit lifecycle and reject invalid state transitions.
-12. all existing v2.0 validation gates remain green.
+13. evidence identities are immutable and duplicate evidence IDs are rejected.
+14. all existing v2.0 validation gates remain green.
 
 ## Minimum conformance scenario
 

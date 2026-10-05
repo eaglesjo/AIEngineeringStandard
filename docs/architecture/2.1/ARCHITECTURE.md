@@ -42,7 +42,7 @@ The unit of standardization is the **Work Unit**, not a chat message, model call
 2. Every work unit has one canonical identity.
 3. Agent permissions cannot exceed the declared role ceiling.
 4. Handoffs preserve provenance and identify sender and receiver.
-5. Evidence is referenced by identity rather than inferred from logs.
+5. Evidence is referenced by identity rather than inferred from logs, and an evidence identity cannot be overwritten by a later record.
 6. Evaluation cannot silently upgrade UNTESTED runtime evidence to PASS.
 7. Acceptance is downstream of evaluation and cannot manufacture evidence.
 8. Retries create a new invocation identity while retaining parent lineage.
@@ -74,3 +74,8 @@ Version 2.1 does not mandate a specific model, agent framework, MCP implementati
 ## Lifecycle enforcement
 
 The reference runtime enforces the canonical Work Unit lifecycle at operation boundaries. Agent contracts bind only to `CREATED` work units; `start` moves `READY` to `EXECUTING`; handoff requires `EXECUTING` and moves the unit to `HANDOFF_PENDING`; evaluation is allowed from `EXECUTING` or `HANDOFF_PENDING`, records `EVALUATING`, and then maps acceptance to `ACCEPTED`, `REJECTED`, or `BLOCKED`. Completed work units cannot be evaluated again.
+
+
+## Evidence identity enforcement
+
+The reference runtime treats evidence IDs as immutable provenance identities. Recording evidence for an unknown Work Unit is rejected, and recording a second evidence item with an existing ID is rejected rather than replacing the original evidence. Handoff, retry, and evaluation references therefore remain bound to the original evidence record.
