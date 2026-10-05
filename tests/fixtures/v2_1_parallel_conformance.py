@@ -21,12 +21,12 @@ def run() -> dict[str, object]:
     _bind_and_start(runtime, branch_b, "implementer-b", "contract-parallel-b")
     runtime.record_evidence(Evidence("e-parallel-a", branch_a.id, "implementer-a", "test-result", "branch-a-pass", "fixture"))
     runtime.record_evidence(Evidence("e-parallel-b", branch_b.id, "implementer-b", "test-result", "branch-b-pass", "fixture"))
-    runtime.evaluate(Evaluation("eval-parallel-a", branch_a.id, branch_a.acceptance_criteria, ("e-parallel-a",), "PASS", "ACCEPTED", "branch A evidence"))
-    runtime.evaluate(Evaluation("eval-parallel-b", branch_b.id, branch_b.acceptance_criteria, ("e-parallel-b",), "PASS", "ACCEPTED", "branch B evidence"))
+    runtime.evaluate(Evaluation("eval-parallel-a", branch_a.id, branch_a.acceptance_criteria, ("e-parallel-a",), "PASS", "ACCEPTED", "branch A evidence","implementer-a","agent"))
+    runtime.evaluate(Evaluation("eval-parallel-b", branch_b.id, branch_b.acceptance_criteria, ("e-parallel-b",), "PASS", "ACCEPTED", "branch B evidence","implementer-b","agent"))
 
     runtime.bind(AgentContract("contract-parallel-root", root.id, "planner", "planner", frozenset({"read", "execute"}), {}, {}, root.acceptance_criteria, ("test-result",)))
     runtime.start(root.id)
     runtime.record_evidence(Evidence("e-parallel-join", root.id, "planner", "test-result", "both-branches-accepted", "fixture"))
-    runtime.evaluate(Evaluation("eval-parallel-root", root.id, root.acceptance_criteria, ("e-parallel-join",), "PASS", "ACCEPTED", "explicit join evidence after both child evaluations"))
+    runtime.evaluate(Evaluation("eval-parallel-root", root.id, root.acceptance_criteria, ("e-parallel-join",), "PASS", "ACCEPTED", "explicit join evidence after both child evaluations","planner","agent"))
 
     return {"work_units": {root.id: root.status, branch_a.id: branch_a.status, branch_b.id: branch_b.status}, "parents": {branch_a.id: branch_a.parent_id, branch_b.id: branch_b.parent_id}, "evaluations": sorted(runtime.evaluations), "join_evidence": ["e-parallel-join"]}

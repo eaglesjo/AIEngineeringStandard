@@ -59,6 +59,8 @@ class Evaluation:
     result: str
     acceptance: str
     basis: str
+    actor_id: str
+    actor_type: str
 
 @dataclass(frozen=True)
 class AgentContract:
@@ -131,8 +133,23 @@ class RuntimeEngine:
         wu = self.work_units[evaluation.work_unit_id]
         if any(ref not in self.evidence for ref in evaluation.evidence_refs):
             raise ValueError("evaluation references missing evidence")
+        if evaluation.actor_type not in {"agent", "human"} or not evaluation.actor_id.strip():
+            raise ValueError("evaluation requires a valid actor")
+        if evaluation.actor_type == "agent" and evaluation.actor_id not in self.agents:
+            raise ValueError("evaluation actor agent is not registered")
+        if evaluation.actor_type == "human" and evaluation.actor_id in self.agents:
+            raise ValueError("human evaluation actor must not be an agent identity")
         if evaluation.result in {"FAIL", "UNTESTED", "BLOCKED"} and evaluation.acceptance == "ACCEPTED":
             raise ValueError("unacceptable evaluation cannot be accepted")
+        if evaluation.acceptance not in {"ACCEPTED", "REJECTED", "INCOMPLETE"}:
+            raise ValueError("invalid acceptance status")
+        if evaluation.acceptance == "ACCEPTED" and evaluation.result != "PASS":
+            raise ValueError("only PASS evaluations can be accepted")
+        if evaluation.actor_type == "human" and not any(
+            self.evidence[ref].type == "human-approval" and self.evidence[ref].source == evaluation.actor_id
+            for ref in evaluation.evidence_refs
+        ):
+            raise ValueError("human acceptance requires human-approval evidence from the actor")
         wu.status = evaluation.acceptance
         self.evaluations[evaluation.id] = evaluation
 

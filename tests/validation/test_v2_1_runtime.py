@@ -13,7 +13,7 @@ def test_reference_lifecycle_and_acceptance():
     r=ready_engine(); r.start("wu-1")
     r.record_evidence(Evidence("e-1","wu-1","pytest","test-result","tests/validation/test_v2_1_runtime.py","deterministic"))
     r.handoff(Handoff("h-1","wu-1","planner","reviewer","result-1",("e-1",),"review",r.timestamp()))
-    r.evaluate(Evaluation("eval-1","wu-1",("tests pass",),("e-1",),"PASS","ACCEPTED","required tests passed"))
+    r.evaluate(Evaluation("eval-1","wu-1",("tests pass",),("e-1",),"PASS","ACCEPTED","required tests passed","planner","agent"))
     assert r.work_units["wu-1"].status=="ACCEPTED"
 
 def test_permission_ceiling_is_enforced():
@@ -41,3 +41,9 @@ def test_failure_preserves_retry_lineage():
 def test_retry_rejects_missing_failure_provenance():
     r=ready_engine(); r.start("wu-1"); r.work_units["wu-1"].status="BLOCKED"
     with pytest.raises(ValueError): r.retry("wu-1","runtime failure",("missing",))
+
+def test_evaluation_actor_must_be_registered_agent():
+    r=ready_engine(); r.start("wu-1")
+    r.record_evidence(Evidence("e-actor","wu-1","planner","test-result","pass","fixture"))
+    with pytest.raises(ValueError, match="not registered"):
+        r.evaluate(Evaluation("eval-actor","wu-1",("tests pass",),("e-actor",),"PASS","ACCEPTED","unknown actor","reviewer","agent"))
