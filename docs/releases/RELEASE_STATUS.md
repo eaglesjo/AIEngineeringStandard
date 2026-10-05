@@ -40,4 +40,4 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 
 Required sequence:
 
-`development → CI → main → version/tag → tagged validation → GitHub Release`.
+`development → local validation → main → release preflight → annotated tag → GitHub Release`.
