@@ -29,13 +29,25 @@ This repository is the canonical development, validation, and release source for
 - Prefer small, auditable commits.
 - Update tests and documentation when a contract changes.
 
+## CI and execution
+
+- GitHub Actions is part of the repository validation architecture.
+- `.github/workflows/ci.yml` is the canonical automated CI entry point.
+- Repository execution follows `core/runtime/execution/OPERATING_POLICY.md` and `core/runtime/execution/mission.schema.json`.
+- CI uses least-privilege read permissions and immutable repository state.
+- Prefer sandbox/local execution for iterative development; use Actions for bounded automated validation or remote execution when appropriate.
+- A green workflow is not by itself acceptance evidence; relevant outputs and source identity must be verified.
+- Do not add project secrets to workflow source, logs, artifacts, or mission payloads.
+- Temporary Actions state must be task-owned and cleaned up after terminal use.
+- When execution is lost or context is reset, recover from durable Git/Actions state before conversation reconstruction.
+
 ## v2.1 architecture contract
 
 The canonical multi-agent model is defined by `core/contracts/2.1/`. Runtime adapters must map their native concepts into these contracts and must not redefine their semantics. A Work Unit owns the trace boundary; Handoffs carry explicit provenance; Evaluation cannot silently convert unavailable evidence into PASS; Acceptance is downstream of Evaluation.
 
 ## Release rules
 
-A release is created from this repository only. Run `python3 scripts/release/check_release.py` from an exact, clean `main` checkout, then use `python3 scripts/release/publish_release.py` to create the annotated tag and GitHub Release. GitHub Actions is not part of the release architecture. Never promote source from another repository.
+A release is created from this repository only. Run `python3 scripts/release/check_release.py` from an exact, clean `main` checkout, then use `python3 scripts/release/publish_release.py` to create the annotated tag and GitHub Release. Never promote source from another repository.
 
 ## Agent/tool adapters
 

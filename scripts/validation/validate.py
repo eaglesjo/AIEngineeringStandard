@@ -67,6 +67,10 @@ def run_2_1_validation() -> None:
     run_checker(ROOT / "scripts" / "validation" / "validate_2_1_contracts.py", "AIEngineeringStandard 2.1 contract validation")
 
 
+def run_execution_validation() -> None:
+    run_checker(ROOT / "scripts" / "validation" / "validate_execution_contract.py", "AIEngineeringStandard execution mission validation")
+
+
 def run_2_0_validation() -> None:
     run_checker(ROOT / "scripts" / "validation" / "validate_2_0_schemas.py", "AIEngineeringStandard 2.0 schema validation")
     run_checker(ROOT / "scripts" / "validation" / "validate_portable_skill.py", "Portable Agent Skill validation")
@@ -110,11 +114,6 @@ def check_no_legacy_installer() -> None:
         fail(f"Legacy installer must not exist before release: {path.name}")
 
 
-def check_no_github_actions() -> None:
-    workflows = ROOT / ".github" / "workflows"
-    if workflows.exists() and any(workflows.glob("*")):
-        fail("GitHub Actions workflows are not part of the local CI/release architecture")
-
 
 def check_version_consistency() -> None:
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
@@ -143,7 +142,7 @@ def run_i18n_check() -> None:
 
 
 def main() -> None:
-    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_no_github_actions(); check_version_consistency(); run_2_1_validation(); run_i18n_check(); print("AIEngineeringStandard validation passed")
+    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_version_consistency(); run_2_1_validation(); run_execution_validation(); run_i18n_check(); print("AIEngineeringStandard validation passed")
 
 
 if __name__ == "__main__":

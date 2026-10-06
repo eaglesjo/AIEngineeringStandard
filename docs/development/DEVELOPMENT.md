@@ -24,6 +24,28 @@ There is no `codingStandard-private`, `codingStandard-dev`, staging repository, 
 
 Version 2.1 architecture work is contract-first: define or update canonical schemas and acceptance rules before implementing runtime adapters.
 
+## Execution and CI
+
+The repository supports both local validation and GitHub Actions CI. They share the same validation entry points so CI is an automated execution of the repository contract rather than a second implementation of validation.
+
+```text
+feature/fix/docs branch
+        ↓
+      pull request
+       ↙      ↘
+local gate    GitHub Actions CI
+       \        /
+          main
+            ↓
+       release preflight
+            ↓
+       version/tag
+```
+
+GitHub Actions runs with least-privilege permissions and a bounded execution model. The execution contract under `core/runtime/execution/` defines source identity, inputs, operations, expected outputs, permissions, terminal state, and verification requirements.
+
+Iterative editing and debugging should remain in the available sandbox/local environment. Actions should be used when automated repository verification or a bounded remote execution is the appropriate mechanism.
+
 ## Branches
 
 - `main`: releasable source of truth.

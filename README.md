@@ -24,11 +24,15 @@ This repository is the **single source of truth for development, validation, and
 flowchart TD
     A[Feature / Fix / Docs] --> B[Pull Request]
     B --> C[Local Validation Gate]
-    C --> D[main]
-    D --> E[Version Tag]
-    E --> F[Release Validation]
-    F --> G[GitHub Release]
+    B --> D[GitHub Actions CI]
+    C --> E[main]
+    D --> E
+    E --> F[Version Tag]
+    F --> G[Release Validation]
+    G --> H[GitHub Release]
 ```
+
+Local validation and GitHub Actions CI execute the same repository validation contract. GitHub Actions is an automated verification and bounded execution mechanism; it is not a second source of truth or a replacement repository.
 
 There is no separate private repository, development repository, staging repository, or promotion/export step.
 
@@ -101,10 +105,10 @@ python3 scripts/release/check_release.py
 python3 scripts/release/publish_release.py
 ```
 
-The preflight requires a clean local `main` that exactly matches `origin/main`, runs the full validation and installer lifecycle gates, and rejects an existing version tag. The publish command creates an annotated `v<VERSION>` tag and then creates the GitHub Release through the authenticated `gh` CLI.
+The preflight requires a clean local `main` that exactly matches `origin/main`, runs the full validation and installer lifecycle gates, and rejects an existing version tag. The publish command creates an annotated `v<VERSION>` tag and then creates the GitHub Release through the authenticated `gh` CLI. GitHub Actions remains the automated CI verification path; release publication remains an explicit local release operation.
 
 ## Release provenance
 
-Release tags and GitHub Releases are created from this repository only. `scripts/release/check_release.py` validates the exact local `main` state, and `scripts/release/publish_release.py` creates the annotated tag and GitHub Release explicitly. No GitHub Actions workflow is required.
+Release tags and GitHub Releases are created from this repository only. `scripts/release/check_release.py` validates the exact local `main` state, and `scripts/release/publish_release.py` creates the annotated tag and GitHub Release explicitly. GitHub Actions CI is part of automated repository validation; release publication remains governed by the release preflight and publication contract.
 
 Historical tags and commits, including `v2.0.0`, are preserved.
