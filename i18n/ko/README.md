@@ -2,7 +2,7 @@
 
 <p align="center"><strong>AI 개발·학습·에이전트 엔지니어링 표준</strong></p>
 
-> 이 페이지는 AI Engineering Standard의 유일한 한국어 문서 진입점입니다. 영어가 canonical source이며, 한국어가 유일한 localized/runtime locale입니다.
+> 이 페이지는 AI Engineering Standard의 유일한 한국어 문서 진입점입니다. 영어가 canonical source이며, 한국어가 유일한 localized/runtime locale이며 유일하게 지원되는 한국어 런타임 로케일입니다.
 
 ## 저장소 역할
 
