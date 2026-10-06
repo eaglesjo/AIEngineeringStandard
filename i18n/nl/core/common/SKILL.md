@@ -1,3 +1,0 @@
-# Vaardigheden en workflow
-
-Bepaal doel en scope, controleer de repository-status en lees het canonical policy- en de relevante domain-documentatie. Maak kleine, traceerbare wijzigingen. Houd tests en validation reproduceerbaar. Stem runtime-configuratie af op de echte environment en beschikbare memory. Gebruik early stopping wanneer passend en bewaar een checkpoint voor hervatbare taken. Rapporteer fouten, resultaten en resterende risico's duidelijk.

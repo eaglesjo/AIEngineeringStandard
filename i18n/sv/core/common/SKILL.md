@@ -1,3 +1,0 @@
-# Färdigheter och arbetsflöde
-
-Definiera mål och scope, kontrollera repositoryts status och läs canonical policy samt relevant domändokumentation. Gör små, spårbara ändringar. Håll tests och validation reproducerbara. Anpassa runtime efter faktisk environment och tillgänglig memory. Använd early stopping när det passar och spara checkpoint för återupptagbara uppgifter. Rapportera fel, resultat och kvarvarande risker tydligt.
