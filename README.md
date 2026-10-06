@@ -24,11 +24,15 @@ This repository is the **single source of truth for development, validation, and
 flowchart TD
     A[Feature / Fix / Docs] --> B[Pull Request]
     B --> C[Local Validation Gate]
-    C --> D[main]
-    D --> E[Version Tag]
-    E --> F[Release Validation]
-    F --> G[GitHub Release]
+    B --> D[GitHub Actions CI]
+    C --> E[main]
+    D --> E
+    E --> F[Version Tag]
+    F --> G[Release Validation]
+    G --> H[GitHub Release]
 ```
+
+Local validation and GitHub Actions CI execute the same repository validation contract. GitHub Actions is an automated verification and bounded execution mechanism; it is not a second source of truth or a replacement repository.
 
 There is no separate private repository, development repository, staging repository, or promotion/export step.
 
