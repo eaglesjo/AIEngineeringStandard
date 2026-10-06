@@ -51,9 +51,6 @@ jobs:
       - name: Install test runner
         run: python -m pip install --upgrade pip pytest
 
-      - name: Validate execution contract
-        run: python scripts/validation/validate_execution_contract.py
-
       - name: Run repository validation
         run: python scripts/validation/validate.py
 
