@@ -2,46 +2,10 @@
   "default": "en",
   "documentation": [
     {"locale": "en", "name": "English", "path": "README.md"},
-    {"locale": "ko", "name": "한국어", "path": "i18n/ko/README.md"},
-    {"locale": "fr", "name": "Français", "path": "i18n/fr/README.md"},
-    {"locale": "es", "name": "Español", "path": "i18n/es/README.md"},
-    {"locale": "zh-CN", "name": "简体中文", "path": "i18n/zh-CN/README.md"},
-    {"locale": "ja", "name": "日本語", "path": "i18n/ja/README.md"},
-    {"locale": "ru", "name": "Русский", "path": "i18n/ru/README.md"},
-    {"locale": "tr", "name": "Türkçe", "path": "i18n/tr/README.md"},
-    {"locale": "de", "name": "Deutsch", "path": "i18n/de/README.md"},
-    {"locale": "it", "name": "Italiano", "path": "i18n/it/README.md"},
-    {"locale": "pt", "name": "Português", "path": "i18n/pt/README.md"},
-    {"locale": "ar", "name": "العربية", "path": "i18n/ar/README.md"},
-    {"locale": "hi", "name": "हिन्दी", "path": "i18n/hi/README.md"},
-    {"locale": "id", "name": "Bahasa Indonesia", "path": "i18n/id/README.md"},
-    {"locale": "vi", "name": "Tiếng Việt", "path": "i18n/vi/README.md"},
-    {"locale": "th", "name": "ไทย", "path": "i18n/th/README.md"},
-    {"locale": "nl", "name": "Nederlands", "path": "i18n/nl/README.md"},
-    {"locale": "pl", "name": "Polski", "path": "i18n/pl/README.md"},
-    {"locale": "sv", "name": "Svenska", "path": "i18n/sv/README.md"},
-    {"locale": "uk", "name": "Українська", "path": "i18n/uk/README.md"}
+    {"locale": "ko", "name": "한국어", "path": "i18n/ko/README.md"}
   ],
   "runtime_resources": [
     {"locale": "en", "name": "English", "path": ".", "fallback": null},
-    {"locale": "ko", "name": "한국어", "path": "i18n/ko", "fallback": "en"},
-    {"locale": "zh-CN", "name": "简体中文", "path": "i18n/zh-CN", "fallback": "en"},
-    {"locale": "ja", "name": "日本語", "path": "i18n/ja", "fallback": "en"},
-    {"locale": "ru", "name": "Русский", "path": "i18n/ru", "fallback": "en"},
-    {"locale": "de", "name": "Deutsch", "path": "i18n/de", "fallback": "en"},
-    {"locale": "it", "name": "Italiano", "path": "i18n/it", "fallback": "en"},
-    {"locale": "fr", "name": "Français", "path": "i18n/fr", "fallback": "en"},
-    {"locale": "es", "name": "Español", "path": "i18n/es", "fallback": "en"},
-    {"locale": "pt", "name": "Português", "path": "i18n/pt", "fallback": "en"},
-    {"locale": "tr", "name": "Türkçe", "path": "i18n/tr", "fallback": "en"},
-    {"locale": "ar", "name": "العربية", "path": "i18n/ar", "fallback": "en"},
-    {"locale": "hi", "name": "हिन्दी", "path": "i18n/hi", "fallback": "en"},
-    {"locale": "id", "name": "Bahasa Indonesia", "path": "i18n/id", "fallback": "en"},
-    {"locale": "vi", "name": "Tiếng Việt", "path": "i18n/vi", "fallback": "en"},
-    {"locale": "th", "name": "ไทย", "path": "i18n/th", "fallback": "en"},
-    {"locale": "nl", "name": "Nederlands", "path": "i18n/nl", "fallback": "en"},
-    {"locale": "pl", "name": "Polski", "path": "i18n/pl", "fallback": "en"},
-    {"locale": "sv", "name": "Svenska", "path": "i18n/sv", "fallback": "en"},
-    {"locale": "uk", "name": "Українська", "path": "i18n/uk", "fallback": "en"}
+    {"locale": "ko", "name": "한국어", "path": "i18n/ko", "fallback": "en"}
   ]
 }
