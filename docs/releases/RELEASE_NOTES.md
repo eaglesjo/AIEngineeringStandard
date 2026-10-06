@@ -1,3 +1,48 @@
+# 2.1.0 Release Notes
+
+AI Engineering Standard 2.1.0 establishes the framework-neutral multi-agent engineering contract and reference runtime.
+
+## Highlights
+
+- Canonical Agent, Agent Role, and Agent Contract definitions
+- Canonical Work Unit lifecycle and ownership boundaries
+- Handoff provenance and receiver authorization
+- Immutable Evidence identity and Work Unit ownership
+- Evaluation and Acceptance contract alignment
+- Evaluation actor authorization
+- Human approval and intervention conformance
+- Parallel Work Unit conformance
+- Retry lineage and failure evidence
+- Immutable Work Unit parent lineage
+- Canonical identity immutability across runtime registries
+- Reference runtime enforcement of the v2.1 contract
+- End-to-end multi-agent conformance coverage
+- Local-first validation and release architecture retained
+
+## Validation
+
+The 2.1.0 release candidate is required to pass:
+
+- repository structure and dependency validation
+- architecture and policy profile validation
+- AIEngineeringStandard 2.0 schema validation
+- Portable Agent Skill validation
+- 2.0 static and runtime conformance gates
+- domain and routing validation
+- v2.1 contract validation
+- multilingual parity, quality, completeness, and consistency validation
+- installer lifecycle validation
+- v2.1 reference runtime tests
+- multi-agent E2E conformance
+- parallel work conformance
+- human approval conformance
+- handoff provenance conformance
+- lifecycle conformance
+- canonical identity and lineage integrity validation
+- evaluation actor authorization validation
+
+Historical 2.0.x release notes remain preserved below.
+
 # 2.0.2 Release Notes
 
 AI Engineering Standard 2.0.2 establishes the local-first CI and release architecture introduced after the 2.0.1 independent-release transition.

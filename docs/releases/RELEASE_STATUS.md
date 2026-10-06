@@ -2,9 +2,9 @@
 
 ## Current release
 
-Release: **2.0.2**
+Release: **2.1.0**
 
-Status: **published**
+Status: **release candidate**
 
 ## Repository model
 
@@ -35,8 +35,8 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 - Release tags must match `VERSION`.
 - Do not describe unavailable runtime evidence as passed.
 
-## v2.1 development boundary
+## v2.1 release readiness
 
-v2.1 architecture and contract work is developed in temporary branches and merged to `main` only after the v2.0 validation gates and the v2.1 contract gate pass.
+The v2.1 multi-agent architecture and reference runtime have completed the contract, lifecycle, provenance, identity, lineage, evaluation, parallel-work, human-approval, and runtime/schema alignment work required for the 2.1.0 release candidate.
 
-The next release version is assigned only when v2.1 implementation work is release-ready.
+The 2.1.0 release candidate must pass the complete repository validation gate, installer lifecycle validation, v2.1 contract validation, and reference-runtime conformance tests before publication.
