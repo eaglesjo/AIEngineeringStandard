@@ -21,7 +21,8 @@ COMMON = [
 ]
 ML = [".github/instructions/ml.instructions.md", "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md"]
 COLAB = ["platform/colab/AGENT.md", "platform/colab/SKILL.md"]
-LOCALES = {"ko", "fr", "es", "zh-CN", "ja", "ru", "tr", "de", "it", "pt", "ar", "hi", "id", "vi", "th", "nl", "pl", "sv", "uk"}
+LOCALES = {"ko"}
+UNSUPPORTED_LOCALES = {"fr", "es", "zh-CN", "ja", "ru", "tr", "de", "it", "pt", "ar", "hi", "id", "vi", "th", "nl", "pl", "sv", "uk"}
 
 
 def run(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -83,6 +84,9 @@ def test_bash() -> None:
             result = run(["bash", str(SH), str(locale_target), locale, "common", "overwrite", "false"])
             check(locale_target, COMMON)
             assert f"language={locale}" in result.stdout
+        for locale in sorted(UNSUPPORTED_LOCALES):
+            result = run(["bash", str(SH), str(Path(tmp) / f"unsupported-{locale}"), locale, "common", "overwrite", "false"], check=False)
+            assert result.returncode != 0, f"unsupported locale was accepted: {locale}"
 
 
 def test_powershell() -> None:
