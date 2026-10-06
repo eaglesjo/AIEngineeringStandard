@@ -1,6 +1,6 @@
 """Deterministic, framework-neutral v2.1 reference runtime."""
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
@@ -27,7 +27,7 @@ class WorkUnit:
     attempts: int = 0
     retry_reason: str | None = None
     failure_evidence_refs: tuple[str, ...] = ()
-    _lineage_locked: bool = False
+    _lineage_locked: bool = field(default=False, init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "_lineage_locked", True)
@@ -193,6 +193,14 @@ class RuntimeEngine:
             raise ValueError("evaluation already exists")
         if any(ref not in self.evidence for ref in evaluation.evidence_refs):
             raise ValueError("evaluation references missing evidence")
+        if not evaluation.criteria or any(not criterion.strip() for criterion in evaluation.criteria):
+            raise ValueError("evaluation requires non-empty criteria")
+        if not evaluation.evidence_refs:
+            raise ValueError("evaluation requires evidence references")
+        if evaluation.result not in {"PASS", "PARTIAL", "UNTESTED", "BLOCKED", "FAIL"}:
+            raise ValueError("invalid evaluation result")
+        if not isinstance(evaluation.acceptance, Acceptance):
+            raise ValueError("evaluation requires a valid acceptance object")
         if evaluation.actor_type not in {"agent", "human"} or not evaluation.actor_id.strip():
             raise ValueError("evaluation requires a valid actor")
         if evaluation.actor_type == "agent" and evaluation.actor_id not in self.agents:
