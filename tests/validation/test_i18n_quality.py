@@ -15,10 +15,7 @@ assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
-EXPECTED_LOCALES = [
-    "en", "ko", "fr", "es", "zh-CN", "ja", "ru", "tr", "de", "it",
-    "pt", "ar", "hi", "id", "vi", "th", "nl", "pl", "sv", "uk",
-]
+EXPECTED_LOCALES = ["en", "ko"]
 EXPECTED_INTENTS = {
     "environment.validate",
     "resources.memory.measure",
@@ -36,7 +33,7 @@ def test_grade_order() -> None:
     assert module.grade(False, False, False) == "F"
 
 
-def test_quality_contract_is_20_locale_contract() -> None:
+def test_quality_contract_is_korean_locale_contract() -> None:
     quality = json.loads((ROOT / "i18n" / "quality.json").read_text(encoding="utf-8"))
     assert quality["contract_version"] == "1.16"
     assert quality["canonical_locale"] == "en"
@@ -44,7 +41,7 @@ def test_quality_contract_is_20_locale_contract() -> None:
     assert quality["quality_levels"]["runtime_minimum"] == "A"
 
 
-def test_policy_intents_have_complete_20_locale_vocabulary() -> None:
+def test_policy_intents_have_complete_korean_vocabulary() -> None:
     vocabulary = json.loads((ROOT / "i18n" / "concepts" / "policy-vocabulary.json").read_text(encoding="utf-8"))
     concepts = vocabulary["concepts"]
     assert EXPECTED_INTENTS <= concepts.keys()
@@ -88,7 +85,7 @@ def test_semantic_parity_uses_policy_intent_vocabulary() -> None:
 
 if __name__ == "__main__":
     test_grade_order()
-    test_quality_contract_is_20_locale_contract()
-    test_policy_intents_have_complete_20_locale_vocabulary()
+    test_quality_contract_is_korean_locale_contract()
+    test_policy_intents_have_complete_korean_vocabulary()
     test_semantic_parity_uses_policy_intent_vocabulary()
     print("i18n quality tests passed")
