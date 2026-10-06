@@ -29,7 +29,7 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 
 ## CI and execution
 
-GitHub Actions CI is part of the validation architecture. It runs the repository validation and installer lifecycle gates for pull requests and pushes to `main). Release publication remains governed by the release preflight and publication contract, while CI provides automated evidence that the repository state passes the standard validation gate.
+GitHub Actions CI is part of the validation architecture. It runs the repository validation and installer lifecycle gates for pull requests and pushes to `main`. Release publication remains governed by the release preflight and publication contract, while CI provides automated evidence that the repository state passes the standard validation gate.
 
 The execution mission contract under `core/runtime/execution/` keeps remote execution bounded, source-identified, least-privileged, and verifiable.
 
