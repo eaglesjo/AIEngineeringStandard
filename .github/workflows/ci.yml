@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="${{ inputs.source_sha || github.sha }}"
+          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
           if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid source SHA: $source_sha" >&2
             exit 1
@@ -47,7 +47,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
 
       - name: Install test runner
         run: python -m pip install --upgrade pip pytest
