@@ -33,11 +33,13 @@ This repository is the canonical development, validation, and release source for
 
 - GitHub Actions is part of the repository validation architecture.
 - `.github/workflows/ci.yml` is the canonical automated CI entry point.
+- Repository execution follows `core/runtime/execution/OPERATING_POLICY.md` and `core/runtime/execution/mission.schema.json`.
 - CI uses least-privilege read permissions and immutable repository state.
 - Prefer sandbox/local execution for iterative development; use Actions for bounded automated validation or remote execution when appropriate.
 - A green workflow is not by itself acceptance evidence; relevant outputs and source identity must be verified.
 - Do not add project secrets to workflow source, logs, artifacts, or mission payloads.
 - Temporary Actions state must be task-owned and cleaned up after terminal use.
+- When execution is lost or context is reset, recover from durable Git/Actions state before conversation reconstruction.
 
 ## v2.1 architecture contract
 
