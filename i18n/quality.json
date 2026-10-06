@@ -4,25 +4,7 @@
   "canonical_locale": "en",
   "required_runtime_locales": [
     "en",
-    "ko",
-    "fr",
-    "es",
-    "zh-CN",
-    "ja",
-    "ru",
-    "tr",
-    "de",
-    "it",
-    "pt",
-    "ar",
-    "hi",
-    "id",
-    "vi",
-    "th",
-    "nl",
-    "pl",
-    "sv",
-    "uk"
+    "ko"
   ],
   "quality_levels": {
     "runtime_minimum": "A",
