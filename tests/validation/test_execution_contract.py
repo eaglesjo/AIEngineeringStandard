@@ -12,6 +12,10 @@ def test_execution_mission_schema():
     assert schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
     assert schema["properties"]["schema_version"]["const"] == "1.0.0"
     assert "source_sha" in schema["required"]
+    assert "capability_inventory" in schema["required"]
+    assert "lifecycle" in schema["required"]
+    assert schema["properties"]["capability_inventory"]["properties"]["decision"]["enum"] == ["REUSE_SANDBOX", "USE_ACTIONS", "BLOCKED"]
+    assert schema["properties"]["lifecycle"]["properties"]["phase"]["enum"] == ["CREATED", "EXECUTING", "TERMINAL"]
     assert schema["properties"]["verification"]["properties"]["source_sha"]["const"] is True
 
 
