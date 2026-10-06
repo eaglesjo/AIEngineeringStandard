@@ -1,7 +1,7 @@
 # AI Engineering Standard
 
 <p align="center"><strong>AI Development, Training & Agent Engineering Standards</strong></p>
-<p align="center"><strong>v2.0.2 — Local-First Validation & Release</strong></p>
+<p align="center"><strong>v2.1.0 — Contract-First Multi-Agent Engineering</strong></p>
 
 <p align="center">
   <a href="https://github.com/eaglesjo/AIEngineeringStandard/releases"><img src="https://img.shields.io/github/v/release/eaglesjo/AIEngineeringStandard?label=release" alt="Release"></a>
@@ -42,7 +42,7 @@ There is no separate private repository, development repository, staging reposit
 
 Version 2.1 extends the 2.0 foundation without replacing it. The canonical unit is the Work Unit, with explicit Agent/Role contracts, Handoffs, Evidence, Evaluation, and Acceptance. Contract definitions live under `core/contracts/2.1/`; architecture guidance lives under `docs/architecture/2.1/`.
 
-Version 2.0.0 and 2.0.1 remain preserved as historical release provenance. Starting with 2.0.1, development and release are performed directly in this repository under the independent release contract.
+Version 2.0.0, 2.0.1, and 2.0.2 remain preserved as historical release provenance. Starting with 2.0.1, development and release are performed directly in this repository under the independent release contract.
 
 ## Quick start
 
