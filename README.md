@@ -105,7 +105,7 @@ python3 scripts/release/check_release.py
 python3 scripts/release/publish_release.py
 ```
 
-The preflight requires a clean local `main` that exactly matches `origin/main`, runs the full validation and installer lifecycle gates, and rejects an existing version tag. The publish command creates an annotated `v<VERSION>` tag and then creates the GitHub Release through the authenticated `gh` CLI.
+The preflight requires a clean local `main` that exactly matches `origin/main`, runs the full validation and installer lifecycle gates, and rejects an existing version tag. The publish command creates an annotated `v<VERSION>` tag and then creates the GitHub Release through the authenticated `gh` CLI. GitHub Actions remains the automated CI verification path; release publication remains an explicit local release operation.
 
 ## Release provenance
 
