@@ -16,7 +16,9 @@
     "expected_outputs",
     "permissions",
     "terminal_state",
-    "verification"
+    "verification",
+    "capability_inventory",
+    "lifecycle"
   ],
   "properties": {
     "schema_version": {
@@ -116,6 +118,101 @@
             "type": "string",
             "minLength": 1
           }
+        }
+      }
+    },
+    "capability_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sandbox_capabilities",
+        "required_capabilities",
+        "decision"
+      ],
+      "properties": {
+        "sandbox_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "decision": {
+          "enum": [
+            "REUSE_SANDBOX",
+            "USE_ACTIONS",
+            "BLOCKED"
+          ]
+        }
+      }
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "checksum_algorithm",
+        "expected_checksum",
+        "verify_source_tree"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "DIRECT_TEXT",
+            "DIRECT_FILE",
+            "GIT_OBJECT",
+            "BUNDLE",
+            "ARCHIVE",
+            "ARTIFACT"
+          ]
+        },
+        "checksum_algorithm": {
+          "enum": [
+            "SHA-256",
+            "SHA-512"
+          ]
+        },
+        "expected_checksum": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64,128}$"
+        },
+        "verify_source_tree": {
+          "const": true
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "evidence_inspected",
+        "outputs_verified",
+        "durable_result"
+      ],
+      "properties": {
+        "phase": {
+          "enum": [
+            "CREATED",
+            "EXECUTING",
+            "TERMINAL"
+          ]
+        },
+        "evidence_inspected": {
+          "type": "boolean"
+        },
+        "outputs_verified": {
+          "type": "boolean"
+        },
+        "durable_result": {
+          "type": "boolean"
         }
       }
     }
