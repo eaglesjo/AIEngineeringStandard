@@ -18,7 +18,8 @@
     "terminal_state",
     "verification",
     "capability_inventory",
-    "lifecycle"
+    "lifecycle",
+    "remote_state"
   ],
   "properties": {
     "schema_version": {
@@ -213,6 +214,66 @@
         },
         "durable_result": {
           "type": "boolean"
+        }
+      }
+    },
+    "failure_classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "retryable"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "SOURCE_TEST",
+            "MISSION_DEFECT",
+            "PERMISSION_AUTH",
+            "QUOTA_PLATFORM",
+            "STALE_SOURCE",
+            "TRANSIENT_INFRASTRUCTURE"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "remote_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resources",
+        "ownership",
+        "cleanup"
+      ],
+      "properties": {
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "ownership": {
+          "enum": [
+            "TASK_OWNED",
+            "SHARED",
+            "UNKNOWN"
+          ]
+        },
+        "cleanup": {
+          "enum": [
+            "NOT_REQUIRED",
+            "PENDING",
+            "COMPLETED",
+            "BLOCKED"
+          ]
         }
       }
     }
