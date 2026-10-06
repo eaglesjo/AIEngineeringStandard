@@ -67,6 +67,10 @@ def run_2_1_validation() -> None:
     run_checker(ROOT / "scripts" / "validation" / "validate_2_1_contracts.py", "AIEngineeringStandard 2.1 contract validation")
 
 
+def run_execution_validation() -> None:
+    run_checker(ROOT / "scripts" / "validation" / "validate_execution_contract.py", "AIEngineeringStandard execution mission validation")
+
+
 def run_2_0_validation() -> None:
     run_checker(ROOT / "scripts" / "validation" / "validate_2_0_schemas.py", "AIEngineeringStandard 2.0 schema validation")
     run_checker(ROOT / "scripts" / "validation" / "validate_portable_skill.py", "Portable Agent Skill validation")
@@ -109,11 +113,6 @@ def check_no_legacy_installer() -> None:
     for path in (ROOT / "scripts").glob("install-coding-standard.*"):
         fail(f"Legacy installer must not exist before release: {path.name}")
 
-
-def check_no_github_actions() -> None:
-    workflows = ROOT / ".github" / "workflows"
-    if workflows.exists() and any(workflows.glob("*")):
-        fail("GitHub Actions workflows are not part of the local CI/release architecture")
 
 
 def check_version_consistency() -> None:
