@@ -23,7 +23,9 @@ Every bounded Actions execution should have:
 - expected outputs;
 - minimum permissions;
 - terminal state;
-- verification requirements.
+- verification requirements;
+- failure classification when execution fails;
+- remote-state resources, ownership, and cleanup state.
 
 The machine-readable contract is `mission.schema.json`.
 
@@ -34,11 +36,12 @@ The machine-readable contract is `mission.schema.json`.
 3. Use Actions for bounded CI, build, test, transport, supply, or recovery work when that is safer or more reliable than the available local path.
 4. Never treat a successful workflow status as sufficient evidence by itself.
 5. Verify the source SHA and relevant outputs after execution.
-6. Diagnose a failed run before retrying it.
-7. Temporary workflows, artifacts, and branches are task-owned state and must be cleaned up after terminal use.
-8. Do not put secrets into workflow text, artifacts, logs, or mission payloads.
-9. Do not grant write permissions to jobs that only validate source.
-10. Remote execution must remain distinguishable from local execution in evidence and reporting.
+6. Classify a failed run before retrying it; unchanged retries require evidence of transient infrastructure failure.
+7. Track temporary remote resources separately and never destructively clean resources with unknown ownership.
+8. Temporary workflows, artifacts, and branches are task-owned state and must be cleaned up after terminal use.
+9. Do not put secrets into workflow text, artifacts, logs, or mission payloads.
+10. Do not grant write permissions to jobs that only validate source.
+11. Remote execution must remain distinguishable from local execution in evidence and reporting.
 
 ## Relationship to v2.1
 
