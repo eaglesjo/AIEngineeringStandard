@@ -68,18 +68,18 @@ Before retrying:
 1. inspect the workflow conclusion and failed job/step;
 2. inspect the relevant logs;
 3. inspect produced artifacts, commits, refs, or partial results;
-4. classify the failure when possible as source/test failure, mission defect, permission/authentication failure, quota/platform limit, stale source identity, or transient infrastructure failure;
+4. classify the failure as `SOURCE_TEST`, `MISSION_DEFECT`, `PERMISSION_AUTH`, `QUOTA_PLATFORM`, `STALE_SOURCE`, or `TRANSIENT_INFRASTRUCTURE`;
 5. change the mission or execution path when evidence requires it.
 
 Do not repeatedly rerun an unchanged failed mission without evidence of a transient failure. A green workflow is not sufficient completion evidence; inspect evidence, verify the outputs required by the mission, and persist a durable result.
 
 ## Task ownership and cleanup
 
-Temporary branches, workflow definitions, artifacts, transport payloads, and mission-only files must be task-owned.
+Temporary branches, workflow definitions, workflow runs, artifacts, transport payloads, and mission-only files are separately tracked remote-state resources. Each resource has an ownership and cleanup state.
 
 Use collision-resistant mission identifiers. Keep unrelated work out of shared temporary state.
 
-Do not delete unfamiliar remote state. Before destructive cleanup, re-resolve mutable refs and confirm ownership and terminal status. Cleanup must be idempotent.
+Do not delete unfamiliar remote state. Before destructive cleanup, re-resolve mutable refs and confirm ownership and terminal status. Cleanup must be idempotent. `UNKNOWN` ownership blocks destructive cleanup until ownership is established. Preserve recovery payloads until consumed or superseded by a durable result.
 
 Keep failed runs and artifacts while they have diagnostic or recovery value. Remove or shorten retention of obsolete task-owned state after a newer durable result supersedes it.
 

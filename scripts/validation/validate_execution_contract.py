@@ -26,7 +26,7 @@ def main() -> int:
         fail("execution mission schema version must be 1.0.0")
     if document.get("type") != "object" or document.get("additionalProperties") is not False:
         fail("execution mission schema must be a closed object")
-    required = {"schema_version", "id", "repository", "source_sha", "purpose", "inputs", "operations", "expected_outputs", "permissions", "terminal_state", "verification", "capability_inventory", "lifecycle"}
+    required = {"schema_version", "id", "repository", "source_sha", "purpose", "inputs", "operations", "expected_outputs", "permissions", "terminal_state", "verification", "capability_inventory", "lifecycle", "remote_state"}
     if set(document.get("required", [])) != required:
         fail("execution mission required fields do not match the canonical set")
     permissions = document["properties"]["permissions"]
