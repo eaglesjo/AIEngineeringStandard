@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/eaglesjo/AIEngineeringStandard/blob/main/core/runtime/execution/mission.schema.json",
+  "title": "AI Engineering Standard Execution Mission",
+  "description": "Bounded repository execution contract for sandbox or GitHub Actions execution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "repository",
+    "source_sha",
+    "purpose",
+    "inputs",
+    "operations",
+    "expected_outputs",
+    "permissions",
+    "terminal_state",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[^/\\\\s]+/[^/\\\\s]+$"
+    },
+    "source_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "expected_outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contents"
+      ],
+      "properties": {
+        "contents": {
+          "enum": [
+            "none",
+            "read",
+            "write"
+          ]
+        },
+        "actions": {
+          "enum": [
+            "none",
+            "read",
+            "write"
+          ]
+        },
+        "pull_requests": {
+          "enum": [
+            "none",
+            "read",
+            "write"
+          ]
+        }
+      }
+    },
+    "terminal_state": {
+      "enum": [
+        "SUCCEEDED",
+        "FAILED",
+        "BLOCKED",
+        "CANCELLED"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sha",
+        "outputs"
+      ],
+      "properties": {
+        "source_sha": {
+          "const": true
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
