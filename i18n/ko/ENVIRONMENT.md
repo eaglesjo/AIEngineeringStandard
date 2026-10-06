@@ -1,4 +1,4 @@
-# LLM 실행환경 프로파일 및 최적화
+# 한국어 실행환경 규칙
 
 실제 실행환경을 측정하고 workload에 맞는 안전한 runtime configuration을 결정합니다.
 
@@ -8,84 +8,26 @@
 Detect → Measure → Resolve → Smoke Test → Lock → Optimize → Execute
 ```
 
-## 프로파일러
+실제 repository와 immutable source SHA를 먼저 확인하고 CPU, RAM, disk, GPU/accelerator, VRAM, framework capability, Python/runtime, IDE/kernel 상태를 측정합니다.
 
-```bash
-python LLM/environment.py
-python LLM/environment.py .codingstandard/environment-profile.json
-```
+## 실행환경과 CI
 
-측정 대상:
+로컬/sandbox 실행을 iterative development의 기본으로 사용합니다. GitHub Actions는 sandbox가 제공하지 못하는 bounded validation, supply, transport, recovery, cleanup 또는 remote execution에 사용합니다.
 
-- OS / architecture
-- Python / executable
-- IDE / Jupyter / Colab
-- CPU
-- System RAM
-- Disk total / free
-- GPU / accelerator / VRAM
-- CUDA / MPS / ROCm / DirectML capability
-- FP16 / BF16 지원 여부
-- resolved device
+Actions 실행 전에는 required capabilities와 available sandbox capabilities를 비교합니다. Actions를 사용한 경우 source SHA와 관련 output을 검증하고 execution evidence에 remote execution임을 명시합니다.
 
-자동 결정 대상:
+## Runtime 분류
 
-- device
-- batch size
-- gradient accumulation
-- DataLoader workers
-- pin memory
-- mixed precision
-- gradient checkpointing
-- maximum sequence length
+- `os`: Python이 보고하는 실제 호스트/runtime 운영체제
+- `execution_environment`: `local`, `jupyter`, `vscode`, `colab` 등의 실제 실행 환경
+- `execution_type`: `local` 또는 `cloud`
 
-## Environment Lock
+특정 장비를 runtime 조건으로 고정하지 않습니다. OS/runtime, framework 및 background process를 위한 memory headroom을 남기고 100% 사용을 목표로 하지 않습니다.
 
-검증된 profile과 runtime configuration을 학습/추론 전체에서 재사용합니다.
+Colab처럼 ephemeral한 runtime에서는 durable checkpoint와 artifact persistence, Resume 검증을 적용합니다.
 
-환경 확정 후 사용하지 않는 OS/device branch, 중복 detection, dead code, 구식 import를 제거합니다. 여러 플랫폼을 공식 지원하는 reusable library는 필요한 분기를 유지합니다.
+## 실패와 복구
 
-## GPU / RAM 최적화
+실패 workflow는 로그와 결과를 확인한 뒤 원인을 분류합니다. 동일한 mission을 근거 없이 반복 실행하지 않습니다.
 
-```text
-batch ↓
-sequence/input ↓
-gradient accumulation
-mixed precision
-gradient checkpointing
-quantization 검토
-offload 검토
-tensor/reference 정리
-```
-
-CPU/RAM은 streaming, chunking, memory mapping, 보수적인 worker, 제한된 prefetch, 중복 복사 방지, CPU thread 제한을 우선합니다.
-
-## Memory Smoke Test
-
-장시간 학습 전에 `LLM/memory_smoke_test.py`를 사용합니다.
-
-```bash
-python LLM/memory_smoke_test.py --cpu --steps 2
-```
-
-본 모델을 학습할 때는 실제 모델/configuration으로도 동일한 `load → forward → backward → optimizer step → validation → checkpoint save/reload` 흐름을 검증합니다.
-
-## OOM Recovery
-
-```text
-memory 기록
-→ batch 감소
-→ input/sequence 감소
-→ workers 감소
-→ precision 확인
-→ checkpointing
-→ quantization/offload 검토
-→ smoke test
-→ 검증된 설정 실행
-```
-
-동일한 실패 설정을 무한 반복하지 않습니다.
-
-## Reproducibility
-
-환경 profile, runtime configuration, device, accelerator, VRAM/RAM, CPU, peak memory, runtime, coding-standard version을 실험 결과와 함께 기록합니다.
+원격 임시 state는 task ownership과 terminal status를 확인한 후 정리합니다. UNKNOWN ownership은 destructive cleanup을 차단합니다.
