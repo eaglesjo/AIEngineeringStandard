@@ -4,46 +4,118 @@
   "concepts": {
     "environment.validate": {
       "required": true,
-      "source_concepts": ["environment"],
-      "canonical": ["environment", "runtime"],
+      "source_concepts": [
+        "environment"
+      ],
+      "canonical": [
+        "environment",
+        "runtime"
+      ],
       "locales": {
-        "en": ["environment", "runtime"], "ko": ["환경", "실행환경", "런타임", "environment", "runtime"], "fr": ["environnement", "exécution", "runtime", "environment"], "es": ["entorno", "ejecución", "runtime", "environment"], "zh-CN": ["环境", "运行环境", "运行时", "environment", "runtime"], "ja": ["環境", "実行環境", "ランタイム", "environment", "runtime"], "ru": ["сред", "окруж", "environment", "runtime"], "tr": ["ortam", "çalışma ortamı", "çalışma", "runtime", "environment"], "de": ["umgebung", "laufzeit", "environment", "runtime"], "it": ["ambiente", "esecuzione", "runtime", "environment"], "pt": ["ambiente", "execução", "runtime", "environment"], "ar": ["بيئة", "التشغيل", "environment", "runtime"], "hi": ["पर्यावरण", "execution environment", "runtime", "environment"], "id": ["lingkungan", "environment", "runtime"], "vi": ["môi trường", "execution environment", "runtime", "environment"], "th": ["สภาพแวดล้อม", "environment", "runtime"], "nl": ["omgeving", "execution environment", "runtime", "environment"], "pl": ["środowisko", "execution environment", "runtime", "environment"], "sv": ["miljö", "execution environment", "runtime", "environment"], "uk": ["середовище", "execution environment", "runtime", "environment"]
+        "en": [
+          "environment",
+          "runtime"
+        ],
+        "ko": [
+          "환경",
+          "실행환경",
+          "런타임",
+          "environment",
+          "runtime"
+        ]
       },
       "intent": "Validate the real execution environment and runtime conditions before resource-sensitive decisions."
     },
     "resources.memory.measure": {
       "required": true,
-      "source_concepts": ["memory"],
-      "canonical": ["memory", "RAM", "VRAM", "resource usage"],
+      "source_concepts": [
+        "memory"
+      ],
+      "canonical": [
+        "memory",
+        "RAM",
+        "VRAM",
+        "resource usage"
+      ],
       "locales": {
-        "en": ["memory", "ram", "vram", "resource usage"], "ko": ["메모리", "램", "브이램", "ram", "vram", "memory"], "fr": ["mémoire", "ram", "vram", "memory"], "es": ["memoria", "ram", "vram", "memory"], "zh-CN": ["内存", "显存", "ram", "vram", "memory"], "ja": ["メモリ", "メモリー", "ram", "vram", "memory"], "ru": ["памят", "оперативная", "видеопамят", "ram", "vram", "memory"], "tr": ["bellek", "ram", "vram", "memory"], "de": ["speicher", "ram", "vram", "memory"], "it": ["memoria", "ram", "vram", "memory"], "pt": ["memória", "ram", "vram", "memory"], "ar": ["ذاكرة", "ram", "vram", "memory"], "hi": ["मेमोरी", "राम", "वीआरएएम", "ram", "vram", "memory"], "id": ["memori", "ram", "vram", "memory"], "vi": ["bộ nhớ", "ram", "vram", "memory"], "th": ["หน่วยความจำ", "ram", "vram", "memory"], "nl": ["geheugen", "ram", "vram", "memory"], "pl": ["pamięć", "ram", "vram", "memory"], "sv": ["minne", "ram", "vram", "memory"], "uk": ["пам’ять", "пам'ять", "ram", "vram", "memory"]
+        "en": [
+          "memory",
+          "ram",
+          "vram",
+          "resource usage"
+        ],
+        "ko": [
+          "메모리",
+          "램",
+          "브이램",
+          "ram",
+          "vram",
+          "memory"
+        ]
       },
       "intent": "Measure memory and resource availability instead of relying on named hardware assumptions."
     },
     "tasks.early_stopping": {
       "required": true,
-      "source_concepts": ["early stopping"],
-      "canonical": ["early stopping"],
+      "source_concepts": [
+        "early stopping"
+      ],
+      "canonical": [
+        "early stopping"
+      ],
       "locales": {
-        "en": ["early stopping"], "ko": ["early stopping", "얼리 스토핑", "조기 종료"], "fr": ["early stopping", "arrêt précoce"], "es": ["early stopping", "parada temprana"], "zh-CN": ["early stopping", "提前停止", "早停"], "ja": ["early stopping", "早期終了", "アーリーストッピング"], "ru": ["early stopping", "ранн", "досрочн"], "tr": ["early stopping", "erken durdurma"], "de": ["early stopping", "frühzeitiger abbruch"], "it": ["early stopping", "arresto anticipato"], "pt": ["early stopping", "parada antecipada"], "ar": ["early stopping", "الإيقاف المبكر"], "hi": ["early stopping", "शीघ्र रोक", "जल्दी रोकना"], "id": ["early stopping", "penghentian dini"], "vi": ["early stopping", "dừng sớm"], "th": ["early stopping", "หยุดก่อนกำหนด"], "nl": ["early stopping", "vroegtijdig stoppen"], "pl": ["early stopping", "wczesne zatrzymanie"], "sv": ["early stopping", "tidigt stopp"], "uk": ["early stopping", "рання зупинка"]
+        "en": [
+          "early stopping"
+        ],
+        "ko": [
+          "early stopping",
+          "얼리 스토핑",
+          "조기 종료"
+        ]
       },
       "intent": "Use Early Stopping where meaningful for long-running workloads."
     },
     "recovery.checkpoint": {
       "required": true,
-      "source_concepts": ["checkpoint"],
-      "canonical": ["checkpoint"],
+      "source_concepts": [
+        "checkpoint"
+      ],
+      "canonical": [
+        "checkpoint"
+      ],
       "locales": {
-        "en": ["checkpoint"], "ko": ["checkpoint", "체크포인트"], "fr": ["checkpoint", "point de contrôle"], "es": ["checkpoint", "punto de control"], "zh-CN": ["checkpoint", "检查点"], "ja": ["checkpoint", "チェックポイント"], "ru": ["checkpoint", "контрольн", "восстановления"], "tr": ["checkpoint", "kontrol noktası"], "de": ["checkpoint", "prüfpunkt"], "it": ["checkpoint", "punto di controllo"], "pt": ["checkpoint", "ponto de controlo", "ponto de controle"], "ar": ["checkpoint", "نقطة حفظ", "نقطة تحقق"], "hi": ["checkpoint", "चेकपॉइंट", "पुनर्प्राप्ति बिंदु"], "id": ["checkpoint", "titik pemeriksaan"], "vi": ["checkpoint", "điểm kiểm tra"], "th": ["checkpoint", "จุดตรวจสอบ"], "nl": ["checkpoint", "controlepunt"], "pl": ["checkpoint", "punkt kontrolny"], "sv": ["checkpoint", "kontrollpunkt"], "uk": ["checkpoint", "контрольна точка"]
+        "en": [
+          "checkpoint"
+        ],
+        "ko": [
+          "checkpoint",
+          "체크포인트"
+        ]
       },
       "intent": "Persist the best or recoverable Checkpoint so long-running work can resume."
     },
     "behavior_change.tests": {
       "required": true,
-      "source_concepts": ["testing"],
-      "canonical": ["test", "tests", "testing"],
+      "source_concepts": [
+        "testing"
+      ],
+      "canonical": [
+        "test",
+        "tests",
+        "testing"
+      ],
       "locales": {
-        "en": ["test", "tests", "testing"], "ko": ["테스트", "시험", "test", "tests"], "fr": ["test", "tests", "tester"], "es": ["prueba", "pruebas", "test"], "zh-CN": ["测试", "test"], "ja": ["テスト", "試験", "test"], "ru": ["тест", "тесты", "провер"], "tr": ["test", "testler", "deneme"], "de": ["test", "tests", "prüfung"], "it": ["test", "testare", "verifica"], "pt": ["teste", "testes", "testar"], "ar": ["اختبار", "اختبارات", "test"], "hi": ["परीक्षण", "टेस्ट", "test"], "id": ["pengujian", "tes", "test"], "vi": ["kiểm thử", "kiểm tra", "test"], "th": ["การทดสอบ", "ทดสอบ", "test"], "nl": ["test", "testen", "tests"], "pl": ["test", "testy", "testowanie"], "sv": ["test", "tester", "testning"], "uk": ["тест", "тести", "перевір"]
+        "en": [
+          "test",
+          "tests",
+          "testing"
+        ],
+        "ko": [
+          "테스트",
+          "시험",
+          "test",
+          "tests"
+        ]
       },
       "intent": "Validate behavior changes with meaningful tests, starting with the smallest meaningful test before broader validation."
     }

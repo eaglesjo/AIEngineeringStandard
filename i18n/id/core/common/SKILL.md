@@ -1,3 +1,0 @@
-# Keterampilan dan Alur Kerja
-
-Tetapkan tujuan dan scope, periksa state repositori, lalu ikuti policy canonical dan dokumentasi domain. Buat perubahan kecil dan dapat dilacak. Pastikan tests dan validation reproducible. Sesuaikan konfigurasi dengan environment dan memory yang tersedia. Gunakan early stopping bila sesuai dan simpan checkpoint untuk pekerjaan yang dapat dilanjutkan. Laporkan kegagalan serta hasil akhir dengan jelas.

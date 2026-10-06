@@ -71,11 +71,12 @@ def build_tree(root: Path, runtime_locales: tuple[str, ...] = ("en", "ko"), docs
 
 
 class I18nParityTests(unittest.TestCase):
-    def test_docs_only_locales_do_not_require_runtime_resources(self) -> None:
+    def test_non_korean_documentation_locale_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             build_tree(root, runtime_locales=("en", "ko"), docs_only=("fr", "es", "tr"))
-            self.assertEqual(validate(root, root / "i18n/languages.json"), [])
+            errors = validate(root, root / "i18n/languages.json")
+            self.assertTrue(any("documentation locale set must be exactly en,ko" in error for error in errors))
 
     def test_missing_runtime_common_resource_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -90,7 +91,7 @@ class I18nParityTests(unittest.TestCase):
             root = Path(tmp)
             build_tree(root, runtime_locales=("en", "xx"))
             errors = validate(root, root / "i18n/languages.json")
-            self.assertTrue(any("missing semantic concept catalog" in error for error in errors))
+            self.assertTrue(any("unsupported locale remains in catalog" in error for error in errors))
 
 
 if __name__ == "__main__":

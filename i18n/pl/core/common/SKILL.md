@@ -1,3 +1,0 @@
-# Umiejętności i workflow
-
-Określ cel i zakres, sprawdź stan repozytorium oraz przeczytaj canonical policy i dokumentację domeny. Wprowadzaj małe, możliwe do prześledzenia zmiany. Utrzymuj tests i validation w formie reproducible. Dopasuj runtime do rzeczywistego environment i dostępnej memory. Stosuj early stopping, gdy jest właściwy, oraz zapisuj checkpoint dla zadań możliwych do wznowienia. Jasno raportuj błędy, wyniki i pozostałe ryzyka.
