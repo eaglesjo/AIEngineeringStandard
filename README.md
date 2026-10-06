@@ -109,6 +109,6 @@ The preflight requires a clean local `main` that exactly matches `origin/main`, 
 
 ## Release provenance
 
-Release tags and GitHub Releases are created from this repository only. `scripts/release/check_release.py` validates the exact local `main` state, and `scripts/release/publish_release.py` creates the annotated tag and GitHub Release explicitly. No GitHub Actions workflow is required.
+Release tags and GitHub Releases are created from this repository only. `scripts/release/check_release.py` validates the exact local `main` state, and `scripts/release/publish_release.py` creates the annotated tag and GitHub Release explicitly. GitHub Actions CI is part of automated repository validation; release publication remains governed by the release preflight and publication contract.
 
 Historical tags and commits, including `v2.0.0`, are preserved.
