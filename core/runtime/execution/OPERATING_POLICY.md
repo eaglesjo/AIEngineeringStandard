@@ -9,12 +9,13 @@ The policy is intentionally host-neutral. It describes capabilities and safety b
 ## Execution priority
 
 1. Resolve the target repository and mutable ref to an immutable commit SHA.
-2. Materialize and verify that exact source before editing or iterative execution.
-3. Prefer the sandbox work environment for editing, building, testing, debugging, and inspection.
-4. Use GitHub Actions only for bounded validation, supply, transport, recovery, cleanup, or remote execution that the sandbox cannot safely or efficiently provide.
-5. Verify returned outputs and source identity before consuming them.
-6. Persist meaningful results as Git commits, pull requests, or immutable artifacts.
-7. Clean task-owned temporary remote state only after terminal status and ownership are established.
+2. Inventory the available sandbox capabilities and the capabilities required by the mission.
+3. Materialize and verify that exact source before editing or iterative execution.
+4. Prefer the sandbox work environment for editing, building, testing, debugging, and inspection.
+5. Use GitHub Actions only for bounded validation, supply, transport, recovery, cleanup, or remote execution that the sandbox cannot safely or efficiently provide.
+6. Verify returned outputs and source identity before consuming them.
+7. Persist meaningful results as Git commits, pull requests, or immutable artifacts.
+8. Clean task-owned temporary remote state only after terminal status and ownership are established.
 
 Actions is an execution mechanism, not an interactive remote shell and not a second source of truth.
 
@@ -36,7 +37,7 @@ Every remote execution must be representable as a bounded mission with:
 
 The machine-readable contract is `core/runtime/execution/mission.schema.json`.
 
-If the expected source SHA no longer matches, stop the mission path and recover the current durable state before continuing.
+If the sandbox satisfies the required capabilities, reuse it. Use Actions only when the inventory shows the sandbox is insufficient or unavailable. If the expected source SHA no longer matches, stop the mission path and recover the current durable state before continuing.
 
 ## Mission classes
 
@@ -50,13 +51,13 @@ The mission must identify the target platform, acquire only the required input, 
 
 Use a transport mission when exact source or an exact verified result must cross an environment boundary.
 
-Prefer direct text/file operations for small semantic changes. Prefer Git objects, bundles, archives, or artifacts for opaque, binary, or filesystem-sensitive state. Verify checksums and expected Git tree/source identity at both ends.
+Prefer direct text/file operations for small semantic changes. Prefer Git objects, bundles, archives, or artifacts for opaque, binary, or filesystem-sensitive state. The machine-readable transport contract records the transport mode, checksum algorithm, expected checksum, and mandatory source/tree verification. Verify checksums and expected Git tree/source identity at both ends.
 
 ### Degraded remote execution
 
 Use degraded remote execution only when the sandbox itself is unavailable or cannot faithfully sustain the requested engineering loop.
 
-Remote work remains bounded: establish the durable base, perform one bounded step, persist the result, inspect evidence, then decide the next step. Do not treat a runner as a persistent workstation.
+Remote work remains bounded: establish the durable base, perform one bounded step, persist the result, inspect evidence, verify outputs, then decide the next step. Do not treat a runner as a persistent workstation.
 
 ## Failure diagnosis and retry
 
@@ -70,7 +71,7 @@ Before retrying:
 4. classify the failure when possible as source/test failure, mission defect, permission/authentication failure, quota/platform limit, stale source identity, or transient infrastructure failure;
 5. change the mission or execution path when evidence requires it.
 
-Do not repeatedly rerun an unchanged failed mission without evidence of a transient failure. A green workflow is not sufficient completion evidence; verify the outputs required by the mission.
+Do not repeatedly rerun an unchanged failed mission without evidence of a transient failure. A green workflow is not sufficient completion evidence; inspect evidence, verify the outputs required by the mission, and persist a durable result.
 
 ## Task ownership and cleanup
 
