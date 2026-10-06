@@ -1,0 +1,97 @@
+name: AI Engineering Standard CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Immutable commit SHA to validate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-engineering-standard-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository-gate:
+    name: Repository validation gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="${{ inputs.source_sha || github.sha }}"
+          if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid source SHA: $source_sha" >&2
+            exit 1
+          fi
+          echo "sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install test runner
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Validate execution contract
+        run: python scripts/validation/validate_execution_contract.py
+
+      - name: Run repository validation
+        run: python scripts/validation/validate.py
+
+      - name: Run installer lifecycle tests
+        run: python scripts/installers/test_installers.py
+
+      - name: Run validation test suite
+        run: python -m pytest -q tests/validation
+
+  source-integrity:
+    name: Source integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Resolve source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="${{ inputs.source_sha || github.sha }}"
+          if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid source SHA: $source_sha" >&2
+            exit 1
+          fi
+          echo "sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Verify checked-out commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          expected="${{ steps.source.outputs.sha }}"
+          test "$actual" = "$expected"
+          echo "verified source SHA: $actual"
