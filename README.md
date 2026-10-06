@@ -20,20 +20,14 @@ Version 2 establishes a machine-readable architecture and policy contract, expli
 
 This repository is the **single source of truth for development, validation, and release**.
 
-```
-feature/fix/docs
-      ↓
-Pull Request
-      ↓
-local validation gate
-      ↓
-main
-      ↓
-version tag
-      ↓
-release validation
-      ↓
-GitHub Release
+```mermaid
+flowchart TD
+    A[Feature / Fix / Docs] --> B[Pull Request]
+    B --> C[Local Validation Gate]
+    C --> D[main]
+    D --> E[Version Tag]
+    E --> F[Release Validation]
+    F --> G[GitHub Release]
 ```
 
 There is no separate private repository, development repository, staging repository, or promotion/export step.
