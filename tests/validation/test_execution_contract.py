@@ -14,6 +14,9 @@ def test_execution_mission_schema():
     assert "source_sha" in schema["required"]
     assert "capability_inventory" in schema["required"]
     assert "lifecycle" in schema["required"]
+    assert "remote_state" in schema["required"]
+    assert schema["properties"]["failure_classification"]["properties"]["class"]["enum"] == ["SOURCE_TEST", "MISSION_DEFECT", "PERMISSION_AUTH", "QUOTA_PLATFORM", "STALE_SOURCE", "TRANSIENT_INFRASTRUCTURE"]
+    assert schema["properties"]["remote_state"]["properties"]["cleanup"]["enum"] == ["NOT_REQUIRED", "PENDING", "COMPLETED", "BLOCKED"]
     assert schema["properties"]["capability_inventory"]["properties"]["decision"]["enum"] == ["REUSE_SANDBOX", "USE_ACTIONS", "BLOCKED"]
     assert schema["properties"]["lifecycle"]["properties"]["phase"]["enum"] == ["CREATED", "EXECUTING", "TERMINAL"]
     assert schema["properties"]["verification"]["properties"]["source_sha"]["const"] is True
