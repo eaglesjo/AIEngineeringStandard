@@ -28,11 +28,10 @@ flowchart TD
     C --> E[main]
     D --> E
     E --> F[Version Tag]
-    F --> G[Release Validation]
-    G --> H[GitHub Release]
+    F --> G[GitHub Release]
 ```
 
-Local validation and GitHub Actions CI execute the same repository validation contract. GitHub Actions is an automated verification and bounded execution mechanism; it is not a second source of truth or a replacement repository.
+Local validation and GitHub Actions CI verify the same repository state before changes reach `main`. GitHub Actions is an automated verification and bounded execution mechanism; it is not a second source of truth or a replacement repository.
 
 There is no separate private repository, development repository, staging repository, or promotion/export step.
 
