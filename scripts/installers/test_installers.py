@@ -40,7 +40,7 @@ def lifecycle(target: Path) -> None:
     if not manifest.is_file():
         raise AssertionError("installation manifest missing")
     data = json.loads(manifest.read_text(encoding="utf-8"))
-    assert data["schema_version"] == 1
+    assert data["schema_version"] == 2
     assert data["coding_standard_version"] == (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     assert data["language"] == "en"
     assert data["domain"] == "all"
