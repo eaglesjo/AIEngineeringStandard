@@ -1,0 +1,321 @@
+#!/usr/bin/env python3
+"""Cross-platform installer lifecycle engine for codingStandard."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import shutil
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+SUPPORTED_DOMAINS = ("common", "ml", "llm", "vision", "colab", "all")
+SUPPORTED_POLICIES = ("ask", "merge", "overwrite", "skip")
+MANIFEST_DIR = ".codingstandard"
+MANIFEST_FILE = "installation.json"
+SCHEMA_VERSION = 1
+CATALOG_FILE = "i18n/languages.json"
+
+COMMON = [
+    "AGENTS.md", ".agents/skills/ai-engineering-standard/SKILL.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md",
+    ".cursor/rules/coding-standard.mdc", ".windsurf/rules/coding-standard.md",
+    ".clinerules/01-coding-standard.md", ".continue/rules/01-coding-standard.md",
+    ".junie/AGENTS.md", ".amazonq/rules/coding-standard.md", ".aider.conf.yml",
+    "core/common/AGENT.md", "core/common/SKILL.md", "core/common/ENVIRONMENT.md", "core/common/environment.py", "core/common/experiment.py", "core/common/dependencies.py",
+]
+DOMAIN_FIXED = {
+    "ml": [".github/instructions/ml.instructions.md", "domains/ml/AGENT.md", "domains/ml/SKILL.md", "domains/ml/ENVIRONMENT.md", "domains/ml/README.md"],
+    "llm": [".github/instructions/llm.instructions.md", "domains/llm/AGENT.md", "domains/llm/SKILL.md", "domains/llm/ENVIRONMENT.md", "domains/llm/environment.py", "domains/llm/experiment.py", "domains/llm/memory_smoke_test.py", "domains/llm/README.md", "domains/llm/config/training.yaml", "domains/llm/config/ablation.yaml"],
+    "vision": [".github/instructions/vision.instructions.md", "domains/vision/AGENT.md", "domains/vision/SKILL.md", "domains/vision/ENVIRONMENT.md", "domains/vision/memory_smoke_test.py", "domains/vision/README.md", "domains/vision/config/training.yaml", "domains/vision/config/ablation.yaml"],
+    "colab": ["platform/colab/AGENT.md", "platform/colab/SKILL.md"],
+}
+
+
+def read_version(root: Path) -> str:
+    return (root / "VERSION").read_text(encoding="utf-8").strip()
+
+
+def supported_languages(root: Path) -> tuple[str, ...]:
+    catalog = root / CATALOG_FILE
+    try:
+        data = json.loads(catalog.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"Invalid language catalog: {catalog}: {exc}") from exc
+    locales = {str(item["locale"]) for item in data.get("runtime_resources", []) if isinstance(item, dict) and item.get("locale")}
+    if "en" not in locales:
+        locales.add("en")
+    return tuple(sorted(locales))
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def manifest_path(target: Path) -> Path:
+    return target / MANIFEST_DIR / MANIFEST_FILE
+
+
+def load_manifest(target: Path) -> dict[str, Any]:
+    path = manifest_path(target)
+    if not path.is_file():
+        raise SystemExit(f"No codingStandard installation manifest found: {path}")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Invalid installation manifest: {path}: {exc}") from exc
+    if data.get("schema_version") != SCHEMA_VERSION:
+        raise SystemExit(f"Unsupported installation manifest schema: {data.get('schema_version')!r}")
+    return data
+
+
+def source_root_for(root: Path, language: str) -> Path:
+    locale_root = root / "i18n" / language
+    return locale_root if language != "en" and locale_root.is_dir() else root
+
+
+def collect_files(root: Path, domain: str) -> list[str]:
+    paths = list(COMMON)
+    domains = ("ml", "llm", "vision", "colab") if domain == "all" else (domain,) if domain != "common" else ()
+    for item in domains:
+        paths.extend(DOMAIN_FIXED[item])
+        skill_root = root / "domains" / item / "skills"
+        if skill_root.is_dir():
+            paths.extend(str(p.relative_to(root)) for p in sorted(skill_root.rglob("SKILL.md")))
+    return list(dict.fromkeys(paths))
+
+
+def resolve_source(root: Path, language: str, rel: str) -> Path:
+    localized = source_root_for(root, language) / rel
+    return localized if localized.is_file() else root / rel
+
+
+def prompt_language() -> str:
+    print("Available languages: " + ", ".join(supported_languages(Path(__file__).resolve().parents[2])))
+    choice = input("Language [en]: ").strip()
+    return choice or "en"
+
+
+def prompt_domain() -> str:
+    print("Domain: 1) Common  2) ML  3) LLM  4) Vision  5) Colab  6) All")
+    choice = input("Domain [6]: ").strip()
+    return {"1": "common", "2": "ml", "3": "llm", "4": "vision", "5": "colab"}.get(choice, "all")
+
+
+def prompt_policy(rel: str) -> str:
+    while True:
+        choice = input(f"Existing {rel} [m]erge [o]verwrite [s]kip: ").strip().lower()
+        if choice in {"m", "o", "s"}:
+            return {"m": "merge", "o": "overwrite", "s": "skip"}[choice]
+
+
+def merge_text(old: str, new: str, rel: str) -> str:
+    if rel.endswith((".py", ".yaml", ".yml", ".sh", ".bash")):
+        start, end = "# BEGIN CODINGSTANDARD MANAGED BLOCK", "# END CODINGSTANDARD MANAGED BLOCK"
+    else:
+        start, end = "<!-- BEGIN CODINGSTANDARD MANAGED BLOCK -->", "<!-- END CODINGSTANDARD MANAGED BLOCK -->"
+    if start in old:
+        before, remainder = old.split(start, 1)
+        _, after = remainder.split(end, 1) if end in remainder else (remainder, "")
+        return f"{before}{start}\n{new.rstrip()}\n{end}{after}"
+    return f"{old.rstrip()}\n\n{start}\n{new.rstrip()}\n{end}\n"
+
+
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def install(root: Path, target: Path, language: str, domain: str, policy: str, dry_run: bool) -> int:
+    languages = supported_languages(root)
+    if language not in languages:
+        raise SystemExit(f"language: {'|'.join(languages)}")
+    if domain not in SUPPORTED_DOMAINS:
+        raise SystemExit(f"domain: {'|'.join(SUPPORTED_DOMAINS)}")
+    if policy not in SUPPORTED_POLICIES:
+        raise SystemExit(f"policy: {'|'.join(SUPPORTED_POLICIES)}")
+    target.mkdir(parents=True, exist_ok=True)
+    files = collect_files(root, domain)
+    state: dict[str, Any] = {}
+    if manifest_path(target).is_file():
+        previous = load_manifest(target)
+        state = {item["path"]: item for item in previous.get("files", [])}
+
+    if language != "en":
+        print(f"Language resource mode: {language} (translated locale with English fallback for missing domain resources)")
+
+    for rel in files:
+        src = resolve_source(root, language, rel)
+        dst = target / rel
+        if not src.is_file():
+            raise SystemExit(f"Missing template: {rel}")
+        if dry_run:
+            print(f"[DRY-RUN] {'EXIST' if dst.exists() else 'CREATE'} {rel}")
+            continue
+        action = "create"
+        if dst.exists():
+            action = policy if policy != "ask" else prompt_policy(rel)
+        if action == "skip":
+            continue
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        if action == "merge":
+            write_text(dst, merge_text(dst.read_text(encoding="utf-8"), src.read_text(encoding="utf-8"), rel))
+        else:
+            shutil.copyfile(src, dst)
+        state[rel] = {"path": rel, "installed_sha256": sha256_file(dst), "source_sha256": sha256_file(src)}
+
+    if dry_run:
+        print(f"Install preview: language={language} domain={domain} files={len(files)}")
+        return 0
+
+    manifest = {
+        "schema_version": SCHEMA_VERSION,
+        "product": "codingStandard",
+        "coding_standard_version": read_version(root),
+        "language": language,
+        "domain": domain,
+        "installed_at": datetime.now(timezone.utc).isoformat(),
+        "source_root": str(root),
+        "files": [state[p] for p in sorted(state)],
+    }
+    write_text(manifest_path(target), json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    print(f"Installed: language={language} domain={domain} version={manifest['coding_standard_version']} files={len(state)}")
+    return 0
+
+
+def state(target: Path, as_json: bool) -> int:
+    data = load_manifest(target)
+    tracked = data.get("files", [])
+    modified, missing = [], []
+    for item in tracked:
+        path = target / item["path"]
+        if not path.is_file():
+            missing.append(item["path"])
+        elif sha256_file(path) != item.get("installed_sha256"):
+            modified.append(item["path"])
+    result = {"installed": True, "version": data.get("coding_standard_version"), "language": data.get("language"), "domain": data.get("domain"), "files": len(tracked), "modified": len(modified), "missing": len(missing)}
+    if as_json:
+        print(json.dumps({**result, "modified_paths": modified, "missing_paths": missing}, ensure_ascii=False, indent=2))
+    else:
+        for key, value in result.items():
+            print(f"{key}: {str(value).lower() if isinstance(value, bool) else value}")
+        for label, paths in (("modified_paths", modified), ("missing_paths", missing)):
+            if paths:
+                print(f"{label}:")
+                for path in paths:
+                    print(f"  {path}")
+    return 2 if modified or missing else 0
+
+
+def update(root: Path, target: Path, policy: str, dry_run: bool) -> int:
+    data = load_manifest(target)
+    language = str(data["language"])
+    domain = str(data["domain"])
+    old_files = {item["path"]: item for item in data.get("files", [])}
+    desired_paths = set(collect_files(root, domain))
+    rc = install(root, target, language, domain, policy, dry_run)
+    if rc or dry_run:
+        return rc
+    current = load_manifest(target)
+    current_paths = {item["path"] for item in current.get("files", [])}
+    for rel, item in old_files.items():
+        if rel in desired_paths or rel not in current_paths:
+            continue
+        path = target / rel
+        if not path.exists():
+            continue
+        if sha256_file(path) == item.get("installed_sha256"):
+            path.unlink()
+            print(f"Removed obsolete managed file: {rel}")
+        else:
+            print(f"Preserved modified obsolete file: {rel}")
+    current["files"] = [item for item in current.get("files", []) if item["path"] in desired_paths and (target / item["path"]).is_file()]
+    write_text(manifest_path(target), json.dumps(current, ensure_ascii=False, indent=2) + "\n")
+    return 0
+
+
+def uninstall(target: Path, force: bool, dry_run: bool) -> int:
+    data = load_manifest(target)
+    modified = []
+    for item in data.get("files", []):
+        path = target / item["path"]
+        if not path.exists():
+            continue
+        if sha256_file(path) != item.get("installed_sha256"):
+            modified.append(item["path"])
+            continue
+        if dry_run:
+            print(f"[DRY-RUN] REMOVE {item['path']}")
+        else:
+            path.unlink()
+            print(f"Removed: {item['path']}")
+    if modified and not force:
+        print("Refusing to remove modified files without --force:")
+        for rel in modified:
+            print(f"  {rel}")
+        return 2
+    for rel in modified:
+        path = target / rel
+        if dry_run:
+            print(f"[DRY-RUN] FORCE REMOVE {rel}")
+        elif path.exists():
+            path.unlink()
+            print(f"Force removed: {rel}")
+    if dry_run:
+        print(f"Uninstall preview: files={len(data.get('files', []))}")
+        return 0
+    manifest_path(target).unlink(missing_ok=True)
+    try:
+        (target / MANIFEST_DIR).rmdir()
+    except OSError:
+        pass
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    install_parser = sub.add_parser("install")
+    install_parser.add_argument("target", nargs="?", default=".")
+    install_parser.add_argument("language", nargs="?")
+    install_parser.add_argument("domain", nargs="?")
+    install_parser.add_argument("policy", nargs="?", default="ask")
+    install_parser.add_argument("dry_run", nargs="?", default="false")
+    state_parser = sub.add_parser("state")
+    state_parser.add_argument("target", nargs="?", default=".")
+    state_parser.add_argument("--json", action="store_true")
+    update_parser = sub.add_parser("update")
+    update_parser.add_argument("target", nargs="?", default=".")
+    update_parser.add_argument("--policy", choices=SUPPORTED_POLICIES, default="merge")
+    update_parser.add_argument("--dry-run", action="store_true")
+    uninstall_parser = sub.add_parser("uninstall")
+    uninstall_parser.add_argument("target", nargs="?", default=".")
+    uninstall_parser.add_argument("--force", action="store_true")
+    uninstall_parser.add_argument("--dry-run", action="store_true")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    if args.command == "install":
+        language = args.language or prompt_language()
+        domain = args.domain or prompt_domain()
+        if args.dry_run not in {"true", "false"}:
+            raise SystemExit("dry_run: true|false")
+        root = Path(__file__).resolve().parents[2]
+        return install(root, Path(args.target).resolve(), language, domain, args.policy, args.dry_run == "true")
+    target = Path(args.target).resolve()
+    if args.command == "state":
+        return state(target, args.json)
+    if args.command == "update":
+        root = Path(__file__).resolve().parents[2]
+        return update(root, target, args.policy, args.dry_run)
+    return uninstall(target, args.force, args.dry_run)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
