@@ -19,7 +19,7 @@ The former `codingStandard-dev` → `AIEngineeringStandard` promotion boundary i
 - canonical repository architecture and policy profile validation
 - repository dependency and layer-boundary validation
 - environment contract and resource detection validation
-- multilingual runtime resource completeness, semantic policy parity, and runtime/documentation consistency
+- Korean runtime resource completeness, semantic policy parity, and runtime/documentation consistency
 - installer lifecycle and obsolete-file reconciliation
 - LLM and Vision CPU memory smoke tests
 - Google Colab runtime and notebook validation
