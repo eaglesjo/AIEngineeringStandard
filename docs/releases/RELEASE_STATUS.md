@@ -4,7 +4,9 @@
 
 Release: **2.1.0**
 
-Status: **release candidate**
+Status: **published**
+
+GitHub Release: **v2.1.0**
 
 ## Repository model
 
@@ -41,8 +43,8 @@ The execution mission contract under `core/runtime/execution/` keeps remote exec
 - Release tags must match `VERSION`.
 - Do not describe unavailable runtime evidence as passed.
 
-## v2.1 release readiness
+## v2.1 release record
 
-The v2.1 multi-agent architecture and reference runtime have completed the contract, lifecycle, provenance, identity, lineage, evaluation, parallel-work, human-approval, and runtime/schema alignment work required for the 2.1.0 release candidate.
+The v2.1 multi-agent architecture and reference runtime have completed the contract, lifecycle, provenance, identity, lineage, evaluation, parallel-work, human-approval, and runtime/schema alignment work required for the published 2.1.0 release.
 
-The 2.1.0 release candidate must pass the complete repository validation gate, installer lifecycle validation, v2.1 contract validation, and reference-runtime conformance tests before publication.
+The published `v2.1.0` release was created from the validated `main` history. Future releases must continue to pass the complete repository validation gate, installer lifecycle validation, v2.1 contract validation, and applicable reference-runtime conformance tests before publication.
