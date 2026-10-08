@@ -141,8 +141,12 @@ def run_i18n_check() -> None:
     run_checker(ROOT / "scripts" / "validation" / "check_i18n_consistency.py", "i18n runtime/documentation consistency")
 
 
+def run_2_2_validation() -> None:
+    run_checker(ROOT / "scripts" / "validation" / "validate_2_2_distribution.py", "AIEngineeringStandard 2.2 distribution validation")
+
+
 def main() -> None:
-    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_version_consistency(); run_2_1_validation(); run_execution_validation(); run_i18n_check(); print("AIEngineeringStandard validation passed")
+    check_required_files(); run_structure_check(); run_profile_check(); check_python(); run_2_0_validation(); run_environment_tests(); check_notebook(); check_routing_paths(); check_hardware_neutrality(); check_no_legacy_installer(); check_version_consistency(); run_2_1_validation(); run_execution_validation(); run_2_2_validation(); run_i18n_check(); print("AIEngineeringStandard validation passed")
 
 
 if __name__ == "__main__":
