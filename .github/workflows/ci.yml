@@ -91,3 +91,51 @@ jobs:
           expected="${{ steps.source.outputs.sha }}"
           test "$actual" = "$expected"
           echo "verified source SHA: $actual"
+  package-distribution:
+    name: Installable package validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: repository-gate
+    steps:
+      - name: Resolve source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
+          if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Invalid source SHA: $source_sha" >&2
+            exit 1
+          fi
+          echo "sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.source.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Build distributions
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Install wheel without repository checkout dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install dist/*.whl
+          test "$(ai-engineering-standard --version)" = "ai-engineering-standard 2.2.0"
+          mkdir -p /tmp/aes-consumer
+          cd /tmp/aes-consumer
+          ai-engineering-standard install --language en --domain common --policy overwrite
+          ai-engineering-standard status --json
+          ai-engineering-standard validate
+          test -f AGENTS.md
+          test -f .codingstandard/installation.json

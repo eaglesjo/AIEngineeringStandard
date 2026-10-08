@@ -1,14 +1,32 @@
 # Installation Guide
 
-`install-domains.ps1` and `install-domains.sh` are the supported installers for the public `AIEngineeringStandard` distribution.
+AIEngineeringStandard 2.2 is a packaged, installable distribution. A consumer project does **not** need a clone of the AIEngineeringStandard repository.
 
-## 1. Clone
+## 1. Install the CLI
+
+Recommended for a standalone command-line application:
 
 ```bash
-git clone https://github.com/eaglesjo/AIEngineeringStandard.git
+pipx install ai-engineering-standard
 ```
 
-Clone the distribution into the project root you want to configure. The commands below assume the cloned repository is available at `./AIEngineeringStandard`.
+Or install into an existing Python environment:
+
+```bash
+python -m pip install ai-engineering-standard
+```
+
+Verify:
+
+```bash
+ai-engineering-standard --version
+```
+
+For a reproducible release, pin the package version:
+
+```bash
+pipx install ai-engineering-standard==2.2.0
+```
 
 ## 2. Choose Language and Domain
 
@@ -186,12 +204,14 @@ The policy treats hosted notebook sessions as ephemeral and requires runtime det
 
 ## 10. Validation After Installation
 
-From the project root containing `./AIEngineeringStandard`:
+From the consumer project root:
 
 ```bash
-python ./AIEngineeringStandard/scripts/validation/validate.py
-python ./AIEngineeringStandard/scripts/installers/test_installers.py
+ai-engineering-standard status --json
+ai-engineering-standard validate
 ```
+
+Repository maintainers additionally validate the source distribution and built wheel before release.
 
 For LLM:
 
@@ -213,4 +233,4 @@ See the language catalog in [`i18n/languages.json`](i18n/languages.json) and the
 
 ## Public distribution
 
-Validated releases are promoted through the release process to `AIEngineeringStandard`.
+Validated releases are published as the `ai-engineering-standard` Python distribution and mirrored by the corresponding GitHub Release. The Git repository remains the development, validation, and release source of truth.

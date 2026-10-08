@@ -14,7 +14,7 @@ SUPPORTED_DOMAINS = ("common", "ml", "llm", "vision", "colab", "all")
 SUPPORTED_POLICIES = ("ask", "merge", "overwrite", "skip")
 MANIFEST_DIR = ".codingstandard"
 MANIFEST_FILE = "installation.json"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 1
 CATALOG_FILE = "i18n/languages.json"
 
 COMMON = [
@@ -63,12 +63,12 @@ def manifest_path(target: Path) -> Path:
 def load_manifest(target: Path) -> dict[str, Any]:
     path = manifest_path(target)
     if not path.is_file():
-        raise SystemExit(f"No AIEngineeringStandard installation manifest found: {path}")
+        raise SystemExit(f"No codingStandard installation manifest found: {path}")
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise SystemExit(f"Invalid installation manifest: {path}: {exc}") from exc
-    if data.get("schema_version") not in (1, SCHEMA_VERSION):
+    if data.get("schema_version") != SCHEMA_VERSION:
         raise SystemExit(f"Unsupported installation manifest schema: {data.get('schema_version')!r}")
     return data
 
@@ -174,8 +174,7 @@ def install(root: Path, target: Path, language: str, domain: str, policy: str, d
 
     manifest = {
         "schema_version": SCHEMA_VERSION,
-        "product": "AIEngineeringStandard",
-        "distribution": "package",
+        "product": "codingStandard",
         "coding_standard_version": read_version(root),
         "language": language,
         "domain": domain,
@@ -275,18 +274,6 @@ def uninstall(target: Path, force: bool, dry_run: bool) -> int:
     except OSError:
         pass
     return 0
-
-
-def validate(target: Path) -> int:
-    try:
-        data = load_manifest(target)
-    except SystemExit as exc:
-        print(str(exc))
-        return 2
-    if data.get("product") not in ("codingStandard", "AIEngineeringStandard"):
-        print("Invalid product identity in installation manifest.")
-        return 2
-    return state(target, False)
 
 
 def build_parser() -> argparse.ArgumentParser:
