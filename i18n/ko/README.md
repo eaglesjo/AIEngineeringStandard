@@ -40,18 +40,17 @@ Work Unit은 canonical trace boundary이며, runtime adapter는 이 계약의 �
 
 ```text
 Feature / Fix / Docs
-        ↓
-Pull Request
-        ↓
-Local Validation Gate
-        ↓
-GitHub Actions CI
-        ↓
-main
-        ↓
-Version Tag
-        ↓
-GitHub Release
+            ↓
+       Pull Request
+         ↙      ↘
+Local Validation  GitHub Actions CI
+       Gate           ↓
+         ↘           ↙
+             main
+               ↓
+          Version Tag
+               ↓
+        GitHub Release
 ```
 
 GitHub Actions는 **검증과 bounded execution을 위한 실행 수단**이며 두 번째 source of truth가 아닙니다. 초록색 workflow만으로 Acceptance를 결정하지 않고, source SHA와 실제 출력/evidence를 확인합니다.
