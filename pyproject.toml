@@ -29,7 +29,9 @@ dependencies = []
 ai-engineering-standard = "ai_engineering_standard.cli:main"
 
 [tool.hatch.version]
+source = "regex"
 path = "VERSION"
+pattern = "^(?P<version>\\d+\\.\\d+\\.\\d+)$"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ai_engineering_standard"]
