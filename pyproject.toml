@@ -58,7 +58,6 @@ packages = ["src/ai_engineering_standard"]
 "compatibility" = "ai_engineering_standard/resources/compatibility"
 "i18n" = "ai_engineering_standard/resources/i18n"
 "scripts/installers/installation.py" = "ai_engineering_standard/resources/installation_engine.py"
-"scripts/installers/installation.py" = "ai_engineering_standard/resources/installation_engine.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
