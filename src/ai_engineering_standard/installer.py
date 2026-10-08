@@ -9,7 +9,7 @@ from types import ModuleType
 
 
 def _load_engine(resource_root: Path) -> ModuleType:
-    engine_path = resource_root / "_installer_engine.py"
+    engine_path = resource_root / "installation_engine.py"
     if not engine_path.is_file():
         raise RuntimeError("Packaged installation engine is missing.")
     spec = importlib.util.spec_from_file_location(
