@@ -277,6 +277,18 @@ def uninstall(target: Path, force: bool, dry_run: bool) -> int:
     return 0
 
 
+def validate(target: Path) -> int:
+    try:
+        data = load_manifest(target)
+    except SystemExit as exc:
+        print(str(exc))
+        return 2
+    if data.get("product") not in ("codingStandard", "AIEngineeringStandard"):
+        print("Invalid product identity in installation manifest.")
+        return 2
+    return state(target, False)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
