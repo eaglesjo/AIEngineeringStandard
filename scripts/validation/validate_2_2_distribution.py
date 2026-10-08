@@ -50,7 +50,14 @@ def main() -> None:
         fail("Installation manifest product identity is not AIEngineeringStandard.")
     readme = require("README.md").read_text(encoding="utf-8")
     install = require("INSTALL.md").read_text(encoding="utf-8")
+    release = require(".github/workflows/publish-package.yml").read_text(encoding="utf-8")
     clone = "git clone https://github.com/eaglesjo/AIEngineeringStandard.git"
+    if "pypa/gh-action-pypi-publish@release/v1" not in release:
+        fail("Release workflow is missing the PyPI Trusted Publishing action.")
+    if "id-token: write" not in release:
+        fail("Release workflow is missing OIDC id-token permission.")
+    if "tags:" not in release or "v*.*.*" not in release:
+        fail("Release workflow must be tag-driven.")
     if clone in readme or clone in install:
         fail("Consumer documentation still requires repository cloning.")
     if not re.search(r"pipx install ai-engineering-standard", readme):
