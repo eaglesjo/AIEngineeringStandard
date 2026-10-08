@@ -43,21 +43,40 @@ Version 2.0.0, 2.0.1, and 2.0.2 remain preserved as historical release provenanc
 
 ## Quick start
 
-Clone the repository into the project you want to configure.
+AIEngineeringStandard 2.2 is installed as a versioned package. The consumer project does not need to clone the AIEngineeringStandard repository.
 
-### Windows / PowerShell
-
-```powershell
-git clone https://github.com/eaglesjo/AIEngineeringStandard.git
-powershell -ExecutionPolicy Bypass -File .\AIEngineeringStandard\scripts\installers\install-domains.ps1 -Target .
-```
-
-### Linux / macOS
+### Recommended: pipx
 
 ```bash
-git clone https://github.com/eaglesjo/AIEngineeringStandard.git
-bash ./AIEngineeringStandard/scripts/installers/install-domains.sh .
+pipx install ai-engineering-standard
 ```
+
+Then install the standard into the current project:
+
+```bash
+ai-engineering-standard install --language ko --domain all
+```
+
+Preview without writing:
+
+```bash
+ai-engineering-standard install --language ko --domain all --dry-run
+```
+
+### Alternative: pip
+
+```bash
+python -m pip install ai-engineering-standard
+ai-engineering-standard install --language ko --domain all
+```
+
+Pinned installation:
+
+```bash
+pipx install ai-engineering-standard==2.2.0
+```
+
+The package provides one cross-platform CLI for installation, state inspection, update/reconciliation, validation, and safe uninstall. Shell and PowerShell installer scripts remain development/source-tree compatibility entrypoints rather than the primary consumer interface.
 
 Available domains are `common`, `ml`, `llm`, `vision`, `colab`, and `all`. The canonical source language is English, with Korean as the only supported localized locale. Supported locales are defined by `i18n/languages.json`; the installer derives its accepted locale set from that catalog.
 
