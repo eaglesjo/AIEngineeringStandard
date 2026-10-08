@@ -21,7 +21,7 @@ AI Engineering Standard 2.1.0 establishes the framework-neutral multi-agent engi
 
 ## Validation
 
-The 2.1.0 release candidate is required to pass:
+The published 2.1.0 release passed:
 
 - repository structure and dependency validation
 - architecture and policy profile validation
@@ -40,6 +40,7 @@ The 2.1.0 release candidate is required to pass:
 - lifecycle conformance
 - canonical identity and lineage integrity validation
 - evaluation actor authorization validation
+- repository execution contract validation
 
 Historical 2.0.x release notes remain preserved below.
 
