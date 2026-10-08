@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-engineering-standard"
+dynamic = ["version"]
+description = "AI development, training, and agent engineering standards with an installable CLI."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "AIEngineeringStandard" }]
+keywords = ["ai", "engineering", "agents", "llm", "ml", "standards", "cli"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development",
+]
+dependencies = []
+
+[project.scripts]
+ai-engineering-standard = "ai_engineering_standard.cli:main"
+
+[tool.hatch.version]
+path = "VERSION"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_engineering_standard"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"VERSION" = "ai_engineering_standard/resources/VERSION"
+"LICENSE" = "ai_engineering_standard/resources/LICENSE"
+"AGENTS.md" = "ai_engineering_standard/resources/AGENTS.md"
+"CLAUDE.md" = "ai_engineering_standard/resources/CLAUDE.md"
+"GEMINI.md" = "ai_engineering_standard/resources/GEMINI.md"
+".aider.conf.yml" = "ai_engineering_standard/resources/.aider.conf.yml"
+".agents" = "ai_engineering_standard/resources/.agents"
+".github" = "ai_engineering_standard/resources/.github"
+".cursor" = "ai_engineering_standard/resources/.cursor"
+".windsurf" = "ai_engineering_standard/resources/.windsurf"
+".clinerules" = "ai_engineering_standard/resources/.clinerules"
+".continue" = "ai_engineering_standard/resources/.continue"
+".junie" = "ai_engineering_standard/resources/.junie"
+".amazonq" = "ai_engineering_standard/resources/.amazonq"
+"core" = "ai_engineering_standard/resources/core"
+"domains" = "ai_engineering_standard/resources/domains"
+"platform" = "ai_engineering_standard/resources/platform"
+"profiles" = "ai_engineering_standard/resources/profiles"
+"compatibility" = "ai_engineering_standard/resources/compatibility"
+"i18n" = "ai_engineering_standard/resources/i18n"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/VERSION",
+  "/LICENSE",
+  "/README.md",
+  "/INSTALL.md",
+  "/AGENTS.md",
+  "/CLAUDE.md",
+  "/GEMINI.md",
+  "/.aider.conf.yml",
+  "/.agents",
+  "/.github",
+  "/.cursor",
+  "/.windsurf",
+  "/.clinerules",
+  "/.continue",
+  "/.junie",
+  "/.amazonq",
+  "/core",
+  "/domains",
+  "/platform",
+  "/profiles",
+  "/compatibility",
+  "/i18n",
+  "/scripts/installers/installation.py",
+]
+exclude = ["/tests", "/docs", "/examples"]
