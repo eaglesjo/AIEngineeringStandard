@@ -16,7 +16,7 @@ function Invoke-Installer {
     $arguments = @{Target=$Target; Language=$Language; Domain=$Domain; ConflictAction=$ConflictAction}; if ($DryRun) { $arguments.DryRun=$true }; & $Installer @arguments
 }
 try {
-    foreach ($language in @("en", "ko", "fr")) {
+    foreach ($language in @("en", "ko")) {
         foreach ($domain in @("common", "ml", "llm", "vision", "colab", "all")) {
             $target = Join-Path $root "$language-$domain"; New-Item -ItemType Directory -Force -Path $target | Out-Null
             Invoke-Installer -Target $target -Language $language -Domain $domain
