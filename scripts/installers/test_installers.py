@@ -109,6 +109,36 @@ def test_manifest_path_traversal() -> None:
         assert outside.read_text(encoding="utf-8") == "keep this file safe\\n"
 
 
+
+def test_manifest_integrity_validation() -> None:
+    malformed_manifests = [
+        [],
+        None,
+        {"schema_version": 2, "files": {}},
+        {"schema_version": 2, "files": ["AGENTS.md"]},
+        {"schema_version": 2, "files": [{"path": "AGENTS.md"}]},
+        {"schema_version": 2, "files": [{"path": "AGENTS.md", "installed_sha256": "not-a-digest"}]},
+        {"schema_version": 2, "files": [
+            {"path": "AGENTS.md", "installed_sha256": "0" * 64},
+            {"path": "AGENTS.md", "installed_sha256": "1" * 64},
+        ]},
+        {"schema_version": 2, "files": [{"path": "AGENTS.md", "installed_sha256": "0" * 64, "source_sha256": "invalid"}]},
+    ]
+    for index, payload in enumerate(malformed_manifests):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "project"
+            manifest_dir = target / ".codingstandard"
+            manifest_dir.mkdir(parents=True)
+            tracked = target / "AGENTS.md"
+            tracked.write_text("keep this file safe\\n", encoding="utf-8")
+            (manifest_dir / "installation.json").write_text(json.dumps(payload), encoding="utf-8")
+            for command in ("state", "uninstall"):
+                result = run(["python3", str(ENGINE), command, str(target)], check=False)
+                assert result.returncode != 0, f"accepted malformed manifest #{index} with {command}"
+            assert tracked.read_text(encoding="utf-8") == "keep this file safe\\n"
+            assert (manifest_dir / "installation.json").is_file(), "malformed manifest was removed"
+
+
 def test_symlink_escape() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -152,6 +182,7 @@ def test_powershell() -> None:
 def main() -> int:
     test_bash()
     test_manifest_path_traversal()
+    test_manifest_integrity_validation()
     test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")
