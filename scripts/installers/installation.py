@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path, PureWindowsPath
@@ -80,10 +81,42 @@ def load_manifest(target: Path) -> dict[str, Any]:
         raise SystemExit(f"No AIEngineeringStandard installation manifest found: {path}")
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise SystemExit(f"Invalid installation manifest: {path}: {exc}") from exc
-    if data.get("schema_version") not in (1, SCHEMA_VERSION):
-        raise SystemExit(f"Unsupported installation manifest schema: {data.get('schema_version')!r}")
+    if not isinstance(data, dict):
+        raise SystemExit("Invalid installation manifest: top-level value must be an object.")
+    schema_version = data.get("schema_version")
+    if type(schema_version) is not int or schema_version not in (1, SCHEMA_VERSION):
+        raise SystemExit(f"Unsupported installation manifest schema: {schema_version!r}")
+
+    tracked = data.get("files")
+    if not isinstance(tracked, list):
+        raise SystemExit("Invalid installation manifest: 'files' must be a list.")
+    seen: set[str] = set()
+    for index, item in enumerate(tracked):
+        if not isinstance(item, dict):
+            raise SystemExit(f"Invalid installation manifest: files[{index}] must be an object.")
+        rel = item.get("path")
+        if not isinstance(rel, str):
+            raise SystemExit(f"Invalid installation manifest: files[{index}].path must be a string.")
+        safe_target_path(target, rel)
+        if rel in seen:
+            raise SystemExit(f"Invalid installation manifest: duplicate managed path {rel!r}.")
+        seen.add(rel)
+        digest = item.get("installed_sha256")
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-fA-F]{64}", digest) is None:
+            raise SystemExit(f"Invalid installation manifest: files[{index}].installed_sha256 must be a SHA-256 hex digest.")
+        source_digest = item.get("source_sha256")
+        if source_digest is not None and (
+            not isinstance(source_digest, str) or re.fullmatch(r"[0-9a-fA-F]{64}", source_digest) is None
+        ):
+            raise SystemExit(f"Invalid installation manifest: files[{index}].source_sha256 must be a SHA-256 hex digest.")
+
+    for field in ("language", "domain"):
+        if field in data and not isinstance(data[field], str):
+            raise SystemExit(f"Invalid installation manifest: '{field}' must be a string.")
+    if "domain" in data and data["domain"] not in SUPPORTED_DOMAINS:
+        raise SystemExit(f"Invalid installation manifest: unsupported domain {data['domain']!r}.")
     return data
 
 
