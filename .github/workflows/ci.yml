@@ -27,10 +27,12 @@ jobs:
     steps:
       - name: Resolve source identity
         id: source
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
+          source_sha="$SOURCE_SHA"
           if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid source SHA: $source_sha" >&2
             exit 1
@@ -67,10 +69,12 @@ jobs:
     steps:
       - name: Resolve source identity
         id: source
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
+          source_sha="$SOURCE_SHA"
           if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid source SHA: $source_sha" >&2
             exit 1
@@ -108,10 +112,12 @@ jobs:
     steps:
       - name: Resolve source identity
         id: source
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
+          source_sha="$SOURCE_SHA"
           if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid source SHA: $source_sha" >&2
             exit 1
@@ -165,10 +171,12 @@ jobs:
     steps:
       - name: Resolve source identity
         id: source
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
+          source_sha="$SOURCE_SHA"
           if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid source SHA: $source_sha" >&2
             exit 1
@@ -203,10 +211,12 @@ jobs:
     steps:
       - name: Resolve source identity
         id: source
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}"
+          source_sha="$SOURCE_SHA"
           if [[ ! "$source_sha" =~ ^[0-9a-f]{40}$ ]]; then
             echo "Invalid source SHA: $source_sha" >&2
             exit 1
