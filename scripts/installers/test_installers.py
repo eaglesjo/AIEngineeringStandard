@@ -89,6 +89,28 @@ def test_bash() -> None:
             assert result.returncode != 0, f"unsupported locale was accepted: {locale}"
 
 
+def test_symlink_escape() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        target = base / "project"
+        outside = base / "outside"
+        target.mkdir()
+        outside.mkdir()
+        (outside / "copilot-instructions.md").write_text("keep this file safe\\n", encoding="utf-8")
+        try:
+            (target / ".github").symlink_to(outside, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            return
+
+        result = run(
+            ["python3", str(ENGINE), "install", str(target), "en", "common", "overwrite", "false"],
+            check=False,
+        )
+        assert result.returncode != 0, "installer accepted a symlinked managed directory"
+        assert (outside / "copilot-instructions.md").read_text(encoding="utf-8") == "keep this file safe\\n"
+        assert not (outside / "copilot-instructions.md").is_symlink()
+
+
 def test_powershell() -> None:
     executable = shutil.which("pwsh") or shutil.which("powershell")
     if not executable:
@@ -109,6 +131,7 @@ def test_powershell() -> None:
 
 def main() -> int:
     test_bash()
+    test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")
     return 0
