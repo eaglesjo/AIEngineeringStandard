@@ -89,6 +89,26 @@ def test_bash() -> None:
             assert result.returncode != 0, f"unsupported locale was accepted: {locale}"
 
 
+def test_manifest_path_traversal() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        target = base / "project"
+        manifest_dir = target / ".codingstandard"
+        manifest_dir.mkdir(parents=True)
+        outside = base / "outside.txt"
+        outside.write_text("keep this file safe\\n", encoding="utf-8")
+        (manifest_dir / "installation.json").write_text(
+            json.dumps({
+                "schema_version": 2,
+                "files": [{"path": "../outside.txt", "installed_sha256": "0" * 64}],
+            }),
+            encoding="utf-8",
+        )
+        result = run(["python3", str(ENGINE), "uninstall", str(target)], check=False)
+        assert result.returncode != 0, "uninstaller accepted a path-traversal manifest entry"
+        assert outside.read_text(encoding="utf-8") == "keep this file safe\\n"
+
+
 def test_symlink_escape() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -131,6 +151,7 @@ def test_powershell() -> None:
 
 def main() -> int:
     test_bash()
+    test_manifest_path_traversal()
     test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")
