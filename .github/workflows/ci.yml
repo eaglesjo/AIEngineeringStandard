@@ -131,7 +131,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install dist/*.whl
-          test "$(ai-engineering-standard --version)" = "ai-engineering-standard 2.2.0"
+          expected_version="$(cat VERSION)"
+          test "$(ai-engineering-standard --version)" = "ai-engineering-standard ${expected_version}"
           mkdir -p /tmp/aes-consumer
           cd /tmp/aes-consumer
           ai-engineering-standard install --language en --domain common --policy overwrite
