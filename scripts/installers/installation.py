@@ -56,8 +56,22 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def safe_target_path(target: Path, rel: str) -> Path:
+    normalized = rel.replace("\\", "/")
+    parts = normalized.split("/")
+    if not normalized or normalized.startswith("/") or any(part in {"", ".", ".."} for part in parts):
+        raise SystemExit(f"Unsafe managed path in installation manifest or template: {rel!r}")
+    root = target.resolve()
+    path = root
+    for part in parts:
+        path = path / part
+        if path.is_symlink():
+            raise SystemExit(f"Refusing to follow symlink in managed path: {rel}")
+    return path
+
+
 def manifest_path(target: Path) -> Path:
-    return target / MANIFEST_DIR / MANIFEST_FILE
+    return safe_target_path(target, f"{MANIFEST_DIR}/{MANIFEST_FILE}")
 
 
 def load_manifest(target: Path) -> dict[str, Any]:
@@ -150,7 +164,7 @@ def install(root: Path, target: Path, language: str, domain: str, policy: str, d
 
     for rel in files:
         src = resolve_source(root, language, rel)
-        dst = target / rel
+        dst = safe_target_path(target, rel)
         if not src.is_file():
             raise SystemExit(f"Missing template: {rel}")
         if dry_run:
@@ -193,7 +207,7 @@ def state(target: Path, as_json: bool) -> int:
     tracked = data.get("files", [])
     modified, missing = [], []
     for item in tracked:
-        path = target / item["path"]
+        path = safe_target_path(target, item["path"])
         if not path.is_file():
             missing.append(item["path"])
         elif sha256_file(path) != item.get("installed_sha256"):
@@ -226,7 +240,7 @@ def update(root: Path, target: Path, policy: str, dry_run: bool) -> int:
     for rel, item in old_files.items():
         if rel in desired_paths or rel not in current_paths:
             continue
-        path = target / rel
+        path = safe_target_path(target, rel)
         if not path.exists():
             continue
         if sha256_file(path) == item.get("installed_sha256"):
@@ -234,7 +248,7 @@ def update(root: Path, target: Path, policy: str, dry_run: bool) -> int:
             print(f"Removed obsolete managed file: {rel}")
         else:
             print(f"Preserved modified obsolete file: {rel}")
-    current["files"] = [item for item in current.get("files", []) if item["path"] in desired_paths and (target / item["path"]).is_file()]
+    current["files"] = [item for item in current.get("files", []) if item["path"] in desired_paths and safe_target_path(target, item["path"]).is_file()]
     write_text(manifest_path(target), json.dumps(current, ensure_ascii=False, indent=2) + "\n")
     return 0
 
@@ -243,7 +257,7 @@ def uninstall(target: Path, force: bool, dry_run: bool) -> int:
     data = load_manifest(target)
     modified = []
     for item in data.get("files", []):
-        path = target / item["path"]
+        path = safe_target_path(target, item["path"])
         if not path.exists():
             continue
         if sha256_file(path) != item.get("installed_sha256"):
@@ -260,7 +274,7 @@ def uninstall(target: Path, force: bool, dry_run: bool) -> int:
             print(f"  {rel}")
         return 2
     for rel in modified:
-        path = target / rel
+        path = safe_target_path(target, rel)
         if dry_run:
             print(f"[DRY-RUN] FORCE REMOVE {rel}")
         elif path.exists():
