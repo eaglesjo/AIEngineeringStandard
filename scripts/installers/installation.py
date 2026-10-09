@@ -176,7 +176,7 @@ def merge_text(old: str, new: str, rel: str) -> str:
 
 def write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8", newline="\\n")
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def write_text_atomic(path: Path, text: str) -> None:
@@ -184,7 +184,7 @@ def write_text_atomic(path: Path, text: str) -> None:
     fd, temporary_name = tempfile.mkstemp(prefix=".installation-", suffix=".tmp", dir=path.parent)
     temporary = Path(temporary_name)
     try:
-        with os.fdopen(fd, "w", encoding="utf-8", newline="\\n") as handle:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
@@ -274,7 +274,7 @@ def install(root: Path, target: Path, language: str, domain: str, policy: str, d
         manifest_file = manifest_path(target)
         if manifest_file not in snapshots:
             snapshots[manifest_file] = manifest_file.read_bytes() if manifest_file.is_file() else None
-        write_text_atomic(manifest_file, json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n")
+        write_text_atomic(manifest_file, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     except BaseException as original:
         try:
             restore_snapshot(snapshots)
