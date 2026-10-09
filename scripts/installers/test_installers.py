@@ -139,6 +139,48 @@ def test_manifest_integrity_validation() -> None:
             assert (manifest_dir / "installation.json").is_file(), "malformed manifest was removed"
 
 
+
+def test_install_rollback_on_write_failure() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "project"
+        run(["bash", str(SH), str(target), "en", "common", "overwrite", "false"])
+        manifest = target / ".codingstandard" / "installation.json"
+        original_manifest = manifest.read_bytes()
+        tracked = target / "AGENTS.md"
+        original_tracked = tracked.read_bytes()
+        injected_failure = r"""
+import importlib.util
+import sys
+from pathlib import Path
+spec = importlib.util.spec_from_file_location("installation", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+original_copy = module.shutil.copyfile
+calls = 0
+def fail_on_second_copy(source, destination):
+    global calls
+    calls += 1
+    if calls == 2:
+        Path(destination).write_text("partial failed write", encoding="utf-8")
+        raise OSError("injected copy failure")
+    return original_copy(source, destination)
+module.shutil.copyfile = fail_on_second_copy
+try:
+    module.install(Path(sys.argv[2]), Path(sys.argv[3]), "en", "common", "overwrite", False)
+except OSError as exc:
+    assert "injected copy failure" in str(exc)
+else:
+    raise AssertionError("injected installer failure did not occur")
+finally:
+    module.shutil.copyfile = original_copy
+"""
+        result = run(["python3", "-c", injected_failure, str(ENGINE), str(ROOT), str(target)], check=False)
+        assert result.returncode == 0, result.stderr
+        assert manifest.read_bytes() == original_manifest, "manifest changed despite failed installation"
+        assert tracked.read_bytes() == original_tracked, "tracked file was not restored after failure"
+        assert not list((target / ".codingstandard").glob(".installation-*.tmp")), "atomic manifest temp file leaked"
+
+
 def test_symlink_escape() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -183,6 +225,7 @@ def main() -> int:
     test_bash()
     test_manifest_path_traversal()
     test_manifest_integrity_validation()
+    test_install_rollback_on_write_failure()
     test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")

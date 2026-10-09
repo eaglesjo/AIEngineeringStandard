@@ -5,8 +5,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path, PureWindowsPath
 from typing import Any
@@ -177,6 +179,35 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+def write_text_atomic(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(prefix=".installation-", suffix=".tmp", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def restore_snapshot(snapshots: dict[Path, bytes | None]) -> None:
+    failures: list[str] = []
+    for path, content in reversed(list(snapshots.items())):
+        try:
+            if content is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+        except OSError as exc:
+            failures.append(f"{path}: {exc}")
+    if failures:
+        raise OSError("Rollback incomplete: " + "; ".join(failures))
+
+
 def install(root: Path, target: Path, language: str, domain: str, policy: str, dry_run: bool) -> int:
     languages = supported_languages(root)
     if language not in languages:
@@ -185,55 +216,74 @@ def install(root: Path, target: Path, language: str, domain: str, policy: str, d
         raise SystemExit(f"domain: {'|'.join(SUPPORTED_DOMAINS)}")
     if policy not in SUPPORTED_POLICIES:
         raise SystemExit(f"policy: {'|'.join(SUPPORTED_POLICIES)}")
-    target.mkdir(parents=True, exist_ok=True)
+
     files = collect_files(root, domain)
     state: dict[str, Any] = {}
-    if manifest_path(target).is_file():
+    existing_manifest = manifest_path(target)
+    if existing_manifest.is_file():
         previous = load_manifest(target)
         state = {item["path"]: item for item in previous.get("files", [])}
 
-    if language != "en":
-        print(f"Language resource mode: {language} (translated locale with English fallback for missing domain resources)")
-
+    # Validate every source and destination before changing the project.
+    plan: list[tuple[str, Path, Path]] = []
     for rel in files:
         src = resolve_source(root, language, rel)
         dst = safe_target_path(target, rel)
         if not src.is_file():
             raise SystemExit(f"Missing template: {rel}")
-        if dry_run:
-            print(f"[DRY-RUN] {'EXIST' if dst.exists() else 'CREATE'} {rel}")
-            continue
-        action = "create"
-        if dst.exists():
-            action = policy if policy != "ask" else prompt_policy(rel)
-        if action == "skip":
-            continue
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        if action == "merge":
-            write_text(dst, merge_text(dst.read_text(encoding="utf-8"), src.read_text(encoding="utf-8"), rel))
-        else:
-            shutil.copyfile(src, dst)
-        state[rel] = {"path": rel, "installed_sha256": sha256_file(dst), "source_sha256": sha256_file(src)}
+        plan.append((rel, src, dst))
+
+    if language != "en":
+        print(f"Language resource mode: {language} (translated locale with English fallback for missing domain resources)")
 
     if dry_run:
+        for rel, _src, dst in plan:
+            print(f"[DRY-RUN] {'EXIST' if dst.exists() else 'CREATE'} {rel}")
         print(f"Install preview: language={language} domain={domain} files={len(files)}")
         return 0
 
-    manifest = {
-        "schema_version": SCHEMA_VERSION,
-        "product": "AIEngineeringStandard",
-        "distribution": "package",
-        "coding_standard_version": read_version(root),
-        "language": language,
-        "domain": domain,
-        "installed_at": datetime.now(timezone.utc).isoformat(),
-        "source_root": str(root),
-        "files": [state[p] for p in sorted(state)],
-    }
-    write_text(manifest_path(target), json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    target.mkdir(parents=True, exist_ok=True)
+    snapshots: dict[Path, bytes | None] = {}
+    try:
+        for rel, src, dst in plan:
+            action = "create"
+            if dst.exists():
+                action = policy if policy != "ask" else prompt_policy(rel)
+            if action == "skip":
+                continue
+            if dst not in snapshots:
+                snapshots[dst] = dst.read_bytes() if dst.is_file() else None
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            if action == "merge":
+                write_text(dst, merge_text(dst.read_text(encoding="utf-8"), src.read_text(encoding="utf-8"), rel))
+            else:
+                shutil.copyfile(src, dst)
+            state[rel] = {"path": rel, "installed_sha256": sha256_file(dst), "source_sha256": sha256_file(src)}
+
+        manifest = {
+            "schema_version": SCHEMA_VERSION,
+            "product": "AIEngineeringStandard",
+            "distribution": "package",
+            "coding_standard_version": read_version(root),
+            "language": language,
+            "domain": domain,
+            "installed_at": datetime.now(timezone.utc).isoformat(),
+            "source_root": str(root),
+            "files": [state[p] for p in sorted(state)],
+        }
+        manifest_file = manifest_path(target)
+        if manifest_file not in snapshots:
+            snapshots[manifest_file] = manifest_file.read_bytes() if manifest_file.is_file() else None
+        write_text_atomic(manifest_file, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    except BaseException as original:
+        try:
+            restore_snapshot(snapshots)
+        except OSError as rollback_error:
+            raise SystemExit(f"Installation failed ({original}); {rollback_error}") from original
+        raise
+
     print(f"Installed: language={language} domain={domain} version={manifest['coding_standard_version']} files={len(state)}")
     return 0
-
 
 def state(target: Path, as_json: bool) -> int:
     data = load_manifest(target)
