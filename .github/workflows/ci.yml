@@ -126,17 +126,35 @@ jobs:
           python -m build
           python -m twine check dist/*
 
-      - name: Install wheel without repository checkout dependency
+      - name: Test packaged CLI across locales and domains
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install dist/*.whl
           expected_version="$(cat VERSION)"
           test "$(ai-engineering-standard --version)" = "ai-engineering-standard ${expected_version}"
-          mkdir -p /tmp/aes-consumer
-          cd /tmp/aes-consumer
-          ai-engineering-standard install --language en --domain common --policy overwrite
-          ai-engineering-standard status --json
-          ai-engineering-standard validate
-          test -f AGENTS.md
-          test -f .codingstandard/installation.json
+
+          for locale in en ko; do
+            for domain in common ml llm vision colab all; do
+              target="/tmp/aes-consumer-${locale}-${domain}"
+              echo "::group::Install ${locale}/${domain}"
+              ai-engineering-standard install --target "${target}" --language "${locale}" --domain "${domain}" --policy overwrite
+              ai-engineering-standard status --target "${target}" --json
+              ai-engineering-standard validate --target "${target}"
+              test -f "${target}/AGENTS.md"
+              test -f "${target}/.codingstandard/installation.json"
+
+              # Dry runs must leave the installed target untouched.
+              before="$(find "${target}" -type f | LC_ALL=C sort | sha256sum)"
+              ai-engineering-standard update --target "${target}" --policy overwrite --dry-run
+              ai-engineering-standard uninstall --target "${target}" --dry-run
+              after="$(find "${target}" -type f | LC_ALL=C sort | sha256sum)"
+              test "${before}" = "${after}"
+
+              # Uninstall should remove owned files and its manifest.
+              ai-engineering-standard uninstall --target "${target}"
+              test ! -e "${target}/.codingstandard/installation.json"
+              test ! -e "${target}/AGENTS.md"
+              echo "::endgroup::"
+            done
+          done
