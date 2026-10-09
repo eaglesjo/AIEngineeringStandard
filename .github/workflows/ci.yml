@@ -145,10 +145,10 @@ jobs:
               test -f "${target}/.codingstandard/installation.json"
 
               # Dry runs must leave the installed target untouched.
-              before="$(find "${target}" -type f | LC_ALL=C sort | sha256sum)"
+              before="$(find "${target}" -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum)"
               ai-engineering-standard update --target "${target}" --policy overwrite --dry-run
               ai-engineering-standard uninstall --target "${target}" --dry-run
-              after="$(find "${target}" -type f | LC_ALL=C sort | sha256sum)"
+              after="$(find "${target}" -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum)"
               test "${before}" = "${after}"
 
               # Uninstall should remove owned files and its manifest.
