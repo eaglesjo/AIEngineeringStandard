@@ -151,7 +151,7 @@ GitHub Actions CI도 repository validation contract를 자동 검증합니다.
 
 ## 한국어 품질
 
-한국어 runtime locale은 resource completeness, semantic policy parity, runtime/documentation consistency 검증을 받습니다. 누락된 domain-specific 한국어 번역은 영어 canonical source로 fallback합니다.
+런타임 지원 locale은 English(en)와 한국어(ko) 2개이며, 한국어 runtime locale은 resource completeness, semantic policy parity, runtime/documentation consistency 검증을 받습니다. 누락된 domain-specific 한국어 번역은 영어 canonical source로 fallback합니다.
 
 자세한 설치 절차는 [INSTALL.md](../../INSTALL.md)를 참고하세요.
 
