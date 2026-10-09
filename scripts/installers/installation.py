@@ -7,7 +7,7 @@ import hashlib
 import json
 import shutil
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 
 SUPPORTED_DOMAINS = ("common", "ml", "llm", "vision", "colab", "all")
@@ -59,7 +59,7 @@ def sha256_file(path: Path) -> str:
 def safe_target_path(target: Path, rel: str) -> Path:
     normalized = rel.replace("\\", "/")
     parts = normalized.split("/")
-    if not normalized or normalized.startswith("/") or any(part in {"", ".", ".."} for part in parts):
+    if not normalized or normalized.startswith("/") or PureWindowsPath(normalized).drive or any(part in {"", ".", ".."} for part in parts):
         raise SystemExit(f"Unsafe managed path in installation manifest or template: {rel!r}")
     root = target.resolve()
     path = root
