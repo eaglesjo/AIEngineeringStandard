@@ -201,7 +201,7 @@ def test_update_rollback_on_cleanup_failure() -> None:
             "installed_sha256": hashlib.sha256(obsolete_bytes).hexdigest(),
             "source_sha256": hashlib.sha256(obsolete_bytes).hexdigest(),
         })
-        manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+        manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         original_manifest = manifest.read_bytes()
 
         injected_failure = r"""
