@@ -249,7 +249,7 @@ def test_update_preserves_modified_obsolete_file() -> None:
             "installed_sha256": hashlib.sha256(originally_installed).hexdigest(),
             "source_sha256": hashlib.sha256(originally_installed).hexdigest(),
         })
-        manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+        manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         obsolete.write_bytes(user_modified)
 
         result = run([
