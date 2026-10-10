@@ -421,6 +421,8 @@ def build_parser() -> argparse.ArgumentParser:
     state_parser = sub.add_parser("state")
     state_parser.add_argument("target", nargs="?", default=".")
     state_parser.add_argument("--json", action="store_true")
+    validate_parser = sub.add_parser("validate")
+    validate_parser.add_argument("target", nargs="?", default=".")
     update_parser = sub.add_parser("update")
     update_parser.add_argument("target", nargs="?", default=".")
     update_parser.add_argument("--policy", choices=SUPPORTED_POLICIES, default="merge")
@@ -444,6 +446,8 @@ def main(argv: list[str] | None = None) -> int:
     target = Path(args.target).resolve()
     if args.command == "state":
         return state(target, args.json)
+    if args.command == "validate":
+        return validate(target)
     if args.command == "update":
         root = Path(__file__).resolve().parents[2]
         return update(root, target, args.policy, args.dry_run)
