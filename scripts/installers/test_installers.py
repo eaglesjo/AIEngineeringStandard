@@ -52,6 +52,11 @@ def lifecycle(target: Path) -> None:
     assert "modified: 0" in state.stdout
     assert "missing: 0" in state.stdout
 
+    validated = run(["python3", str(ENGINE), "validate", str(target)])
+    assert "installed: true" in validated.stdout
+    assert "modified: 0" in validated.stdout
+    assert "missing: 0" in validated.stdout
+
     removed = target / ML[0]
     removed.unlink()
     update = run(["bash", str(ROOT / "scripts/installers/update-domains.sh"), str(target), "--policy", "overwrite"])
