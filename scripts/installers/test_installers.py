@@ -311,6 +311,7 @@ def main() -> int:
     test_manifest_integrity_validation()
     test_install_rollback_on_write_failure()
     test_update_rollback_on_cleanup_failure()
+    test_update_preserves_modified_obsolete_file()
     test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")
