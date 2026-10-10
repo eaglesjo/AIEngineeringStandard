@@ -82,3 +82,14 @@ This contract is mandatory for repository work initiated from chat or another ag
 10. **Fallback must not become user burden by default.** Do not stop at “this chat has no shell” or immediately ask the user to perform commands. First inventory the real sandbox, connected operations, repository scripts, and viable bounded Actions paths. Ask for user intervention only when a required authorization/approval or an unsupported capability genuinely cannot be supplied through those paths.
 
 This contract complements the release and validation rules above; it does not authorize bypassing branch protection, repository policy, package provenance, or required review.
+
+
+## Persistent agent memory: release operations
+
+At the beginning of any release-related task or resumed session, read `docs/releases/AGENT_RELEASE_RUNBOOK.md` before deciding what to do. Treat it as the durable operating memory for capability discovery, release stage tracking, approval boundaries, and recovery. Do not rely on conversational memory alone.
+
+The agent must distinguish (a) capability it can exercise through the current host and verified repository authorization, (b) a release prepared and validated, and (c) a release actually published. Re-discover current tool capabilities and remote GitHub/PyPI state for every release; historical success does not prove current access or current publication state. Never infer that a missing connector method means missing repository permission, or that read access implies write access.
+
+The release runbook does not grant standing authorization to publish. Public side effects—pushing a release tag, creating/updating a public GitHub Release, or publishing a package—require explicit user approval for the release task unless the user has already clearly authorized those exact actions in the current task. Preparing changes, inspecting state, running validation, and drafting a release plan are not publication approval.
+
+Record release evidence stage by stage and resume from verified durable state after context loss. Never blindly repeat a tag push or package publication. Keep incomplete runtime evidence marked with its real status; do not convert `UNTESTED`, `BLOCKED`, or missing evidence into PASS.
