@@ -2,6 +2,7 @@
 """Integration-test the cross-platform codingStandard installer lifecycle."""
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -181,6 +182,57 @@ finally:
         assert not list((target / ".codingstandard").glob(".installation-*.tmp")), "atomic manifest temp file leaked"
 
 
+
+def test_update_rollback_on_cleanup_failure() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "project"
+        run(["bash", str(SH), str(target), "en", "common", "overwrite", "false"])
+        manifest = target / ".codingstandard" / "installation.json"
+        original_manifest = manifest.read_bytes()
+        tracked = target / "AGENTS.md"
+        original_tracked = tracked.read_bytes()
+
+        obsolete = target / "obsolete.txt"
+        obsolete_bytes = b"obsolete managed content\\n"
+        obsolete.write_bytes(obsolete_bytes)
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        data["files"].append({
+            "path": "obsolete.txt",
+            "installed_sha256": hashlib.sha256(obsolete_bytes).hexdigest(),
+            "source_sha256": hashlib.sha256(obsolete_bytes).hexdigest(),
+        })
+        manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        original_manifest = manifest.read_bytes()
+
+        injected_failure = r"""
+import importlib.util
+import sys
+from pathlib import Path
+spec = importlib.util.spec_from_file_location("installation", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+original_unlink = Path.unlink
+def fail_obsolete_cleanup(self, *args, **kwargs):
+    if self.name == "obsolete.txt":
+        raise OSError("injected obsolete cleanup failure")
+    return original_unlink(self, *args, **kwargs)
+Path.unlink = fail_obsolete_cleanup
+try:
+    module.update(Path(sys.argv[2]), Path(sys.argv[3]), "overwrite", False)
+except OSError as exc:
+    assert "injected obsolete cleanup failure" in str(exc)
+else:
+    raise AssertionError("injected update cleanup failure did not occur")
+finally:
+    Path.unlink = original_unlink
+"""
+        result = run(["python3", "-c", injected_failure, str(ENGINE), str(ROOT), str(target)], check=False)
+        assert result.returncode == 0, result.stderr
+        assert manifest.read_bytes() == original_manifest, "manifest changed despite failed update"
+        assert tracked.read_bytes() == original_tracked, "managed file was not restored after failed update"
+        assert obsolete.read_bytes() == obsolete_bytes, "obsolete file was not restored after failed update"
+
+
 def test_symlink_escape() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -226,6 +278,7 @@ def main() -> int:
     test_manifest_path_traversal()
     test_manifest_integrity_validation()
     test_install_rollback_on_write_failure()
+    test_update_rollback_on_cleanup_failure()
     test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")
