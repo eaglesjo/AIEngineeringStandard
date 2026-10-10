@@ -255,6 +255,11 @@ jobs:
               ai-engineering-standard install --target "${target}" --language "${locale}" --domain "${domain}" --policy overwrite
               ai-engineering-standard status --target "${target}" --json
               ai-engineering-standard validate --target "${target}"
+
+              # Exercise a real package update, then verify the resulting manifest and files.
+              ai-engineering-standard update --target "${target}" --policy overwrite
+              ai-engineering-standard status --target "${target}" --json
+              ai-engineering-standard validate --target "${target}"
               test -f "${target}/AGENTS.md"
               test -f "${target}/.codingstandard/installation.json"
 
