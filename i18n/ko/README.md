@@ -56,6 +56,18 @@ Local Validation  GitHub Actions CI
 
 GitHub Actions는 **검증과 bounded execution을 위한 실행 수단**이며 두 번째 source of truth가 아닙니다. 초록색 workflow만으로 Acceptance를 결정하지 않고, source SHA와 실제 출력/evidence를 확인합니다.
 
+## ChatGPT Web 에이전트 연결 설정
+
+ChatGPT 대화에서 이 저장소를 조회·수정하도록 하려면, 사용 가능한 환경에서는 **ChatGPT의 GitHub 연결**과 **GitHub의 ChatGPT Codex Connector App 설치**를 각각 설정합니다. 두 설정은 별개이며, 한쪽을 연결했다고 다른 쪽까지 완료된 것은 아닙니다.
+
+1. ChatGPT에서 [Plugins / GitHub 연결 설정](https://chatgpt.com/plugins)을 열고 계정에서 제공되는 GitHub 연동을 설치하거나 연결합니다. 제품 UI의 메뉴명과 위치는 달라질 수 있습니다.
+2. GitHub에서 [ChatGPT Codex Connector GitHub App](https://github.com/apps/chatgpt-codex-connector)을 설치하고 이 저장소에 대한 접근을 허용합니다. 필요한 저장소만 선택하는 최소 권한 구성을 권장합니다. 이미 특정 저장소만 허용한 설치라면 해당 목록에 이 저장소를 추가합니다.
+3. 조직 정책상 승인이 필요하면 조직 관리자에게 앱 또는 연동 승인을 요청합니다.
+4. 일반 ChatGPT 대화에서 저장소 URL을 제공하고, 변경을 요청하기 전에 에이전트가 실제로 조회할 수 있는 저장소와 사용 가능한 읽기·쓰기·샌드박스·Actions 기능을 먼저 확인하도록 요청합니다.
+
+두 연결은 서로 보완하는 경로이며, 셸 실행·Actions 디스패치·릴리스·패키지 발행 권한을 자동으로 보장하지 않습니다. 에이전트는 연결 상태와 실제 권한을 검증해야 하며, 설정이 완료됐다고 추정해서는 안 됩니다. 하나의 연결을 사용할 수 없다면 구체적인 제한을 알리고, 확인된 기능만 사용합니다.
+
+
 ## Repository Execution
 
 실행 계약은 `core/runtime/execution/`에 정의되어 있습니다.
