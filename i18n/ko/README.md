@@ -1,7 +1,7 @@
 # AI Engineering Standard — 한국어
 
 <p align="center"><strong>AI 개발·학습·에이전트 엔지니어링 표준</strong></p>
-<p align="center"><strong>v2.2.0 — Contract-First Multi-Agent Engineering</strong></p>
+<p align="center"><strong>v2.2.1 — Safer Installer Lifecycle</strong></p>
 
 > 이 페이지는 AI Engineering Standard의 유일한 한국어 문서 진입점입니다. 영어가 canonical source이며, 한국어는 유일하게 지원되는 localized/runtime locale입니다.
 
@@ -9,7 +9,7 @@
 
 이 저장소는 AI Engineering Standard의 **개발·검증·릴리스 단일 source of truth**입니다. 별도의 private/development/staging/promotion 저장소를 사용하지 않습니다.
 
-현재 릴리스는 **v2.2.0**이며, 버전이 고정된 PyPI 패키지와 CLI를 소비자 프로젝트의 기본 설치 경로로 제공합니다.
+현재 릴리스 예정 버전은 **v2.2.1**이며, 버전이 고정된 PyPI 패키지와 CLI를 소비자 프로젝트의 기본 설치 경로로 제공합니다.
 
 ## 2.1 멀티에이전트 계약
 
@@ -83,7 +83,7 @@ Actions mission은 repository, immutable SHA, purpose, inputs, operations, expec
 ### 권장: pipx
 
 ```bash
-pipx install ai-engineering-standard==2.2.0
+pipx install ai-engineering-standard==2.2.1
 ai-engineering-standard install --language ko --domain all
 ```
 
@@ -96,7 +96,7 @@ ai-engineering-standard install --language ko --domain all --dry-run
 ### 대안: pip
 
 ```bash
-python -m pip install ai-engineering-standard==2.2.0
+python -m pip install ai-engineering-standard==2.2.1
 ai-engineering-standard install --language ko --domain all
 ```
 
@@ -133,6 +133,13 @@ ai-engineering-standard validate --target /tmp/aes-v220-consumer
 
 이 결과는 Python 3.14, 한국어, `common` 도메인에 대한 공개 패키지 스모크 테스트입니다. 모든 도메인·언어 조합을 검증했다는 의미는 아닙니다.
 
+## v2.2.1 변경 사항
+
+- 오래된 파일 정리 실패를 포함해 업데이트를 트랜잭션으로 처리하고 롤백을 보장합니다.
+- 사용자가 수정한 오래된 파일을 보존하고, 파일 삭제 전 안전하지 않은 제거를 거부합니다.
+- `validate`를 지원되는 CLI 명령으로 노출합니다.
+- 실제 업데이트까지 실행하는 패키지 CLI 생명주기 CI를 확장합니다.
+
 ## 검증
 
 저장소의 개발 검증 명령:
@@ -157,6 +164,6 @@ GitHub Actions CI도 repository validation contract를 자동 검증합니다.
 
 ## 릴리스 링크
 
-- [GitHub Release v2.2.0](https://github.com/eaglesjo/AIEngineeringStandard/releases/tag/v2.2.0)
-- [PyPI 패키지 v2.2.0](https://pypi.org/project/ai-engineering-standard/2.2.0/)
-- [GitHub Actions 릴리스 workflow](https://github.com/eaglesjo/AIEngineeringStandard/actions/runs/37793199850)
+- [GitHub Release v2.2.1](https://github.com/eaglesjo/AIEngineeringStandard/releases/tag/v2.2.1)
+- [PyPI 패키지 v2.2.1](https://pypi.org/project/ai-engineering-standard/2.2.1/)
+- [GitHub Actions 릴리스 workflow](https://github.com/eaglesjo/AIEngineeringStandard/blob/main/.github/workflows/publish-package.yml)

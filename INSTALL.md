@@ -25,7 +25,7 @@ ai-engineering-standard --version
 For a reproducible release, pin the package version:
 
 ```bash
-pipx install ai-engineering-standard==2.2.0
+pipx install ai-engineering-standard==2.2.1
 ```
 
 ## 2. Choose Language and Domain

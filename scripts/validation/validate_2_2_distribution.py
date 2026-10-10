@@ -25,8 +25,8 @@ def require(path: str) -> Path:
 def main() -> None:
     pyproject = require("pyproject.toml").read_text(encoding="utf-8")
     version = require("VERSION").read_text(encoding="utf-8").strip()
-    if version != "2.2.0":
-        fail(f"Expected 2.2.0 distribution version, got {version!r}")
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        fail(f"Expected a semantic distribution version, got {version!r}")
     if '[project.scripts]' not in pyproject or 'ai-engineering-standard = "ai_engineering_standard.cli:main"' not in pyproject:
         fail("Missing canonical CLI entry point.")
     if 'requires-python = ">=3.10"' not in pyproject:
@@ -62,7 +62,7 @@ def main() -> None:
         fail("Consumer documentation still requires repository cloning.")
     if not re.search(r"pipx install ai-engineering-standard", readme):
         fail("README is missing the package installation path.")
-    print("AIEngineeringStandard 2.2 distribution validation passed")
+    print(f"AIEngineeringStandard {version} distribution validation passed")
 
 
 if __name__ == "__main__":
