@@ -1,7 +1,7 @@
 # AI Engineering Standard
 
 <p align="center"><strong>AI Development, Training & Agent Engineering Standards</strong></p>
-<p align="center"><strong>v2.2.0 — Contract-First Multi-Agent Engineering</strong></p>
+<p align="center"><strong>v2.2.1 — Safer Installer Lifecycle</strong></p>
 
 <p align="center">
   <a href="https://github.com/eaglesjo/AIEngineeringStandard/releases"><img src="https://img.shields.io/github/v/release/eaglesjo/AIEngineeringStandard?label=release" alt="Release"></a>
@@ -14,7 +14,7 @@
 
 AI Engineering Standard is a reusable engineering standard for AI-assisted development, model training, experimentation, LLM/Vision workflows, general ML/DL workflows, and AI coding agents.
 
-Version 2 establishes a machine-readable architecture and policy contract, explicit agent/Skill routing, environment-aware runtime behavior, cross-platform installation lifecycle controls, Korean localization quality gates, executable conformance checks, and dependency-compatibility alignment rules. Version 2.1 extends this foundation with framework-neutral multi-agent contracts for Agent, Agent Role, Agent Contract, Work Unit, Handoff, Evidence, Evaluation, and Acceptance. Version 2.2.0 provides the versioned PyPI package and cross-platform CLI as the primary consumer installation interface.
+Version 2 establishes a machine-readable architecture and policy contract, explicit agent/Skill routing, environment-aware runtime behavior, cross-platform installation lifecycle controls, Korean localization quality gates, executable conformance checks, and dependency-compatibility alignment rules. Version 2.1 extends this foundation with framework-neutral multi-agent contracts for Agent, Agent Role, Agent Contract, Work Unit, Handoff, Evidence, Evaluation, and Acceptance. The 2.2 series provides the versioned PyPI package and cross-platform CLI as the primary consumer installation interface.
 
 ## Independent repository model
 
@@ -48,7 +48,7 @@ Install the published package; consumer projects do not need to clone this repos
 ### Recommended: pipx
 
 ```bash
-pipx install ai-engineering-standard==2.2.0
+pipx install ai-engineering-standard==2.2.1
 ai-engineering-standard install --language ko --domain all
 ```
 
@@ -61,7 +61,7 @@ ai-engineering-standard install --language ko --domain all --dry-run
 ### Alternative: pip
 
 ```bash
-python -m pip install ai-engineering-standard==2.2.0
+python -m pip install ai-engineering-standard==2.2.1
 ai-engineering-standard install --language ko --domain all
 ```
 
@@ -99,6 +99,13 @@ Observed result:
 
 This is a smoke test of the published package's installation and validation flow for Python 3.14, Korean, and the `common` domain. It does not claim that every domain or locale combination was tested.
 
+## v2.2.1 changes
+
+- Make installer updates transactional, including rollback when obsolete-file cleanup fails.
+- Preserve user-modified files that become obsolete and refuse destructive uninstall before removing files.
+- Expose `validate` as a supported CLI command.
+- Expand packaged CLI lifecycle CI to exercise real updates across supported test locales and domains.
+
 ## Installation lifecycle
 
 Successful installs record ownership and hashes in `.codingstandard/installation.json`. The installer supports state inspection, update/reconciliation, safe uninstall, and explicit force mode for recovery.
@@ -107,6 +114,6 @@ See [`INSTALL.md`](INSTALL.md) for the complete installation contract.
 
 ## Release links
 
-- [GitHub Release v2.2.0](https://github.com/eaglesjo/AIEngineeringStandard/releases/tag/v2.2.0)
-- [PyPI package v2.2.0](https://pypi.org/project/ai-engineering-standard/2.2.0/)
-- [GitHub Actions release workflow](https://github.com/eaglesjo/AIEngineeringStandard/actions/runs/37793199850)
+- [GitHub Release v2.2.1](https://github.com/eaglesjo/AIEngineeringStandard/releases/tag/v2.2.1)
+- [PyPI package v2.2.1](https://pypi.org/project/ai-engineering-standard/2.2.1/)
+- [GitHub Actions release workflow](https://github.com/eaglesjo/AIEngineeringStandard/blob/main/.github/workflows/publish-package.yml)
