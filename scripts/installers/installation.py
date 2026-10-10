@@ -348,7 +348,7 @@ def update(root: Path, target: Path, policy: str, dry_run: bool) -> int:
             item for item in current.get("files", [])
             if item["path"] in desired_paths and safe_target_path(target, item["path"]).is_file()
         ]
-        write_text_atomic(manifest_path(target), json.dumps(current, ensure_ascii=False, indent=2) + "\\n")
+        write_text_atomic(manifest_path(target), json.dumps(current, ensure_ascii=False, indent=2) + "\n")
         return 0
     except BaseException as original:
         try:
