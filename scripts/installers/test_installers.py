@@ -233,6 +233,38 @@ finally:
         assert obsolete.read_bytes() == obsolete_bytes, "obsolete file was not restored after failed update"
 
 
+def test_update_preserves_modified_obsolete_file() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "project"
+        run(["bash", str(SH), str(target), "en", "common", "overwrite", "false"])
+        manifest = target / ".codingstandard" / "installation.json"
+
+        obsolete = target / "obsolete-user-file.txt"
+        originally_installed = b"original managed content\\n"
+        user_modified = b"user edits that must survive\\n"
+        obsolete.write_bytes(originally_installed)
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        data["files"].append({
+            "path": obsolete.name,
+            "installed_sha256": hashlib.sha256(originally_installed).hexdigest(),
+            "source_sha256": hashlib.sha256(originally_installed).hexdigest(),
+        })
+        manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        obsolete.write_bytes(user_modified)
+
+        result = run([
+            "bash", str(ROOT / "scripts/installers/update-domains.sh"),
+            str(target), "--policy", "overwrite",
+        ])
+        assert "Preserved modified obsolete file: obsolete-user-file.txt" in result.stdout
+        assert obsolete.read_bytes() == user_modified, "update overwrote or removed a user-modified obsolete file"
+
+        updated_manifest = json.loads(manifest.read_text(encoding="utf-8"))
+        tracked_paths = {item["path"] for item in updated_manifest["files"]}
+        assert obsolete.name not in tracked_paths, "obsolete user file should no longer be installer-managed"
+
+
+
 def test_symlink_escape() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -279,6 +311,7 @@ def main() -> int:
     test_manifest_integrity_validation()
     test_install_rollback_on_write_failure()
     test_update_rollback_on_cleanup_failure()
+    test_update_preserves_modified_obsolete_file()
     test_symlink_escape()
     test_powershell()
     print("installer lifecycle tests passed")
