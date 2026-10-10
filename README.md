@@ -35,6 +35,18 @@ Local validation and GitHub Actions CI verify the same repository state before c
 
 There is no separate private repository, development repository, staging repository, or promotion/export step.
 
+## ChatGPT Web agent setup (GitHub-connected)
+
+To let a ChatGPT conversation work with this repository, configure the ChatGPT-side GitHub connection and the GitHub App connection where both are available. These are separate setup steps; installing one does not prove the other is configured.
+
+1. In ChatGPT, open the [Plugins/connected GitHub setup page](https://chatgpt.com/plugins) and install or connect the GitHub integration available to your account. Product navigation and labels may vary.
+2. On GitHub, install the [ChatGPT Codex Connector GitHub App](https://github.com/apps/chatgpt-codex-connector) and grant it access to this repository. Prefer selecting only the repositories the agent needs. If it is already installed for selected repositories, add this repository to that installation's access list.
+3. If an organization policy requires approval, ask an organization administrator to approve the integration or App installation.
+4. Start a normal ChatGPT conversation, provide this repository URL, and ask the agent to inspect the repository and report which read/write, sandbox, and Actions capabilities are actually available before making changes.
+
+The two connections provide different, complementary access paths. They do not automatically grant shell access, workflow-dispatch permission, release permission, or package-publishing permission. The agent must verify actual capabilities and repository authorization instead of assuming setup succeeded. If one integration is unavailable, it should state the specific limitation and use only a verified supported path.
+
+
 ## 2.1 architecture
 
 Version 2.1 extends the 2.0 foundation without replacing it. The canonical unit is the Work Unit, with explicit Agent/Role contracts, Handoffs, Evidence, Evaluation, and Acceptance. Contract definitions live under `core/contracts/2.1/`; architecture guidance lives under `docs/architecture/2.1/`.
