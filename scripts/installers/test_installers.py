@@ -90,6 +90,26 @@ def test_bash() -> None:
             assert result.returncode != 0, f"unsupported locale was accepted: {locale}"
 
 
+def test_uninstall_refusal_is_non_destructive() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "project"
+        run(["bash", str(SH), str(target), "en", "common", "overwrite", "false"])
+        manifest = target / ".codingstandard" / "installation.json"
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        clean_rel = next(item["path"] for item in data["files"] if item["path"] != "AGENTS.md")
+        clean_file = target / clean_rel
+        clean_bytes = clean_file.read_bytes()
+        modified = target / "AGENTS.md"
+        modified.write_text(modified.read_text(encoding="utf-8") + "\nuser change\n", encoding="utf-8")
+
+        result = run(["python3", str(ENGINE), "uninstall", str(target)], check=False)
+        assert result.returncode == 2, "uninstall should refuse modified files without --force"
+        assert modified.is_file(), "uninstall removed a user-modified file"
+        assert clean_file.is_file(), "refused uninstall partially removed an unmodified managed file"
+        assert clean_file.read_bytes() == clean_bytes, "refused uninstall changed an unmodified managed file"
+        assert manifest.is_file(), "refused uninstall removed the installation manifest"
+
+
 def test_manifest_path_traversal() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -307,6 +327,7 @@ def test_powershell() -> None:
 
 def main() -> int:
     test_bash()
+    test_uninstall_refusal_is_non_destructive()
     test_manifest_path_traversal()
     test_manifest_integrity_validation()
     test_install_rollback_on_write_failure()

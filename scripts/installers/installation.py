@@ -359,31 +359,33 @@ def update(root: Path, target: Path, policy: str, dry_run: bool) -> int:
 
 def uninstall(target: Path, force: bool, dry_run: bool) -> int:
     data = load_manifest(target)
-    modified = []
+    modified: list[str] = []
+    existing: list[tuple[str, Path]] = []
     for item in data.get("files", []):
-        path = safe_target_path(target, item["path"])
+        rel = item["path"]
+        path = safe_target_path(target, rel)
         if not path.exists():
             continue
+        existing.append((rel, path))
         if sha256_file(path) != item.get("installed_sha256"):
-            modified.append(item["path"])
-            continue
-        if dry_run:
-            print(f"[DRY-RUN] REMOVE {item['path']}")
-        else:
-            path.unlink()
-            print(f"Removed: {item['path']}")
+            modified.append(rel)
+
+    # Refuse before deleting anything: a protected uninstall must be atomic
+    # from the user's perspective, not a partial removal of clean files.
     if modified and not force:
         print("Refusing to remove modified files without --force:")
         for rel in modified:
             print(f"  {rel}")
         return 2
-    for rel in modified:
-        path = safe_target_path(target, rel)
+
+    for rel, path in existing:
+        is_modified = rel in modified
         if dry_run:
-            print(f"[DRY-RUN] FORCE REMOVE {rel}")
-        elif path.exists():
+            action = "FORCE REMOVE" if is_modified else "REMOVE"
+            print(f"[DRY-RUN] {action} {rel}")
+        else:
             path.unlink()
-            print(f"Force removed: {rel}")
+            print(f"{'Force removed' if is_modified else 'Removed'}: {rel}")
     if dry_run:
         print(f"Uninstall preview: files={len(data.get('files', []))}")
         return 0
