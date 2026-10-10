@@ -315,26 +315,47 @@ def update(root: Path, target: Path, policy: str, dry_run: bool) -> int:
     domain = str(data["domain"])
     old_files = {item["path"]: item for item in data.get("files", [])}
     desired_paths = set(collect_files(root, domain))
-    rc = install(root, target, language, domain, policy, dry_run)
-    if rc or dry_run:
-        return rc
-    current = load_manifest(target)
-    current_paths = {item["path"] for item in current.get("files", [])}
-    for rel, item in old_files.items():
-        if rel in desired_paths or rel not in current_paths:
-            continue
-        path = safe_target_path(target, rel)
-        if not path.exists():
-            continue
-        if sha256_file(path) == item.get("installed_sha256"):
-            path.unlink()
-            print(f"Removed obsolete managed file: {rel}")
-        else:
-            print(f"Preserved modified obsolete file: {rel}")
-    current["files"] = [item for item in current.get("files", []) if item["path"] in desired_paths and safe_target_path(target, item["path"]).is_file()]
-    write_text(manifest_path(target), json.dumps(current, ensure_ascii=False, indent=2) + "\n")
-    return 0
+    if dry_run:
+        return install(root, target, language, domain, policy, True)
 
+    # Snapshot every path update may touch so post-install cleanup failures can
+    # restore the complete pre-update state, including the original manifest.
+    manifest_file = manifest_path(target)
+    affected_paths = desired_paths | set(old_files) | {f"{MANIFEST_DIR}/{MANIFEST_FILE}"}
+    snapshots: dict[Path, bytes | None] = {}
+    for rel in sorted(affected_paths):
+        path = manifest_file if rel == f"{MANIFEST_DIR}/{MANIFEST_FILE}" else safe_target_path(target, rel)
+        snapshots[path] = path.read_bytes() if path.is_file() else None
+
+    try:
+        rc = install(root, target, language, domain, policy, False)
+        if rc:
+            return rc
+        current = load_manifest(target)
+        current_paths = {item["path"] for item in current.get("files", [])}
+        for rel, item in old_files.items():
+            if rel in desired_paths or rel not in current_paths:
+                continue
+            path = safe_target_path(target, rel)
+            if not path.exists():
+                continue
+            if sha256_file(path) == item.get("installed_sha256"):
+                path.unlink()
+                print(f"Removed obsolete managed file: {rel}")
+            else:
+                print(f"Preserved modified obsolete file: {rel}")
+        current["files"] = [
+            item for item in current.get("files", [])
+            if item["path"] in desired_paths and safe_target_path(target, item["path"]).is_file()
+        ]
+        write_text_atomic(manifest_path(target), json.dumps(current, ensure_ascii=False, indent=2) + "\\n")
+        return 0
+    except BaseException as original:
+        try:
+            restore_snapshot(snapshots)
+        except OSError as rollback_error:
+            raise SystemExit(f"Update failed ({original}); {rollback_error}") from original
+        raise
 
 def uninstall(target: Path, force: bool, dry_run: bool) -> int:
     data = load_manifest(target)
