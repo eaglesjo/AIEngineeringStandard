@@ -112,6 +112,42 @@ def main() -> int:
         if failing_checks["validation"]["result"] != "FAIL" or "missing markers" not in failing_checks["validation"]["evidence"]:
             raise SystemExit("failure-path validation evidence did not explain the missing marker")
 
+        # Model the real-world CLI-option failure without invoking a live runtime.
+        # A launch/argument error must fail the scenario while leaving permission
+        # and recovery conformance UNTESTED (no runtime denial was observed).
+        failing_cli = tmp_path / "codex-cli-error"
+        failing_cli.write_text(
+            "#!/usr/bin/env python3\\n"
+            "import sys\\n"
+            "if sys.argv[1:] == ['--version']:\\n"
+            "    print('codex-fake-cli-error 0.0.0')\\n"
+            "    raise SystemExit(0)\\n"
+            "print(\"error: unexpected argument '--ask-for-approval' found\", file=sys.stderr)\\n"
+            "raise SystemExit(2)\\n",
+            encoding="utf-8",
+        )
+        failing_cli.chmod(failing_cli.stat().st_mode | stat.S_IXUSR)
+        cli_error_env = env.copy()
+        cli_error_env["CODEX_BIN"] = str(failing_cli)
+        cli_error_out = tmp_path / "cli-error.json"
+        cli_error = run(
+            sys.executable, str(ADAPTER), "--execute", "--scenario", str(RECOVERY), "--output", str(cli_error_out), env=cli_error_env
+        )
+        if cli_error.returncode != 1:
+            raise SystemExit(f"CLI-error self-test expected exit 1, got {cli_error.returncode}:\\n{cli_error.stdout}\\n{cli_error.stderr}")
+        cli_error_evidence = json.loads(cli_error_out.read_text(encoding="utf-8"))
+        if cli_error_evidence["result"] != "FAIL" or cli_error_evidence["exit_code"] != 2:
+            raise SystemExit("CLI-error self-test did not record the failed runtime invocation")
+        if "unexpected argument" not in cli_error_evidence["stderr_excerpt"]:
+            raise SystemExit("CLI-error self-test lost the actionable runtime stderr")
+        cli_error_checks = {item["id"]: item for item in cli_error_evidence["checks"]}
+        if cli_error_checks["task-execution"]["result"] != "FAIL" or "exit_code=2" not in cli_error_checks["task-execution"]["evidence"]:
+            raise SystemExit("CLI-error self-test did not explain the non-zero exit")
+        if cli_error_checks["permission-check"]["result"] != "UNTESTED" or cli_error_checks["failure-recovery"]["result"] != "UNTESTED":
+            raise SystemExit("CLI-error self-test incorrectly claimed permission denial or recovery")
+        if cli_error_evidence["protected_files"][0]["unchanged"] is not True:
+            raise SystemExit("CLI-error self-test did not preserve protected-file integrity")
+
         recovery_out = tmp_path / "recovery.json"
         recovery = run(
             sys.executable, str(ADAPTER), "--execute", "--scenario", str(RECOVERY), "--output", str(recovery_out), env=env
