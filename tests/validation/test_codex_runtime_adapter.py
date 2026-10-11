@@ -117,13 +117,13 @@ def main() -> int:
         # and recovery conformance UNTESTED (no runtime denial was observed).
         failing_cli = tmp_path / "codex-cli-error"
         failing_cli.write_text(
-            "#!/usr/bin/env python3\\n"
-            "import sys\\n"
-            "if sys.argv[1:] == ['--version']:\\n"
-            "    print('codex-fake-cli-error 0.0.0')\\n"
-            "    raise SystemExit(0)\\n"
-            "print(\"error: unexpected argument '--ask-for-approval' found\", file=sys.stderr)\\n"
-            "raise SystemExit(2)\\n",
+            "#!/usr/bin/env python3\n"
+            "import sys\n"
+            "if sys.argv[1:] == ['--version']:\n"
+            "    print('codex-fake-cli-error 0.0.0')\n"
+            "    raise SystemExit(0)\n"
+            "print(\"error: unexpected argument '--ask-for-approval' found\", file=sys.stderr)\n"
+            "raise SystemExit(2)\n",
             encoding="utf-8",
         )
         failing_cli.chmod(failing_cli.stat().st_mode | stat.S_IXUSR)
@@ -134,7 +134,7 @@ def main() -> int:
             sys.executable, str(ADAPTER), "--execute", "--scenario", str(RECOVERY), "--output", str(cli_error_out), env=cli_error_env
         )
         if cli_error.returncode != 1:
-            raise SystemExit(f"CLI-error self-test expected exit 1, got {cli_error.returncode}:\\n{cli_error.stdout}\\n{cli_error.stderr}")
+            raise SystemExit(f"CLI-error self-test expected exit 1, got {cli_error.returncode}:\n{cli_error.stdout}\n{cli_error.stderr}")
         cli_error_evidence = json.loads(cli_error_out.read_text(encoding="utf-8"))
         if cli_error_evidence["result"] != "FAIL" or cli_error_evidence["exit_code"] != 2:
             raise SystemExit("CLI-error self-test did not record the failed runtime invocation")
