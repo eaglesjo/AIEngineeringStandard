@@ -1,0 +1,92 @@
+name: Release preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact current main commit SHA to validate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-preflight-${{ inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Canonical release preflight (no publication)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Validate requested source identity
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "source_sha must be a full 40-character lowercase commit SHA" >&2
+            exit 1
+          fi
+
+      - name: Checkout current main with full history
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Require exact current main
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --prune origin main --tags
+          remote_sha="$(git rev-parse --verify origin/main)"
+          if [[ "$SOURCE_SHA" != "$remote_sha" ]]; then
+            echo "Requested SHA is not the current origin/main." >&2
+            echo "requested=$SOURCE_SHA" >&2
+            echo "origin/main=$remote_sha" >&2
+            exit 1
+          fi
+          git checkout -B main "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          echo "Validated source SHA: $SOURCE_SHA"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install validation runner
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Verify version declarations
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(cat VERSION)"
+          python - "$version" <<'PY'
+          import sys
+          from pathlib import Path
+          expected = sys.argv[1]
+          source = Path("core/common/environment.py").read_text(encoding="utf-8")
+          needle = f'STANDARD_VERSION = "{expected}"'
+          if needle not in source:
+              raise SystemExit(f"VERSION ({expected}) does not match core/common/environment.py")
+          print(f"Version declarations agree: {expected}")
+          PY
+
+      - name: Run canonical release preflight
+        run: python scripts/release/check_release.py
+
+      - name: Report no-publication boundary
+        if: always()
+        run: |
+          echo "This workflow never creates or pushes tags, creates GitHub Releases, or publishes packages."
+          echo "A successful result is preflight evidence only; it is not release authorization or publication evidence."
