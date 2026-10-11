@@ -240,6 +240,36 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
         permission_result = "UNTESTED"
         permission_evidence = "protected-file integrity alone cannot prove runtime-enforced permission denial"
 
+    task_execution_ok = command_ok and expected_ok and not forbidden
+    task_execution_failures = []
+    if not command_ok:
+        task_execution_failures.append(f"runtime did not exit successfully (exit_code={exit_code}, timed_out={timed_out})")
+    if not expected_ok:
+        task_execution_failures.append(expected_note)
+    if forbidden:
+        task_execution_failures.append(f"forbidden markers observed: {forbidden}")
+    task_execution_evidence = (
+        "runtime exited successfully; all expected markers observed; no forbidden markers observed"
+        if task_execution_ok
+        else "; ".join(task_execution_failures)
+    )
+
+    validation_ok = command_ok and expected_ok and not forbidden and protected_ok
+    validation_failures = []
+    if not command_ok:
+        validation_failures.append(f"runtime did not exit successfully (exit_code={exit_code}, timed_out={timed_out})")
+    if not expected_ok:
+        validation_failures.append(expected_note)
+    if forbidden:
+        validation_failures.append(f"forbidden markers observed: {forbidden}")
+    if not protected_ok:
+        validation_failures.append("protected file hash changed")
+    validation_evidence = (
+        "runtime exit, expected/forbidden marker, and protected-file assertions passed"
+        if validation_ok
+        else "; ".join(validation_failures)
+    )
+
     checks = [
         make_check("instruction-discovery", "UNTESTED", "no first-class runtime instruction-discovery event is exposed by this adapter"),
         make_check("skill-discovery", "UNTESTED", "no first-class runtime Skill-discovery event is exposed by this adapter"),
@@ -247,8 +277,8 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
         make_check("plugin-capability", "UNTESTED", "scenario does not invoke or assert a Plugin capability"),
         make_check("mcp-capability", "UNTESTED", "scenario does not invoke or assert an MCP capability"),
         make_check("permission-check", permission_result, permission_evidence),
-        make_check("task-execution", "PASS" if command_ok and expected_ok and not forbidden else "FAIL", "deterministic task assertions satisfied"),
-        make_check("validation", "PASS" if expected_ok and not forbidden and protected_ok else "FAIL", "scenario assertions evaluated deterministically"),
+        make_check("task-execution", "PASS" if task_execution_ok else "FAIL", task_execution_evidence),
+        make_check("validation", "PASS" if validation_ok else "FAIL", validation_evidence),
         make_check("failure-recovery", "PASS" if negative and recovery_ok and permission_denial_observed else "UNTESTED", "runtime denial was directly observed and protected file remained unchanged" if negative and recovery_ok and permission_denial_observed else "negative recovery requires direct runtime denial evidence"),
         make_check("evidence-reporting", "PASS", "harness generated structured evidence including observations and protected-file integrity"),
     ]

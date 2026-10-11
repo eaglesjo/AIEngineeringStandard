@@ -29,6 +29,15 @@ This repository is the canonical development, validation, and release source for
 - Prefer small, auditable commits.
 - Update tests and documentation when a contract changes.
 
+## Cost-free execution policy
+
+- Cost is a hard constraint: use only workflows and resources that can be used at zero cost to the user.
+- Do not invoke paid APIs, metered model inference, paid hosted runtimes, paid cloud resources, or third-party services that may incur charges.
+- Before starting any remote CI/Actions or other metered work, verify that the specific run is covered by a zero-cost allowance; if that cannot be established, do not start it.
+- Prefer local deterministic tests, static analysis, fixtures, mocks, and fake runtimes that do not call a model or external paid service.
+- Never retry a live model/runtime invocation after quota exhaustion unless the user explicitly confirms that a zero-cost allowance is available; never suggest upgrading or adding billing as a workaround.
+- Cost-free tests must clearly distinguish mock/adapter evidence from live runtime conformance. Do not promote UNTESTED evidence to PASS to compensate for unavailable runtime access.
+
 ## CI and execution
 
 - GitHub Actions is part of the repository validation architecture.
