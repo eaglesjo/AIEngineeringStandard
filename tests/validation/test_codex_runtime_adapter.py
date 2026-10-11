@@ -91,6 +91,27 @@ def main() -> int:
         if "exec --json --ephemeral --sandbox read-only" not in invocation:
             raise SystemExit("adapter did not construct the JSONL read-only invocation")
 
+        # A missing expected marker must produce a truthful FAIL explanation,
+        # while still using only the deterministic fake runtime (zero model cost).
+        failing_scenario = json.loads(BASIC.read_text(encoding="utf-8"))
+        failing_scenario["scenario"]["expected_markers"].append("marker-that-the-fake-runtime-never-emits")
+        failing_scenario_path = tmp_path / "failing-scenario.json"
+        failing_scenario_path.write_text(json.dumps(failing_scenario), encoding="utf-8")
+        failing_out = tmp_path / "failing.json"
+        failing = run(
+            sys.executable, str(ADAPTER), "--execute", "--scenario", str(failing_scenario_path), "--output", str(failing_out), env=env
+        )
+        if failing.returncode != 1:
+            raise SystemExit(f"failure-path self-test expected exit 1, got {failing.returncode}:\\n{failing.stdout}\\n{failing.stderr}")
+        failing_evidence = json.loads(failing_out.read_text(encoding="utf-8"))
+        if failing_evidence["result"] != "FAIL":
+            raise SystemExit(f"failure-path self-test expected FAIL, got {failing_evidence['result']!r}")
+        failing_checks = {item["id"]: item for item in failing_evidence["checks"]}
+        if failing_checks["task-execution"]["result"] != "FAIL" or "missing markers" not in failing_checks["task-execution"]["evidence"]:
+            raise SystemExit("failure-path task-execution evidence did not explain the missing marker")
+        if failing_checks["validation"]["result"] != "FAIL" or "missing markers" not in failing_checks["validation"]["evidence"]:
+            raise SystemExit("failure-path validation evidence did not explain the missing marker")
+
         recovery_out = tmp_path / "recovery.json"
         recovery = run(
             sys.executable, str(ADAPTER), "--execute", "--scenario", str(RECOVERY), "--output", str(recovery_out), env=env
