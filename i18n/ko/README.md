@@ -9,7 +9,7 @@
 
 이 저장소는 AI Engineering Standard의 **개발·검증·릴리스 단일 source of truth**입니다. 별도의 private/development/staging/promotion 저장소를 사용하지 않습니다.
 
-현재 릴리스 예정 버전은 **v2.2.1**이며, 버전이 고정된 PyPI 패키지와 CLI를 소비자 프로젝트의 기본 설치 경로로 제공합니다.
+현재 공개 릴리스는 **v2.2.1**이며, 버전이 고정된 PyPI 패키지와 CLI를 소비자 프로젝트의 기본 설치 경로로 제공합니다.
 
 ## 2.1 멀티에이전트 계약
 
