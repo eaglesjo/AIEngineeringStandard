@@ -48,7 +48,17 @@ def main() -> int:
     tag = f"v{version}"
     existing = run("git", "rev-parse", "--verify", f"refs/tags/{tag}")
     if existing.returncode == 0:
-        fail(f"release tag already exists: {tag}")
+        fail(f"release tag already exists locally: {tag}")
+
+    # Check the remote directly as well: a tag may exist on GitHub without
+    # being present in the local clone or fetched tag refs.
+    remote_tag = run("git", "ls-remote", "--exit-code", "--tags", "origin", f"refs/tags/{tag}")
+    if remote_tag.returncode == 0:
+        fail(f"release tag already exists on origin: {tag}")
+    if remote_tag.returncode != 2:
+        if remote_tag.stderr:
+            print(remote_tag.stderr, file=sys.stderr, end="")
+        fail(f"unable to verify whether release tag exists on origin: {tag}")
 
     validation = run(sys.executable, "scripts/validation/validate.py")
     if validation.returncode != 0:
