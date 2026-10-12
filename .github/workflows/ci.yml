@@ -60,7 +60,7 @@ jobs:
         run: python scripts/installers/test_installers.py
 
       - name: Run validation test suite
-        run: python -m pytest -q tests/validation
+        run: python -m pytest -q tests/validation tests/release
 
   source-integrity:
     name: Source integrity
@@ -141,7 +141,7 @@ jobs:
       - name: Run repository validation tests
         run: |
           python scripts/validation/validate.py
-          python -m pytest -q tests/validation
+          python -m pytest -q tests/validation tests/release
 
       - name: Build and smoke-test installable package
         shell: bash
