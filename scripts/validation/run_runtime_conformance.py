@@ -279,7 +279,7 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     observations = [
         make_observation("runtime-exit", "harness", "harness-integrity", "moderate", "OBSERVED" if command_ok else "FAILED", f"exit_code={exit_code}, timed_out={timed_out}"),
         make_observation("task-output-markers", "harness", "task-assertion", "weak", "OBSERVED" if expected_ok and not forbidden else "FAILED", expected_note),
-        make_observation("protected-file-integrity", "harness", "harness-integrity", "strong", "OBSERVED" if protected_ok else "FAILED", "protected file hashes were unchanged" if protected_ok else "protected file hash changed"),
+        make_observation("protected-file-integrity", "harness", "harness-integrity", "strong", "NOT_OBSERVED" if not protected else ("OBSERVED" if protected_ok else "FAILED"), "scenario did not declare protected files" if not protected else ("protected file hashes were unchanged" if protected_ok else "protected file hash changed")),
     ]
     observations.extend(codex_observations)
     if negative and not permission_denial_observed:
