@@ -233,7 +233,6 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     meta = scenario["scenario"]
     started = now()
     trace = trace_identity(args)
-    repository = repository_provenance()
     timeout = int(meta.get("timeout_seconds", 120))
     if timeout < 1 or timeout > 900:
         raise SystemExit("ERROR: scenario timeout_seconds must be between 1 and 900")
@@ -349,7 +348,7 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
         make_check("failure-recovery", "PASS" if negative and recovery_ok and permission_denial_observed else "UNTESTED", "runtime denial was directly observed and protected file remained unchanged" if negative and recovery_ok and permission_denial_observed else "negative recovery requires direct runtime denial evidence"),
         make_check("evidence-reporting", "PASS", "harness generated structured evidence including observations and protected-file integrity"),
     ]
-    return {"schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"], "runtime": {"version": args.runtime_version, "invocation": args.command}, "repository": repository, "scenario": {"id": meta["id"], "description": meta["description"]}, "trace": trace, "started_at": started, "finished_at": now(), "result": overall(checks), "exit_code": exit_code, "timed_out": timed_out, "stdout_excerpt": stdout[-MAX_OUTPUT:], "stderr_excerpt": stderr[-MAX_OUTPUT:], "observations": observations, "protected_files": [{"path": path, "before_sha256": before, "after_sha256": protected_after[path], "unchanged": before == protected_after[path]} for path, before in protected.items()], "checks": checks}
+    return {"schema_version": "2.0.0", "standard_version": scenario["standard_version"], "agent": scenario["agent"], "runtime": {"version": args.runtime_version, "invocation": args.command}, "repository": repository_provenance(), "scenario": {"id": meta["id"], "description": meta["description"]}, "trace": trace, "started_at": started, "finished_at": now(), "result": overall(checks), "exit_code": exit_code, "timed_out": timed_out, "stdout_excerpt": stdout[-MAX_OUTPUT:], "stderr_excerpt": stderr[-MAX_OUTPUT:], "observations": observations, "protected_files": [{"path": path, "before_sha256": before, "after_sha256": protected_after[path], "unchanged": before == protected_after[path]} for path, before in protected.items()], "checks": checks}
 
 
 def main() -> int:

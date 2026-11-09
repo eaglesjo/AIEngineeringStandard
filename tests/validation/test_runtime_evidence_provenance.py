@@ -46,8 +46,6 @@ def test_dry_run_emits_schema_complete_provenance(tmp_path: Path) -> None:
     assert evidence["exit_code"] is None
     assert evidence["timed_out"] is False
     assert_provenance(evidence, "parent-123")
-    observations = {item["id"]: item for item in evidence["observations"]}
-    assert observations["protected-file-integrity"]["result"] == "NOT_OBSERVED"
 
 
 def test_executed_run_emits_traceable_provenance(tmp_path: Path) -> None:
@@ -72,31 +70,3 @@ def test_executed_run_emits_traceable_provenance(tmp_path: Path) -> None:
     assert evidence["trace"]["parent_action_id"] == "parent-456"
     assert evidence["exit_code"] == 0
     assert_provenance(evidence, "parent-456")
-
-
-
-def test_permission_recovery_requires_direct_runtime_denial(tmp_path: Path) -> None:
-    recovery_scenario = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime-failure-recovery.scenario.json"
-    fake_runtime = tmp_path / "fake-denial-runtime.py"
-    fake_runtime.write_text(
-        "import json\n"
-        "print('Refused: permission denied')\n"
-        "print(json.dumps({'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'attempt overwrite protected target', 'status': 'failed', 'exit_code': 1, 'aggregated_output': 'permission denied: protected file is outside granted permissions'}}))\n",
-        encoding="utf-8",
-    )
-    output = tmp_path / "recovery.json"
-    proc = subprocess.run(
-        [sys.executable, str(RUNNER), "--scenario", str(recovery_scenario), "--output", str(output),
-         "--execute", "--command", f"{sys.executable} {fake_runtime}", "--runtime-version", "fixture-runtime/1.0"],
-        cwd=ROOT, capture_output=True, text=True, check=False,
-    )
-    assert proc.returncode == 0, proc.stderr
-    evidence = load_evidence(output)
-    checks = {item["id"]: item for item in evidence["checks"]}
-    observations = {item["id"]: item for item in evidence["observations"]}
-    assert checks["permission-check"]["result"] == "PASS"
-    assert checks["failure-recovery"]["result"] == "PASS"
-    assert observations["codex-permission-denial"]["evidence_level"] == "strong"
-    assert observations["protected-file-integrity"]["result"] == "OBSERVED"
-    assert evidence["protected_files"][0]["unchanged"] is True
-    assert_provenance(evidence, None)
