@@ -46,8 +46,6 @@ def test_dry_run_emits_schema_complete_provenance(tmp_path: Path) -> None:
     assert evidence["exit_code"] is None
     assert evidence["timed_out"] is False
     assert_provenance(evidence, "parent-123")
-    observations = {item["id"]: item for item in evidence["observations"]}
-    assert observations["protected-file-integrity"]["result"] == "NOT_OBSERVED"
 
 
 def test_executed_run_emits_traceable_provenance(tmp_path: Path) -> None:
@@ -72,6 +70,8 @@ def test_executed_run_emits_traceable_provenance(tmp_path: Path) -> None:
     assert evidence["trace"]["parent_action_id"] == "parent-456"
     assert evidence["exit_code"] == 0
     assert_provenance(evidence, "parent-456")
+    observations = {item["id"]: item for item in evidence["observations"]}
+    assert observations["protected-file-integrity"]["result"] == "NOT_OBSERVED"
 
 
 
