@@ -37,7 +37,7 @@
     },
     "trace": {
       "type": "object",
-      "required": ["action_id"],
+      "required": ["action_id", "evidence_id"],
       "properties": {
         "action_id": {"type": "string", "minLength": 1},
         "parent_action_id": {"type": ["string", "null"], "minLength": 1},

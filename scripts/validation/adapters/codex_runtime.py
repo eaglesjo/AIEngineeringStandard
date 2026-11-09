@@ -41,6 +41,8 @@ def run_harness(args: argparse.Namespace, command: str | None, runtime_version: 
     ]
     if command:
         cmd.extend(["--command", command])
+    if args.parent_action_id:
+        cmd.extend(["--parent-action-id", args.parent_action_id])
     if args.execute and command:
         cmd.append("--execute")
     return subprocess.run(cmd, cwd=ROOT, check=False).returncode
@@ -51,6 +53,7 @@ def main() -> int:
     parser.add_argument("--scenario", default=str(DEFAULT_SCENARIO))
     parser.add_argument("--output", default="/tmp/codex-runtime-conformance.json")
     parser.add_argument("--execute", action="store_true", help="Invoke the configured Codex runtime")
+    parser.add_argument("--parent-action-id", help="Optional parent action ID for linked evidence")
     args = parser.parse_args()
 
     binary = executable()
