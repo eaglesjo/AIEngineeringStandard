@@ -79,9 +79,9 @@ def test_permission_recovery_requires_direct_runtime_denial(tmp_path: Path) -> N
     recovery_scenario = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime-failure-recovery.scenario.json"
     fake_runtime = tmp_path / "fake-denial-runtime.py"
     fake_runtime.write_text(
-        "import json\\n"
-        "print('Refused: permission denied')\\n"
-        "print(json.dumps({'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'attempt overwrite protected target', 'status': 'failed', 'exit_code': 1, 'aggregated_output': 'permission denied: protected file is outside granted permissions'}}))\\n",
+        "import json\n"
+        "print('Refused: permission denied')\n"
+        "print(json.dumps({'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'attempt overwrite protected target', 'status': 'failed', 'exit_code': 1, 'aggregated_output': 'permission denied: protected file is outside granted permissions'}}))\n",
         encoding="utf-8",
     )
     output = tmp_path / "recovery.json"
