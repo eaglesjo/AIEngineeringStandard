@@ -124,6 +124,7 @@ def test_prompt_placeholder_is_not_reparsed_after_substitution(tmp_path: Path) -
     fake_runtime = tmp_path / "argv-runtime.py"
     fake_runtime.write_text(
         "import json, sys\n"
+        "print('portable-skill 2.0')\n"
         "print(json.dumps({'argv': sys.argv[1:]}))\n",
         encoding="utf-8",
     )
@@ -141,6 +142,6 @@ def test_prompt_placeholder_is_not_reparsed_after_substitution(tmp_path: Path) -
     )
     assert proc.returncode == 0, proc.stderr
     evidence = load_evidence(output)
-    argv = json.loads(evidence["stdout_excerpt"])["argv"]
+    argv = json.loads(evidence["stdout_excerpt"].splitlines()[-1])["argv"]
     assert argv == [prompt]
     assert not (ROOT / "SHOULD_NOT_EXIST").exists()
