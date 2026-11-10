@@ -130,7 +130,21 @@ def validate_evidence_schema(data: object) -> None:
     require(set(observation.get("properties", {}).get("source", {}).get("enum", [])) == OBSERVATION_SOURCES, "observation source enum is incomplete")
     require(set(observation.get("properties", {}).get("method", {}).get("enum", [])) == OBSERVATION_METHODS, "observation method enum is incomplete")
     require(set(observation.get("properties", {}).get("evidence_level", {}).get("enum", [])) == OBSERVATION_LEVELS, "observation evidence level enum is incomplete")
-    protected = data.get("properties", {}).get("protected_files", {})
+    properties = data.get("properties", {})
+    for key, expected_type in {
+        "exit_code": ["integer", "null"],
+        "timed_out": "boolean",
+        "stdout_excerpt": "string",
+        "stderr_excerpt": "string",
+        "protected_files": "array",
+    }.items():
+        require(key in properties, f"evidence schema missing property: {key}")
+        actual_type = properties[key].get("type")
+        require(actual_type == expected_type, f"evidence schema {key} has an invalid type declaration")
+    repository = properties.get("repository", {})
+    require({"revision", "dirty"} <= set(repository.get("required", [])), "evidence schema repository must require revision and dirty")
+    require(repository.get("properties", {}).get("dirty", {}).get("type") == ["boolean", "null"], "evidence schema repository.dirty must be boolean or null")
+    protected = properties.get("protected_files", {})
     require(protected.get("type") == "array", "evidence schema protected_files must be an array")
     all_of = data.get("allOf", [])
     require(isinstance(all_of, list) and all_of, "evidence schema must define result-dependent policy rules")
