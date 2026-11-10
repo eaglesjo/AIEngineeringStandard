@@ -123,12 +123,12 @@ def test_free_form_permission_text_is_not_runtime_denial_evidence() -> None:
 def test_prompt_placeholder_is_not_reparsed_after_substitution(tmp_path: Path) -> None:
     fake_runtime = tmp_path / "argv-runtime.py"
     fake_runtime.write_text(
-        "import json, sys\\n"
-        "print(json.dumps({'argv': sys.argv[1:]}))\\n",
+        "import json, sys\n"
+        "print(json.dumps({'argv': sys.argv[1:]}))\n",
         encoding="utf-8",
     )
     output = tmp_path / "argv.json"
-    prompt = 'quotes \\"; --sandbox danger; $(touch SHOULD_NOT_EXIST)'
+    prompt = 'quotes " ; --sandbox danger; $(touch SHOULD_NOT_EXIST)'
     scenario = json.loads(SCENARIO.read_text(encoding="utf-8"))
     scenario["scenario"]["prompt"] = prompt
     scenario_path = tmp_path / "scenario.json"
