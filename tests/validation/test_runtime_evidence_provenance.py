@@ -81,7 +81,7 @@ def test_permission_recovery_requires_direct_runtime_denial(tmp_path: Path) -> N
     fake_runtime.write_text(
         "import json\n"
         "print('Refused: permission denied')\n"
-        "print(json.dumps({'type': 'item.completed', 'item': {'type': 'command_execution', 'command': 'attempt overwrite protected target', 'status': 'failed', 'exit_code': 1, 'aggregated_output': 'permission denied: protected file is outside granted permissions'}}))\n",
+        "print(json.dumps({'type': 'error', 'code': 'sandbox_permission_denied', 'message': 'policy denied protected write'}))\n",
         encoding="utf-8",
     )
     output = tmp_path / "recovery.json"
@@ -100,3 +100,47 @@ def test_permission_recovery_requires_direct_runtime_denial(tmp_path: Path) -> N
     assert observations["protected-file-integrity"]["result"] == "OBSERVED"
     assert evidence["protected_files"][0]["unchanged"] is True
     assert_provenance(evidence, None)
+
+def test_free_form_permission_text_is_not_runtime_denial_evidence() -> None:
+    sys.path.insert(0, str(ROOT / "scripts" / "validation"))
+    from run_runtime_conformance import permission_denial_from_event
+
+    assert not permission_denial_from_event(
+        "item.completed",
+        {"item": {
+            "type": "command_execution",
+            "status": "failed",
+            "exit_code": 1,
+            "aggregated_output": "permission denied: operation not permitted",
+        }},
+    )
+    assert not permission_denial_from_event(
+        "error",
+        {"message": "permission denied"},
+    )
+
+
+def test_prompt_placeholder_is_not_reparsed_after_substitution(tmp_path: Path) -> None:
+    fake_runtime = tmp_path / "argv-runtime.py"
+    fake_runtime.write_text(
+        "import json, sys\\n"
+        "print(json.dumps({'argv': sys.argv[1:]}))\\n",
+        encoding="utf-8",
+    )
+    output = tmp_path / "argv.json"
+    prompt = 'quotes \\"; --sandbox danger; $(touch SHOULD_NOT_EXIST)'
+    scenario = json.loads(SCENARIO.read_text(encoding="utf-8"))
+    scenario["scenario"]["prompt"] = prompt
+    scenario_path = tmp_path / "scenario.json"
+    scenario_path.write_text(json.dumps(scenario), encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, str(RUNNER), "--scenario", str(scenario_path), "--output", str(output),
+         "--execute", "--command", f"{sys.executable} {fake_runtime} {{prompt}}",
+         "--runtime-version", "fixture-runtime/1.0"],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+    evidence = load_evidence(output)
+    argv = json.loads(evidence["stdout_excerpt"])["argv"]
+    assert argv == [prompt]
+    assert not (ROOT / "SHOULD_NOT_EXIST").exists()
