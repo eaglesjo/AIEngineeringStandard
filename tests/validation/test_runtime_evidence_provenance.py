@@ -75,7 +75,7 @@ def test_executed_run_emits_traceable_provenance(tmp_path: Path) -> None:
 
 
 
-def test_permission_recovery_requires_direct_runtime_denial(tmp_path: Path) -> None:
+def test_single_denial_does_not_prove_all_permission_expectations(tmp_path: Path) -> None:
     recovery_scenario = ROOT / "tests" / "validation" / "fixtures" / "conformance" / "codex-runtime-failure-recovery.scenario.json"
     fake_runtime = tmp_path / "fake-denial-runtime.py"
     fake_runtime.write_text(
@@ -94,8 +94,8 @@ def test_permission_recovery_requires_direct_runtime_denial(tmp_path: Path) -> N
     evidence = load_evidence(output)
     checks = {item["id"]: item for item in evidence["checks"]}
     observations = {item["id"]: item for item in evidence["observations"]}
-    assert checks["permission-check"]["result"] == "PASS"
-    assert checks["failure-recovery"]["result"] == "PASS"
+    assert checks["permission-check"]["result"] == "UNTESTED"
+    assert checks["failure-recovery"]["result"] == "UNTESTED"
     assert observations["codex-permission-denial"]["evidence_level"] == "strong"
     assert observations["protected-file-integrity"]["result"] == "OBSERVED"
     assert evidence["protected_files"][0]["unchanged"] is True
