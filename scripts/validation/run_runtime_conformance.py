@@ -8,6 +8,7 @@ import json
 import os
 import shlex
 import subprocess
+import tempfile
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,7 +21,7 @@ OBSERVATION_SOURCES = {"harness", "adapter", "runtime"}
 OBSERVATION_METHODS = {"task-assertion", "harness-integrity", "adapter-trace", "direct-runtime"}
 OBSERVATION_LEVELS = {"weak", "moderate", "strong"}
 MAX_OUTPUT = 12000
-PERMISSION_DENIAL_TERMS = ("permission denied", "permission_denied", "access denied", "operation not permitted")
+PERMISSION_DENIAL_CODES = {"sandbox_denied", "sandbox_permission_denied", "permission_denied", "access_denied", "approval_required"}
 
 
 def now() -> str:
@@ -159,18 +160,24 @@ def marker_check(output: str, markers: list[str]) -> tuple[bool, str]:
 
 
 def permission_denial_from_event(event_type: str, payload: dict) -> bool:
-    """Accept denial only from structured runtime fields, never from the prompt text."""
+    """Require an explicit machine-readable denial code; free-form output is not proof."""
+    candidates = []
     if event_type == "error":
-        fields = (payload.get("code"), payload.get("status"), payload.get("message"), payload.get("error"))
+        candidates.append(payload.get("code"))
+        error = payload.get("error")
+        if isinstance(error, dict):
+            candidates.append(error.get("code"))
     elif event_type in {"item.started", "item.updated", "item.completed"}:
         item = payload.get("item")
         if not isinstance(item, dict) or item.get("type") != "command_execution":
             return False
-        fields = (item.get("status"), item.get("exit_code"), item.get("aggregated_output"), item.get("error"), item.get("message"))
+        error = item.get("error")
+        if isinstance(error, dict):
+            candidates.append(error.get("code"))
+        candidates.append(item.get("failure_reason"))
     else:
         return False
-    text = " ".join(str(value) for value in fields if value is not None).casefold()
-    return any(term in text for term in PERMISSION_DENIAL_TERMS)
+    return any(isinstance(code, str) and code.casefold() in PERMISSION_DENIAL_CODES for code in candidates)
 
 
 def parse_codex_jsonl(stdout: str) -> tuple[list[dict], list[str], bool]:
@@ -240,12 +247,23 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     if any(value is None for value in protected.values()):
         raise SystemExit("ERROR: every protected_files entry must exist and be readable")
     prompt = str(meta["prompt"])
-    prompt_path = ROOT / ".runtime-conformance-prompt.txt"
-    prompt_path.write_text(prompt + "\n", encoding="utf-8")
-    command = shlex.split(args.command.replace("{prompt}", prompt))
+    # Parse the template before inserting untrusted scenario text. Only a whole
+    # argv token may be used as the prompt placeholder, so prompt quotes cannot
+    # alter the command's argument boundaries.
+    command = shlex.split(args.command)
     if not command:
         raise SystemExit("ERROR: --command must not be empty")
+    if any("{prompt}" in token and token != "{prompt}" for token in command):
+        raise SystemExit("ERROR: {prompt} must occupy a complete command argument")
+    command = [prompt if token == "{prompt}" else token for token in command]
+    prompt_path = None
     try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", prefix=".runtime-conformance-prompt-",
+            suffix=".txt", dir=ROOT, delete=False,
+        ) as prompt_file:
+            prompt_file.write(prompt + "\n")
+            prompt_path = Path(prompt_file.name)
         env = {"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", ""), "AIENGINEERINGSTANDARD_CONFORMANCE": "1", "AIENGINEERINGSTANDARD_CONFORMANCE_PROMPT_FILE": str(prompt_path)}
         # Preserve only the credential needed for an explicitly configured live
         # Codex run. The value is never copied into evidence or command output.
@@ -264,7 +282,8 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
             timed_out, exit_code = False, None
             stdout, stderr = "", str(exc)
     finally:
-        prompt_path.unlink(missing_ok=True)
+        if prompt_path is not None:
+            prompt_path.unlink(missing_ok=True)
 
     protected_after = {path: sha256_file(ROOT / path) for path in protected}
     protected_ok = protected == protected_after
