@@ -115,7 +115,7 @@ def validate_evidence_schema(data: object) -> None:
     require(data.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "unexpected evidence schema dialect")
     require(data.get("title") == "AIEngineeringStandard 2.0 Runtime Conformance Evidence", "unexpected evidence schema title")
     required = data.get("required", [])
-    for key in ("schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "trace", "started_at", "finished_at", "result", "observations", "checks"):
+    for key in ("schema_version", "standard_version", "agent", "runtime", "repository", "scenario", "trace", "started_at", "finished_at", "result", "exit_code", "timed_out", "stdout_excerpt", "stderr_excerpt", "protected_files", "observations", "checks"):
         require(key in required, f"evidence schema missing required field: {key}")
     trace = data.get("properties", {}).get("trace", {})
     require(trace.get("type") == "object", "evidence schema trace must be an object")
