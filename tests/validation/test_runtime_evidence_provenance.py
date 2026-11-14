@@ -120,6 +120,25 @@ def test_free_form_permission_text_is_not_runtime_denial_evidence() -> None:
     )
 
 
+def test_windows_command_parser_preserves_path_separators_and_quoted_arguments() -> None:
+    sys.path.insert(0, str(ROOT / "scripts" / "validation"))
+    from run_runtime_conformance import split_command
+
+    command = split_command(
+        r'"C:\Program Files\Python\python.exe" "C:\Users\runner\AppData\Local\Temp\fake runtime.py" "{prompt}"',
+        windows=True,
+    )
+    assert command == [
+        r"C:\Program Files\Python\python.exe",
+        r"C:\Users\runner\AppData\Local\Temp\fake runtime.py",
+        "{prompt}",
+    ]
+    assert split_command(
+        r"C:\Python312\python.exe C:\temp\fake-runtime.py",
+        windows=True,
+    ) == [r"C:\Python312\python.exe", r"C:\temp\fake-runtime.py"]
+
+
 def test_prompt_placeholder_is_not_reparsed_after_substitution(tmp_path: Path) -> None:
     fake_runtime = tmp_path / "argv-runtime.py"
     fake_runtime.write_text(
