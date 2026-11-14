@@ -236,6 +236,25 @@ def parse_codex_jsonl(stdout: str) -> tuple[list[dict], list[str], bool]:
     return observations, warnings, permission_denial_observed
 
 
+def split_command(command: str, *, windows: bool | None = None) -> list[str]:
+    """Split a command template without treating Windows path separators as escapes."""
+    if windows is None:
+        windows = os.name == "nt"
+    if not windows:
+        return shlex.split(command)
+
+    lexer = shlex.shlex(command, posix=False)
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    tokens = list(lexer)
+    return [
+        token[1:-1]
+        if len(token) >= 2 and token[0] == token[-1] and token[0] in {"'", '"'}
+        else token
+        for token in tokens
+    ]
+
+
 def run(args: argparse.Namespace, scenario: dict) -> dict:
     meta = scenario["scenario"]
     started = now()
@@ -250,7 +269,7 @@ def run(args: argparse.Namespace, scenario: dict) -> dict:
     # Parse the template before inserting untrusted scenario text. Only a whole
     # argv token may be used as the prompt placeholder, so prompt quotes cannot
     # alter the command's argument boundaries.
-    command = shlex.split(args.command)
+    command = split_command(args.command)
     if not command:
         raise SystemExit("ERROR: --command must not be empty")
     if any("{prompt}" in token and token != "{prompt}" for token in command):
