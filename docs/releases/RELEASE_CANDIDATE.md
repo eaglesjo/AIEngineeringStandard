@@ -28,7 +28,7 @@ This document defines the release-candidate gate for the current single-reposito
 
 ## Current transition
 
-The former `v2.0.0` release remains historical. The next release is `v2.0.1` under the independent development and release contract.
+The former `v2.0.0` release remains historical. The next planned release is `v2.3.0`, covering Runtime Conformance & Evidence Provenance.
 
 ## Publication gate
 
